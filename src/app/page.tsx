@@ -3,9 +3,9 @@ import Image from "next/image";
 export default function Home() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center bg-background px-4 py-16 text-center sm:px-8 sm:py-24 lg:py-32">
-      <div className="rounded-md bg-white px-4 py-3 sm:px-6">
+      <div>
         <Image
-          src="/brand/house-of-bollywood-logo.jpg"
+          src="/brand/house-of-bollywood-logo.png"
           alt=""
           width={1024}
           height={341}

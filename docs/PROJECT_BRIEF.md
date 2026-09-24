@@ -87,7 +87,7 @@ Do not display artificial cart counts, ratings, sales counts, stock urgency, or 
 
 Create an original fashion storefront with a clear House of Bollywood identity. A cinema/pop-culture influence can inform the art direction, but the actual merchandise remains the source of product truth.
 
-Suggested starting palette, taken from the owner logo at `public/brand/house-of-bollywood-logo.jpg`: brand red, gold edge, near-black outline, and warm white / cream for “House of”. Treat this as a design starting point, not a fixed template. The file is a JPEG, so its background is light gray, not transparent. Pair expressive headings with readable body text, consistent product photography, generous spacing, and strong contrast.
+Suggested starting palette, taken from the owner logo at `public/brand/house-of-bollywood-logo.png`: brand red, gold edge, near-black outline, and warm white / cream for “House of”. Treat this as a design starting point, not a fixed template. The site file has a transparent background. Pair expressive headings with readable body text, consistent product photography, generous spacing, and strong contrast.
 
 Product images should remain recognizable and accurately represent the goods. Use owner-supplied or existing approved assets, record their sources, and document missing assets. Do not invent product designs or celebrity endorsements.
 
