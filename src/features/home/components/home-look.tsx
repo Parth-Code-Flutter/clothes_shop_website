@@ -7,12 +7,15 @@ import Magnet from "@/components/react-bits/Magnet";
 import { RevealOnScroll } from "@/components/motion/reveal-on-scroll";
 import { SplitWords } from "@/components/motion/split-words";
 
-/** “An Extended Look” — dual trailer stills like Rockstar media blocks. */
+/** Extended look — themed chrome; photo captions stay light on image scrims. */
 export function HomeLook() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section id="look" className="bg-[#05070f] px-6 py-20 text-white sm:px-8 sm:py-28">
+    <section
+      id="look"
+      className="bg-background px-6 py-20 text-foreground sm:px-8 sm:py-28"
+    >
       <div className="mx-auto max-w-[1440px]">
         <RevealOnScroll>
           <p className="text-[10px] font-semibold tracking-[0.32em] text-accent uppercase">
@@ -23,7 +26,7 @@ export function HomeLook() {
             text="Two frames. One house."
             className="mt-4 max-w-3xl font-display text-4xl tracking-tight sm:text-6xl lg:text-7xl"
           />
-          <p className="mt-4 max-w-lg text-sm leading-7 text-white/60">
+          <p className="mt-4 max-w-lg text-sm leading-7 text-muted">
             Campaign boards from the live drop — oversized silhouettes, character
             backs, no filler stock.
           </p>
@@ -43,7 +46,7 @@ export function HomeLook() {
             },
           ].map((board, index) => (
             <RevealOnScroll key={board.src} delay={index * 0.08}>
-              <figure className="group relative aspect-[16/10] overflow-hidden bg-black">
+              <figure className="group relative aspect-[16/10] overflow-hidden bg-surface">
                 <Image
                   src={board.src}
                   alt={board.title}
@@ -51,7 +54,7 @@ export function HomeLook() {
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
-                <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black via-black/50 to-transparent p-5 sm:p-6">
+                <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black via-black/50 to-transparent p-5 text-white sm:p-6">
                   <div>
                     <p className="font-mono text-[10px] tracking-[0.2em] text-accent uppercase">
                       {board.label}
@@ -70,7 +73,7 @@ export function HomeLook() {
           <Magnet padding={40} magnetStrength={3.5} disabled={!!reduceMotion}>
             <Link
               href="/shop"
-              className="inline-flex min-h-12 items-center rounded-full border border-white/25 px-7 text-sm font-semibold text-white transition-colors hover:border-white hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              className="inline-flex min-h-12 items-center rounded-full border border-border bg-surface px-7 text-sm font-semibold text-foreground transition-colors hover:border-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
             >
               Shop the board
             </Link>

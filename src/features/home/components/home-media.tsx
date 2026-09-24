@@ -5,7 +5,7 @@ import Link from "next/link";
 import { RevealOnScroll } from "@/components/motion/reveal-on-scroll";
 import { getAllProducts } from "@/features/catalog/data";
 
-/** Media & artwork grid — Rockstar “Media & Artwork” energy with catalog stills. */
+/** Media grid — themed section; hover labels stay light on photo scrims. */
 export function HomeMedia() {
   const products = getAllProducts();
   const shots = products.flatMap((product) =>
@@ -19,7 +19,10 @@ export function HomeMedia() {
   );
 
   return (
-    <section id="media" className="bg-[#05070f] px-6 py-20 text-white sm:px-8 sm:py-28">
+    <section
+      id="media"
+      className="bg-surface px-6 py-20 text-foreground sm:px-8 sm:py-28"
+    >
       <div className="mx-auto max-w-[1440px]">
         <RevealOnScroll>
           <p className="text-[10px] font-semibold tracking-[0.32em] text-accent uppercase">
@@ -27,9 +30,9 @@ export function HomeMedia() {
           </p>
           <h2 className="mt-4 max-w-2xl font-display text-4xl tracking-tight sm:text-6xl">
             Download the vibe.
-            <span className="block text-white/45">Wear the print.</span>
+            <span className="block text-muted">Wear the print.</span>
           </h2>
-          <p className="mt-4 max-w-md text-sm leading-7 text-white/60">
+          <p className="mt-4 max-w-md text-sm leading-7 text-muted">
             Official product stills from the live House of Bollywood catalog.
           </p>
         </RevealOnScroll>
@@ -43,7 +46,7 @@ export function HomeMedia() {
             >
               <Link
                 href={shot.href}
-                className="group relative block overflow-hidden bg-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                className="group relative block overflow-hidden border border-border bg-background focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
               >
                 <Image
                   src={shot.src}

@@ -93,7 +93,9 @@ export function HomeHero() {
     <section
       id="opener"
       ref={rootRef}
-      className={reduceMotion ? "relative bg-[#05070f]" : "relative h-[260vh] bg-[#05070f]"}
+      className={
+        reduceMotion ? "relative bg-background" : "relative h-[260vh] bg-background"
+      }
     >
       <div
         ref={stageRef}

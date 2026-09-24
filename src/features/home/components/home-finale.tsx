@@ -7,7 +7,7 @@ import Magnet from "@/components/react-bits/Magnet";
 import { RevealOnScroll } from "@/components/motion/reveal-on-scroll";
 import { Button } from "@/components/ui/button";
 
-/** Finale — shop CTA + honest newsletter preview (Rockstar “Propaganda” energy). */
+/** Finale — fully theme-aware shop CTA + newsletter preview. */
 export function HomeFinale() {
   const reduceMotion = useReducedMotion();
   const [email, setEmail] = useState("");
@@ -27,7 +27,10 @@ export function HomeFinale() {
   }
 
   return (
-    <section id="shop" className="bg-[#05070f] px-6 py-24 text-white sm:px-8 sm:py-32">
+    <section
+      id="shop"
+      className="bg-background px-6 py-24 text-foreground sm:px-8 sm:py-32"
+    >
       <div className="mx-auto max-w-[1440px]">
         <RevealOnScroll>
           <p className="text-[10px] font-semibold tracking-[0.32em] text-accent uppercase">
@@ -36,7 +39,7 @@ export function HomeFinale() {
           <h2 className="mt-4 max-w-3xl font-display text-5xl tracking-tight sm:text-7xl lg:text-8xl">
             The board is live.
           </h2>
-          <p className="mt-5 max-w-md text-sm leading-7 text-white/60">
+          <p className="mt-5 max-w-md text-sm leading-7 text-muted">
             Graphic tees from the verified catalog. Bag it. Checkout stays a
             preview until payments connect.
           </p>
@@ -44,30 +47,33 @@ export function HomeFinale() {
             <Magnet padding={48} magnetStrength={3.2} disabled={!!reduceMotion}>
               <Link
                 href="/shop"
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-8 text-sm font-semibold text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-8 text-sm font-semibold text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
               >
                 Shop all tees
               </Link>
             </Magnet>
             <Link
               href="/search"
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/25 px-8 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-border bg-surface px-8 text-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
             >
               Search cast
             </Link>
           </div>
         </RevealOnScroll>
 
-        <RevealOnScroll className="mt-20 border-t border-white/10 pt-12" delay={0.08}>
+        <RevealOnScroll
+          className="mt-20 border-t border-border pt-12"
+          delay={0.08}
+        >
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-md">
-              <p className="text-[10px] font-semibold tracking-[0.28em] text-white/45 uppercase">
+              <p className="text-[10px] font-semibold tracking-[0.28em] text-muted uppercase">
                 House updates
               </p>
               <h3 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">
                 Stay close to the next drop
               </h3>
-              <p className="mt-3 text-sm leading-6 text-white/50">
+              <p className="mt-3 text-sm leading-6 text-muted">
                 Preview only. Nothing is subscribed, stored, or emailed.
               </p>
             </div>
@@ -86,12 +92,12 @@ export function HomeFinale() {
                     setMessage(null);
                   }}
                   placeholder="you@email.com"
-                  className="h-12 flex-1 rounded-full border border-white/20 bg-white/5 px-5 text-sm text-white outline-none placeholder:text-white/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  className="h-12 flex-1 rounded-full border border-border bg-surface px-5 text-sm text-foreground outline-none placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 />
                 <Button type="submit">Preview join</Button>
               </div>
               {message ? (
-                <p className="mt-3 text-sm text-white/50" role="status">
+                <p className="mt-3 text-sm text-muted" role="status">
                   {message}
                 </p>
               ) : null}

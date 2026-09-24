@@ -6,12 +6,12 @@ import { HomeLook } from "@/features/home/components/home-look";
 import { HomeMedia } from "@/features/home/components/home-media";
 
 /**
- * Homepage only — Rockstar VI–style scroll story.
- * Uses existing House of Bollywood campaign + product images.
+ * Homepage — cinematic scroll story that respects light/dark theme tokens.
+ * Photo panels keep light type on dark scrims for contrast on imagery.
  */
 export default function Home() {
   return (
-    <main className="relative flex flex-1 flex-col bg-[#05070f] text-white">
+    <main className="relative flex flex-1 flex-col bg-background text-foreground">
       <HomeChapterNav />
       <HomeHero />
       <HomeLook />

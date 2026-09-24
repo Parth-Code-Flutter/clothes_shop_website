@@ -11,7 +11,7 @@ const CHAPTERS = [
   { id: "shop", label: "Shop" },
 ] as const;
 
-/** Side chapter rail — Rockstar VI–style section dots. */
+/** Side chapter rail — theme-aware (not locked to white-on-black). */
 export function HomeChapterNav() {
   const [active, setActive] = useState<string>("opener");
 
@@ -46,10 +46,12 @@ export function HomeChapterNav() {
           href={`#${chapter.id}`}
           className={cn(
             "pointer-events-auto group flex items-center justify-end gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent",
-            active === chapter.id ? "text-accent" : "text-white/35 hover:text-white/70",
+            active === chapter.id
+              ? "text-accent"
+              : "text-muted hover:text-foreground",
           )}
         >
-          <span className="text-[9px] font-semibold tracking-[0.2em] uppercase opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+          <span className="rounded-md bg-background/80 px-2 py-1 text-[9px] font-semibold tracking-[0.2em] uppercase opacity-0 shadow-sm backdrop-blur transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
             {chapter.label}
           </span>
           <span className="font-mono text-[10px] tabular-nums">
@@ -58,7 +60,7 @@ export function HomeChapterNav() {
           <span
             className={cn(
               "block h-8 w-px transition-all",
-              active === chapter.id ? "bg-accent scale-y-100" : "bg-white/25",
+              active === chapter.id ? "bg-accent scale-y-100" : "bg-border",
             )}
             aria-hidden="true"
           />

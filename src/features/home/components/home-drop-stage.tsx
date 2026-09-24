@@ -7,14 +7,13 @@ import { getAllProducts } from "@/features/catalog/data";
 import { formatInrFromPaise } from "@/lib/money";
 
 /**
- * Character chapters — full-bleed cast panels (Rockstar “characters” energy).
- * Uses live catalog images only.
+ * Cast chapters — section chrome follows theme; type on photos stays light.
  */
 export function HomeDropStage() {
   const products = getAllProducts();
 
   return (
-    <section id="cast" className="bg-[#05070f] text-white">
+    <section id="cast" className="bg-background text-foreground">
       <div className="mx-auto max-w-[1440px] px-6 pt-20 sm:px-8 sm:pt-24">
         <RevealOnScroll>
           <p className="text-[10px] font-semibold tracking-[0.32em] text-accent uppercase">
@@ -23,7 +22,7 @@ export function HomeDropStage() {
           <h2 className="mt-4 max-w-2xl font-display text-4xl tracking-tight sm:text-6xl">
             Only in the house.
           </h2>
-          <p className="mt-4 max-w-md text-sm leading-7 text-white/60">
+          <p className="mt-4 max-w-md text-sm leading-7 text-muted">
             Five live graphic tees. Tap a character — open the drop.
           </p>
         </RevealOnScroll>
@@ -34,7 +33,7 @@ export function HomeDropStage() {
           <RevealOnScroll key={product.id} delay={Math.min(index * 0.04, 0.16)}>
             <Link
               href={`/product/${product.slug}`}
-              className="group relative block min-h-[70svh] overflow-hidden bg-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent lg:min-h-[78svh]"
+              className="group relative block min-h-[70svh] overflow-hidden bg-surface focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent lg:min-h-[78svh]"
             >
               <Image
                 src={product.image}
@@ -47,7 +46,7 @@ export function HomeDropStage() {
                 className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/35 to-transparent"
                 aria-hidden="true"
               />
-              <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 lg:p-14">
+              <div className="absolute inset-0 flex flex-col justify-between p-6 text-white sm:p-10 lg:p-14">
                 <p className="font-mono text-[10px] tracking-[0.28em] text-white/50 uppercase">
                   Character {String(index + 1).padStart(2, "0")}
                 </p>
@@ -71,7 +70,6 @@ export function HomeDropStage() {
   );
 }
 
-/** Keep marquee export for any legacy imports — unused on Rockstar home. */
 export function HomeMarquee() {
   return null;
 }
