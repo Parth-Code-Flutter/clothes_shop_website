@@ -2,32 +2,54 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/features/cart/cart-provider";
 import { getCategoryById } from "@/features/catalog/data";
+import { useWishlist } from "@/features/wishlist/wishlist-provider";
 import { formatInrFromPaise } from "@/lib/money";
 import type { CatalogProduct } from "@/features/catalog/types";
 import { cn } from "@/lib/utils";
 
 export function ProductCard({ product }: { product: CatalogProduct }) {
   const { addProduct } = useCart();
+  const { hasProduct, toggleProduct } = useWishlist();
+  const saved = hasProduct(product.id);
   const href = `/product/${product.slug}`;
   const category = getCategoryById(product.categoryId);
 
   return (
     <article className="group flex flex-col">
-      <Link
-        href={href}
-        className="relative aspect-[700/910] overflow-hidden bg-[#0a0705] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-      >
-        <Image
-          src={product.image}
-          alt={product.alt}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-        />
-      </Link>
+      <div className="relative">
+        <Link
+          href={href}
+          className="relative block aspect-[700/910] overflow-hidden bg-[#0a0705] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+        >
+          <Image
+            src={product.image}
+            alt={product.alt}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+          />
+        </Link>
+        <button
+          type="button"
+          aria-label={
+            saved
+              ? `Remove ${product.name} from wishlist`
+              : `Save ${product.name}`
+          }
+          aria-pressed={saved}
+          onClick={() => toggleProduct(product)}
+          className="absolute top-3 right-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          <Heart
+            className={cn("size-4", saved && "fill-accent text-accent")}
+            aria-hidden="true"
+          />
+        </button>
+      </div>
       <div className="mt-4 flex flex-1 flex-col gap-3">
         <div>
           {category ? (

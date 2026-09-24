@@ -8,12 +8,15 @@ import { Button } from "@/components/ui/button";
 import { PreviewNotice } from "@/components/shared/preview-notice";
 import { useCart } from "@/features/cart/cart-provider";
 import { getCategoryById } from "@/features/catalog/data";
+import { useWishlist } from "@/features/wishlist/wishlist-provider";
 import { formatInrFromPaise } from "@/lib/money";
 import type { CatalogProduct } from "@/features/catalog/types";
 import { cn } from "@/lib/utils";
 
 export function ProductDetail({ product }: { product: CatalogProduct }) {
   const { addProduct } = useCart();
+  const { hasProduct, toggleProduct } = useWishlist();
+  const saved = hasProduct(product.id);
   const category = getCategoryById(product.categoryId);
   const [activeImage, setActiveImage] = useState(
     product.gallery[0] ?? product.image,
@@ -138,10 +141,13 @@ export function ProductDetail({ product }: { product: CatalogProduct }) {
             <Button
               variant="ghost"
               className="border border-border"
-              onClick={() => setPreview(`Wishlist ${product.name}`)}
+              onClick={() => toggleProduct(product)}
             >
-              <Heart className="mr-2 size-4" aria-hidden="true" />
-              Wishlist
+              <Heart
+                className={cn("mr-2 size-4", saved && "fill-accent text-accent")}
+                aria-hidden="true"
+              />
+              {saved ? "Saved" : "Wishlist"}
             </Button>
             <Button
               variant="ghost"

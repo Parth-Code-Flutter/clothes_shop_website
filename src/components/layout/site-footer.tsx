@@ -9,7 +9,9 @@ import { siteConfig } from "@/config/site";
 const FOOTER_LINKS = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
+  { label: "Wishlist", href: "/wishlist" },
   { label: "Bag", href: "/cart" },
+  { label: "Account", href: "/account" },
 ] as const;
 
 const PREVIEW_LINKS = [

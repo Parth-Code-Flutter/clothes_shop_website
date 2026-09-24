@@ -8,30 +8,23 @@ import { useState } from "react";
 import { PreviewNotice } from "@/components/shared/preview-notice";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useCart } from "@/features/cart/cart-provider";
+import { useWishlist } from "@/features/wishlist/wishlist-provider";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Shop" },
+  { href: "/wishlist", label: "Wishlist" },
   { href: "/cart", label: "Bag" },
-] as const;
-
-const PREVIEW_ACTIONS = [
-  { id: "search", label: "Search", icon: Search },
-  { id: "account", label: "Account", icon: User },
-  { id: "wishlist", label: "Wishlist", icon: Heart },
+  { href: "/account", label: "Account" },
 ] as const;
 
 export function SiteHeader() {
   const pathname = usePathname();
   const { itemCount } = useCart();
+  const { count: wishlistCount } = useWishlist();
   const [menuOpen, setMenuOpen] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
-
-  function openPreview(label: string) {
-    setMenuOpen(false);
-    setPreview(label);
-  }
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -82,17 +75,37 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-1 lg:flex">
-          {PREVIEW_ACTIONS.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              aria-label={label}
-              onClick={() => openPreview(label)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >
-              <Icon aria-hidden="true" className="size-5" />
-            </button>
-          ))}
+          <button
+            type="button"
+            aria-label="Search"
+            onClick={() => setPreview("Search")}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <Search aria-hidden="true" className="size-5" />
+          </button>
+          <Link
+            href="/account"
+            aria-label="Account"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <User aria-hidden="true" className="size-5" />
+          </Link>
+          <Link
+            href="/wishlist"
+            aria-label={
+              wishlistCount > 0
+                ? `Wishlist, ${wishlistCount} saved`
+                : "Wishlist"
+            }
+            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <Heart aria-hidden="true" className="size-5" />
+            {wishlistCount > 0 ? (
+              <span className="absolute top-1 right-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
+                {wishlistCount > 99 ? "99+" : wishlistCount}
+              </span>
+            ) : null}
+          </Link>
           <Link
             href="/cart"
             aria-label={itemCount > 0 ? `Bag, ${itemCount} items` : "Bag"}
@@ -108,6 +121,22 @@ export function SiteHeader() {
           <ThemeToggle />
         </div>
         <div className="ml-auto flex items-center gap-1 lg:hidden">
+          <Link
+            href="/wishlist"
+            aria-label={
+              wishlistCount > 0
+                ? `Wishlist, ${wishlistCount} saved`
+                : "Wishlist"
+            }
+            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <Heart aria-hidden="true" className="size-5" />
+            {wishlistCount > 0 ? (
+              <span className="absolute top-1 right-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
+                {wishlistCount > 99 ? "99+" : wishlistCount}
+              </span>
+            ) : null}
+          </Link>
           <Link
             href="/cart"
             aria-label={itemCount > 0 ? `Bag, ${itemCount} items` : "Bag"}
@@ -142,21 +171,22 @@ export function SiteHeader() {
               )}
             >
               {link.label}
-              {link.href === "/cart" && itemCount > 0
-                ? ` (${itemCount})`
+              {link.href === "/cart" && itemCount > 0 ? ` (${itemCount})` : ""}
+              {link.href === "/wishlist" && wishlistCount > 0
+                ? ` (${wishlistCount})`
                 : ""}
             </Link>
           ))}
-          {PREVIEW_ACTIONS.map(({ id, label }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => openPreview(label)}
-              className="flex h-12 w-full items-center text-left text-lg text-foreground"
-            >
-              {label}
-            </button>
-          ))}
+          <button
+            type="button"
+            onClick={() => {
+              setMenuOpen(false);
+              setPreview("Search");
+            }}
+            className="flex h-12 w-full items-center text-left text-lg text-foreground"
+          >
+            Search
+          </button>
         </nav>
       ) : null}
 
