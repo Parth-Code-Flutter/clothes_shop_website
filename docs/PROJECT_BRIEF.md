@@ -10,6 +10,20 @@ Do not reproduce its layout, section styling, theme, typography, spacing, or int
 
 **Explicit additional requirement: implement both light and dark themes now**, including a working homepage theme toggle. This user-requested requirement is included alongside the existing-site feature scope.
 
+**Explicit additional requirement: responsive UI from the first layout**, for phone, tablet, and computer. Do not design a desktop page and then shrink it. Each width gets its own spacing, type size, navigation, and image crop. Check about 360–390px, a tablet width, and 1440px. No horizontal scrolling. Tap targets stay large enough for a thumb. The mobile menu, theme toggle, and preview notices must work on all three.
+
+### Starting constraints
+
+These apply to the first UI code, not as a later pass:
+
+- Light and dark themes share one set of named color variables. Components do not hardcode white or black.
+- Layouts are responsive at phone, tablet, and computer widths from the first section.
+- Keyboard use, visible focus, readable contrast, and image alt text are part of each component. Honor reduced motion.
+- Use semantic page regions (`header`, `main`, `nav`, `footer`) and reserve image space so the page does not jump while pictures load.
+- Product photos keep their real colors in both themes.
+- Prices stay in integer paise and display as INR.
+- Shop, cart, account, and newsletter actions stay in preview until a later instruction. Do not invent products, reviews, or shipping promises.
+
 This revision replaces the earlier broader demo plan. Suggestions previously made for new features are removed from the development scope. A missing capability is not permission to add it.
 
 Build inside a new `house-of-bollywood/` directory without altering unrelated files or the live website. This document is a specification; the application has not been scaffolded.
@@ -73,7 +87,7 @@ Do not display artificial cart counts, ratings, sales counts, stock urgency, or 
 
 Create an original fashion storefront with a clear House of Bollywood identity. A cinema/pop-culture influence can inform the art direction, but the actual merchandise remains the source of product truth.
 
-Suggested starting palette: warm white, near-black, and the logo's red. Treat this as a design starting point, not a fixed template. Pair expressive headings with readable body text, consistent product photography, generous spacing, and strong contrast.
+Suggested starting palette, taken from the owner logo at `public/brand/house-of-bollywood-logo.jpg`: brand red, gold edge, near-black outline, and warm white / cream for “House of”. Treat this as a design starting point, not a fixed template. The file is a JPEG, so its background is light gray, not transparent. Pair expressive headings with readable body text, consistent product photography, generous spacing, and strong contrast.
 
 Product images should remain recognizable and accurately represent the goods. Use owner-supplied or existing approved assets, record their sources, and document missing assets. Do not invent product designs or celebrity endorsements.
 
