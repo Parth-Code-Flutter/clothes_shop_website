@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/shared/product-card";
 import { RevealOnScroll } from "@/components/motion/reveal-on-scroll";
 import { SplitWords } from "@/components/motion/split-words";
@@ -29,22 +30,37 @@ function sortProducts(products: CatalogProduct[], sort: SortKey) {
 }
 
 export function ShopListing() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const categories = getAllCategories();
-  const [categoryId, setCategoryId] = useState<string>("all");
+  const categoryFromUrl = searchParams.get("category");
+  const activeCategory =
+    categoryFromUrl && categories.some((c) => c.id === categoryFromUrl)
+      ? categoryFromUrl
+      : "all";
+
   const [sort, setSort] = useState<SortKey>("featured");
 
   const selectedCategory =
-    categoryId === "all"
+    activeCategory === "all"
       ? null
-      : categories.find((category) => category.id === categoryId) ?? null;
+      : (categories.find((category) => category.id === activeCategory) ?? null);
 
   const products = useMemo(() => {
     const base =
-      categoryId === "all"
+      activeCategory === "all"
         ? getAllProducts()
-        : getProductsByCategory(categoryId);
+        : getProductsByCategory(activeCategory);
     return sortProducts(base, sort);
-  }, [categoryId, sort]);
+  }, [activeCategory, sort]);
+
+  function selectCategory(id: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (id === "all") params.delete("category");
+    else params.set("category", id);
+    const query = params.toString();
+    router.replace(query ? `/shop?${query}` : "/shop", { scroll: false });
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
@@ -54,10 +70,10 @@ export function ShopListing() {
             Shop
           </p>
           <SplitWords
-              as="h1"
-              text="The drop board"
-              className="mt-3 font-display text-5xl tracking-tight text-foreground sm:text-6xl"
-            />
+            as="h1"
+            text="The drop board"
+            className="mt-3 font-display text-5xl tracking-tight text-foreground sm:text-6xl"
+          />
           <p className="mt-3 max-w-xl text-sm text-muted">
             Built for Gen Z closet rotation — graphic tees live now, more
             categories ready for the next drop.
@@ -81,10 +97,10 @@ export function ShopListing() {
       <div className="mt-8 flex gap-2 overflow-x-auto pb-2">
         <button
           type="button"
-          onClick={() => setCategoryId("all")}
+          onClick={() => selectCategory("all")}
           className={cn(
             "shrink-0 rounded-full px-4 py-2 text-sm font-semibold tracking-wide focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-            categoryId === "all"
+            activeCategory === "all"
               ? "bg-accent text-accent-foreground"
               : "border border-border text-foreground",
           )}
@@ -95,10 +111,10 @@ export function ShopListing() {
           <button
             key={category.id}
             type="button"
-            onClick={() => setCategoryId(category.id)}
+            onClick={() => selectCategory(category.id)}
             className={cn(
               "shrink-0 rounded-full px-4 py-2 text-sm font-semibold tracking-wide focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-              categoryId === category.id
+              activeCategory === category.id
                 ? "bg-accent text-accent-foreground"
                 : "border border-border text-foreground",
             )}
@@ -131,7 +147,10 @@ export function ShopListing() {
           </p>
           <div className="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {products.map((product, index) => (
-              <RevealOnScroll key={product.id} delay={Math.min(index * 0.04, 0.24)}>
+              <RevealOnScroll
+                key={product.id}
+                delay={Math.min(index * 0.04, 0.24)}
+              >
                 <ProductCard product={product} />
               </RevealOnScroll>
             ))}
