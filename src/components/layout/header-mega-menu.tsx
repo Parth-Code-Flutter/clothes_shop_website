@@ -18,14 +18,12 @@ gsap.registerPlugin(useGSAP);
 type HeaderMegaMenuProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  overHero: boolean;
   onNavigate?: () => void;
 };
 
 export function HeaderMegaMenu({
   open,
   onOpenChange,
-  overHero,
   onNavigate,
 }: HeaderMegaMenuProps) {
   const reduceMotion = useReducedMotion();
@@ -138,12 +136,10 @@ export function HeaderMegaMenu({
         onClick={() => onOpenChange(!open)}
         onMouseEnter={() => onOpenChange(true)}
         className={cn(
-          "group inline-flex items-center gap-1.5 py-2 text-[11px] font-semibold tracking-[0.16em] uppercase focus-visible:outline-2 focus-visible:outline-offset-4",
-          overHero
-            ? "text-white/75 hover:text-white focus-visible:outline-white"
-            : open
-              ? "text-foreground focus-visible:outline-foreground"
-              : "text-muted hover:text-foreground focus-visible:outline-foreground",
+          "group relative inline-flex items-center gap-1.5 py-2 text-[11px] font-semibold tracking-[0.18em] uppercase transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground",
+          open
+            ? "text-foreground"
+            : "text-muted hover:text-foreground",
         )}
       >
         Mens
@@ -169,12 +165,12 @@ export function HeaderMegaMenu({
         ref={panelRef}
         role="region"
         aria-label="Mens categories"
-        className="absolute top-full left-0 z-50 w-[min(92vw,640px)] -translate-x-2 overflow-hidden opacity-0"
+        className="absolute top-full left-0 z-50 w-[min(92vw,640px)] overflow-hidden opacity-0"
         onMouseLeave={() => onOpenChange(false)}
       >
         <div
           ref={itemsRef}
-          className="mt-3 overflow-hidden rounded-2xl border border-border bg-background/95 text-foreground shadow-[0_24px_60px_rgba(19,6,3,0.18)] backdrop-blur-2xl"
+          className="mt-2 overflow-hidden rounded-xl border border-border bg-background text-foreground shadow-[0_20px_50px_rgba(19,6,3,0.12)]"
         >
           <div className="grid gap-0 sm:grid-cols-[1.1fr_0.9fr]">
             <div className="border-b border-border p-5 sm:border-r sm:border-b-0 sm:p-6">
