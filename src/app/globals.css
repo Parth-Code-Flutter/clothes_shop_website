@@ -4,9 +4,9 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #fbf7f2;
+  --background: #ffffff;
   --foreground: #130603;
-  --surface: #fffdfb;
+  --surface: #ffffff;
   --muted: #5e5148;
   --border: #eadfd4;
   --accent: #ea1916;
