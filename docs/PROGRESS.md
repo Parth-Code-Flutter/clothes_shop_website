@@ -12,6 +12,8 @@
 - Checkout at `/checkout` with billing validation, promo preview, Razorpay preview, and order summary
 - Wishlist at `/wishlist` with local saves and header count
 - Account at `/account` with device-only profile save/sign-out
+- Search at `/search` over the local catalog
+- Homepage polish: hero, marquee, character drop stage
 - Multi-category shelf: Graphic Tees live; Hoodies, Accessories, Limited Drops marked soon
 - Gen Z tone in shop/bag/checkout/account copy without inventing merchandise
 - Shared catalog data using live store slugs and ₹650 prices
@@ -22,11 +24,10 @@
 - Typecheck: passed
 - Lint: passed
 - Build: passed
-- Routes: `/`, `/shop`, `/product/[slug]`, `/cart`, `/checkout`, `/wishlist`, `/account`
+- Routes: `/`, `/shop`, `/product/[slug]`, `/cart`, `/checkout`, `/wishlist`, `/account`, `/search`
 
 ## Known limitations
 
-- Search stays in preview
 - Cart, wishlist, and account are device-local only until backend integration
 - Account is not real authentication (no password, no server)
 - Checkout does not charge, create orders, or call Razorpay
@@ -34,4 +35,4 @@
 - Empty categories intentionally have no fake products
 - Newsletter validates format locally and does not store or send email
 - Size and stock are omitted until verified on the live product pages
-- Full visual redesign still deferred after core features
+- WooCommerce / Razorpay integration still future work

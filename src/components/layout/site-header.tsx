@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Search, ShoppingBag, User, X, Heart } from "lucide-react";
 import { useState } from "react";
-import { PreviewNotice } from "@/components/shared/preview-notice";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useCart } from "@/features/cart/cart-provider";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
@@ -14,6 +13,7 @@ import { cn } from "@/lib/utils";
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Shop" },
+  { href: "/search", label: "Search" },
   { href: "/wishlist", label: "Wishlist" },
   { href: "/cart", label: "Bag" },
   { href: "/account", label: "Account" },
@@ -24,7 +24,6 @@ export function SiteHeader() {
   const { itemCount } = useCart();
   const { count: wishlistCount } = useWishlist();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -75,14 +74,13 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-1 lg:flex">
-          <button
-            type="button"
+          <Link
+            href="/search"
             aria-label="Search"
-            onClick={() => setPreview("Search")}
             className="inline-flex h-11 w-11 items-center justify-center rounded-full text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <Search aria-hidden="true" className="size-5" />
-          </button>
+          </Link>
           <Link
             href="/account"
             aria-label="Account"
@@ -121,6 +119,13 @@ export function SiteHeader() {
           <ThemeToggle />
         </div>
         <div className="ml-auto flex items-center gap-1 lg:hidden">
+          <Link
+            href="/search"
+            aria-label="Search"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <Search aria-hidden="true" className="size-5" />
+          </Link>
           <Link
             href="/wishlist"
             aria-label={
@@ -177,24 +182,8 @@ export function SiteHeader() {
                 : ""}
             </Link>
           ))}
-          <button
-            type="button"
-            onClick={() => {
-              setMenuOpen(false);
-              setPreview("Search");
-            }}
-            className="flex h-12 w-full items-center text-left text-lg text-foreground"
-          >
-            Search
-          </button>
         </nav>
       ) : null}
-
-      <PreviewNotice
-        open={preview !== null}
-        action={preview ?? ""}
-        onClose={() => setPreview(null)}
-      />
     </header>
   );
 }

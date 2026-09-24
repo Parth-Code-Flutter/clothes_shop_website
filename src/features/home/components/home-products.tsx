@@ -16,12 +16,12 @@ export function HomeProducts() {
               Catalog
             </p>
             <h2 className="mt-3 font-display text-4xl tracking-tight text-foreground sm:text-5xl">
-              Featured drops
+              Full drop board
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-6 text-muted">
-            Graphic tees live now at ₹650. Hoodies, accessories, and limited
-            drops are shelved for the next catalog update — no fake stock.
+            Same live tees in a clean grid. Open shop for categories, or search
+            when you already know the name.
           </p>
         </div>
 

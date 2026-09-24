@@ -8,6 +8,7 @@
 - Testimonials, blog, and brand logos are omitted until verified assets exist.
 - Catalog supports multiple categories. Only Graphic Tees have live products; Hoodies, Accessories, and Limited Drops stay “soon” until real stock exists.
 - Audience tone is Gen Z: bag language, drop board, bold display type, category chips — without inventing products or hype claims.
-- Wishlist and account are device-local (`localStorage`) like the bag. Account stores name/email only — no password and no server auth.
+- Homepage visual pass uses a cinematic hero, footer-colored marquee, and character drop stage while keeping verified product data only.
+- Search queries the local catalog by name, slug, summary, and category.
 - Footer uses dedicated `--footer` / `--footer-foreground` tokens so it stays dark and readable in both themes. Never use `bg-foreground` for large surfaces.
 - Preview overlays use `--overlay`, not `bg-foreground/…`, for the same reason.
