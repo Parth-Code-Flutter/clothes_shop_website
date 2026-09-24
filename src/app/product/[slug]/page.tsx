@@ -6,7 +6,7 @@ import {
   getProductSlugs,
 } from "@/features/catalog/data";
 import { ProductDetail } from "@/features/product/components/product-detail";
-import { ProductCard } from "@/components/shared/product-card";
+import { RelatedProducts } from "@/features/product/components/related-products";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -42,19 +42,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <main className="flex flex-1 flex-col bg-background">
-      <ProductDetail product={product} />
-      <section className="border-t border-border px-4 py-14 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="font-display text-3xl tracking-tight text-foreground sm:text-4xl">
-            More tees
-          </h2>
-          <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {related.map((item) => (
-              <ProductCard key={item.id} product={item} />
-            ))}
-          </div>
-        </div>
-      </section>
+      <ProductDetail key={product.id} product={product} />
+      <RelatedProducts products={related} />
     </main>
   );
 }

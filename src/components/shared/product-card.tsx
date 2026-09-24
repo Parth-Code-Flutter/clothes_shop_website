@@ -2,89 +2,142 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Heart, Plus } from "lucide-react";
+import { useReducedMotion } from "motion/react";
+import { useState, type MouseEvent } from "react";
+import Magnet from "@/components/react-bits/Magnet";
 import { useCart } from "@/features/cart/cart-provider";
-import { getCategoryById } from "@/features/catalog/data";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
 import { formatInrFromPaise } from "@/lib/money";
 import type { CatalogProduct } from "@/features/catalog/types";
 import { cn } from "@/lib/utils";
 
-export function ProductCard({ product }: { product: CatalogProduct }) {
+type ProductCardProps = {
+  product: CatalogProduct;
+  index?: number;
+  featured?: boolean;
+};
+
+export function ProductCard({
+  product,
+  index,
+  featured = false,
+}: ProductCardProps) {
   const { addProduct } = useCart();
   const { hasProduct, toggleProduct } = useWishlist();
   const saved = hasProduct(product.id);
   const href = `/product/${product.slug}`;
-  const category = getCategoryById(product.categoryId);
+  const reduceMotion = useReducedMotion();
+  const [justAdded, setJustAdded] = useState(false);
+
+  function handleAdd(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    addProduct(product, 1);
+    setJustAdded(true);
+    window.setTimeout(() => setJustAdded(false), 1600);
+  }
 
   return (
-    <article className="group flex flex-col">
-      <div className="relative">
+    <article className="group relative h-full">
+      <div
+        className={cn(
+          "relative h-full overflow-hidden bg-[#0a0705]",
+          featured ? "min-h-[420px] sm:min-h-[560px]" : "aspect-[3/4]",
+        )}
+      >
         <Link
           href={href}
-          className="relative block aspect-[700/910] overflow-hidden bg-[#0a0705] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          className="absolute inset-0 block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          aria-label={`View ${product.name}`}
         >
           <Image
             src={product.image}
             alt={product.alt}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
-            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+            sizes={
+              featured
+                ? "(max-width: 640px) 100vw, 66vw"
+                : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            }
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.045] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
           />
-        </Link>
-        <button
-          type="button"
-          aria-label={
-            saved
-              ? `Remove ${product.name} from wishlist`
-              : `Save ${product.name}`
-          }
-          aria-pressed={saved}
-          onClick={() => toggleProduct(product)}
-          className="absolute top-3 right-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
-          <Heart
-            className={cn("size-4", saved && "fill-accent text-accent")}
+          <span
+            className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30"
             aria-hidden="true"
           />
-        </button>
-      </div>
-      <div className="mt-4 flex flex-1 flex-col gap-3">
-        <div>
-          {category ? (
-            <p className="text-[11px] font-semibold tracking-[0.2em] text-gold uppercase">
-              {category.name}
-            </p>
-          ) : null}
-          <h3 className="mt-1 font-display text-xl tracking-wide text-foreground sm:text-2xl">
+        </Link>
+
+        {typeof index === "number" ? (
+          <span className="pointer-events-none absolute top-4 left-4 z-[1] font-mono text-[10px] tracking-[0.2em] text-white/70">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+        ) : null}
+
+        <div className="absolute top-3 right-3 z-10">
+          <Magnet
+            padding={24}
+            magnetStrength={3}
+            disabled={!!reduceMotion}
+            wrapperClassName="block"
+          >
+            <button
+              type="button"
+              aria-label={
+                saved
+                  ? `Remove ${product.name} from wishlist`
+                  : `Save ${product.name}`
+              }
+              aria-pressed={saved}
+              onClick={() => toggleProduct(product)}
+              className="inline-flex size-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition-colors hover:bg-black/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              <Heart
+                className={cn("size-4", saved && "fill-accent text-accent")}
+                aria-hidden="true"
+              />
+            </button>
+          </Magnet>
+        </div>
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] flex items-end justify-between gap-3 p-4 sm:p-5">
+          <div className="min-w-0">
             <Link
               href={href}
-              className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+              className="pointer-events-auto block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             >
-              {product.name}
+              <h3
+                className={cn(
+                  "font-display tracking-wide text-white transition-colors hover:text-white/80",
+                  featured ? "text-3xl sm:text-5xl" : "text-2xl sm:text-3xl",
+                )}
+              >
+                {product.name.replace(/ t-?shirt$/i, "")}
+              </h3>
             </Link>
-          </h3>
-          <p className="mt-1 text-sm text-muted">
-            {formatInrFromPaise(product.pricePaise)}
-          </p>
-        </div>
-        <div className="mt-auto flex flex-col gap-2 sm:flex-row">
-          <Link
-            href={href}
-            className={cn(
-              "inline-flex h-12 items-center justify-center rounded-full border border-border bg-surface px-6 text-sm font-semibold tracking-wide text-foreground transition-colors hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-            )}
+            <p className="mt-1 text-sm tabular-nums text-white/75">
+              {formatInrFromPaise(product.pricePaise)}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleAdd}
+            aria-label={
+              justAdded ? `${product.name} added` : `Add ${product.name} to bag`
+            }
+            className="pointer-events-auto inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-white text-[#130603] transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
-            View
-          </Link>
-          <Button
-            variant="ghost"
-            className="w-full border border-border sm:w-auto"
-            onClick={() => addProduct(product, 1)}
-          >
-            Add to bag
-          </Button>
+            <Plus
+              size={18}
+              strokeWidth={2.25}
+              aria-hidden="true"
+              className={cn(
+                "transition-transform duration-300",
+                justAdded && "rotate-45",
+              )}
+            />
+          </button>
         </div>
       </div>
     </article>
