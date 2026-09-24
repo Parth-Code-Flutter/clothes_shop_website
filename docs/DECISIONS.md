@@ -8,6 +8,6 @@
 - Testimonials, blog, and brand logos are omitted until verified assets exist.
 - Catalog supports multiple categories. Only Graphic Tees have live products; Hoodies, Accessories, and Limited Drops stay “soon” until real stock exists.
 - Audience tone is Gen Z: bag language, drop board, bold display type, category chips — without inventing products or hype claims.
-- Cart state is local to the browser (`localStorage`) until a backend cart is connected. Checkout remains preview.
+- Checkout collects billing fields and shows bag summary only. Razorpay and promo codes open a preview notice; nothing is charged, stored on a server, or marked as ordered.
 - Footer uses dedicated `--footer` / `--footer-foreground` tokens so it stays dark and readable in both themes. Never use `bg-foreground` for large surfaces.
 - Preview overlays use `--overlay`, not `bg-foreground/…`, for the same reason.

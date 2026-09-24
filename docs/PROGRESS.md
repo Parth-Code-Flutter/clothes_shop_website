@@ -8,9 +8,10 @@
 - Homepage: cinematic hero, featured tees, contact strip, newsletter preview
 - Shop listing at `/shop` with category chips and sort
 - Product detail at `/product/[slug]` with gallery and real add-to-bag
-- Cart at `/cart` with local bag state, quantity controls, and checkout preview
+- Cart at `/cart` with local bag state, quantity controls, and link to checkout
+- Checkout at `/checkout` with billing validation, promo preview, Razorpay preview, and order summary
 - Multi-category shelf: Graphic Tees live; Hoodies, Accessories, Limited Drops marked soon
-- Gen Z tone in shop/bag copy without inventing merchandise
+- Gen Z tone in shop/bag/checkout copy without inventing merchandise
 - Shared catalog data using live store slugs and ₹650 prices
 - Product and hero images copied from the live site and recorded in `ASSETS.md`
 
@@ -19,12 +20,14 @@
 - Typecheck: passed
 - Lint: passed
 - Build: passed
-- Routes: `/`, `/shop`, `/product/[slug]`, `/cart`
+- Routes: `/`, `/shop`, `/product/[slug]`, `/cart`, `/checkout`
 
 ## Known limitations
 
-- Search, account, wishlist, checkout stay in preview
+- Search, account, wishlist stay in preview
 - Cart is device-local only until backend integration
+- Checkout does not charge, create orders, or call Razorpay
+- Promo codes do not apply discounts
 - Empty categories intentionally have no fake products
 - Newsletter validates format locally and does not store or send email
 - Size and stock are omitted until verified on the live product pages
