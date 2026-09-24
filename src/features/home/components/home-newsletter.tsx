@@ -22,13 +22,14 @@ export function HomeNewsletter() {
 
   return (
     <section className="bg-background px-6 py-16 sm:px-8 sm:py-20">
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-8 border-y border-border py-12 lg:flex-row lg:items-end lg:justify-between">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-8 border border-border bg-surface px-6 py-10 sm:px-10 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-lg">
-          <p className="text-[10px] font-semibold tracking-[0.28em] text-gold uppercase">
-            Newsletter
+          <p className="mb-3 flex items-center gap-2 text-[10px] font-semibold tracking-[0.22em] uppercase">
+            <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
+            Next screening
           </p>
-          <h2 className="mt-3 font-display text-4xl tracking-tight text-foreground sm:text-5xl">
-            Stay close to the next drop
+          <h2 className="font-display text-4xl tracking-tight text-foreground sm:text-5xl">
+            Stay on the list
           </h2>
           <p className="mt-3 text-sm leading-6 text-muted">
             Preview only. Nothing is subscribed, stored, or emailed from this
@@ -50,7 +51,7 @@ export function HomeNewsletter() {
                 setMessage(null);
               }}
               placeholder="you@email.com"
-              className="h-12 flex-1 rounded-full border border-border bg-surface px-5 text-sm text-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="h-12 flex-1 rounded-full border border-border bg-background px-5 text-sm text-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             />
             <Button type="submit">Preview join</Button>
           </div>

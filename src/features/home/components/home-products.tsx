@@ -15,7 +15,7 @@ export function HomeProducts() {
           <div>
             <p className="mb-3 flex items-center gap-2 text-[10px] font-semibold tracking-[0.22em] uppercase">
               <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
-              Full board
+              Full screening
             </p>
             <h2 className="text-3xl font-semibold tracking-[-0.04em] text-foreground sm:text-4xl">
               Every live tee

@@ -2,18 +2,27 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { getAllProducts } from "@/features/catalog/data";
 import { formatInrFromPaise } from "@/lib/money";
 import { siteConfig } from "@/config/site";
+import type { CatalogProduct } from "@/features/catalog/types";
+import { cn } from "@/lib/utils";
+
+/**
+ * Inspiration: Dribbble modular editorial grids (Almina / Bodega-style)
+ * + Pinterest fashion lookbook boards. “Tonight’s cast” = cinema billboard.
+ */
 
 const MARQUEE = [
+  "Now showing",
   siteConfig.name,
   "Graphic tees",
+  "₹650",
   "Junagadh",
   "Pop culture",
-  "Personal style",
-];
+] as const;
 
 export function HomeMarquee() {
   const reduceMotion = useReducedMotion();
@@ -21,8 +30,8 @@ export function HomeMarquee() {
 
   return (
     <section
-      aria-label="Brand marquee"
-      className="overflow-hidden border-y border-border bg-background"
+      aria-label="Credits marquee"
+      className="overflow-hidden border-y border-border bg-foreground text-background"
     >
       <div
         className={
@@ -34,7 +43,7 @@ export function HomeMarquee() {
         {loop.map((item, index) => (
           <span
             key={`${item}-${index}`}
-            className="text-xs font-semibold tracking-[0.22em] text-muted uppercase"
+            className="font-display text-xl tracking-[0.16em] uppercase sm:text-2xl"
           >
             {item}
             <span className="ml-10 text-accent" aria-hidden="true">
@@ -47,69 +56,174 @@ export function HomeMarquee() {
   );
 }
 
+function CastCard({
+  product,
+  index,
+  className,
+  featured = false,
+}: {
+  product: CatalogProduct;
+  index: number;
+  className?: string;
+  featured?: boolean;
+}) {
+  return (
+    <Link
+      href={`/product/${product.slug}`}
+      className={cn(
+        "group relative block overflow-hidden bg-[#0a0705] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent",
+        className,
+      )}
+    >
+      <Image
+        src={product.image}
+        alt={product.alt}
+        fill
+        sizes={
+          featured
+            ? "(max-width: 1024px) 100vw, 58vw"
+            : "(max-width: 1024px) 50vw, 28vw"
+        }
+        className="object-cover transition-transform duration-700 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+      />
+      <div
+        className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"
+        aria-hidden="true"
+      />
+      <div className="absolute inset-x-0 top-0 flex items-start justify-between p-4">
+        <span className="font-mono text-[10px] tracking-[0.2em] text-white/70 uppercase">
+          Scene {String(index + 1).padStart(2, "0")}
+        </span>
+        {featured ? (
+          <span className="rounded-full bg-accent px-2.5 py-1 text-[10px] font-semibold tracking-[0.14em] text-accent-foreground uppercase">
+            Lead
+          </span>
+        ) : null}
+      </div>
+      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+        <p
+          className={cn(
+            "font-display tracking-wide text-white",
+            featured ? "text-3xl sm:text-5xl" : "text-2xl sm:text-3xl",
+          )}
+        >
+          {product.name}
+        </p>
+        <p className="mt-1 text-sm text-gold">
+          {formatInrFromPaise(product.pricePaise)}
+        </p>
+      </div>
+    </Link>
+  );
+}
+
 export function HomeDropStage() {
   const products = getAllProducts();
   const reduceMotion = useReducedMotion();
+  const [lead, second, third, ...rest] = products;
+
+  if (!lead || !second || !third) {
+    return null;
+  }
 
   return (
-    <section id="the-cast" className="bg-background py-16 sm:py-20">
+    <section id="tonight" className="bg-background py-16 sm:py-20">
       <div className="mx-auto max-w-[1440px] px-6 sm:px-8">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="mb-3 flex items-center gap-2 text-[10px] font-semibold tracking-[0.22em] text-foreground uppercase">
+            <p className="mb-3 flex items-center gap-2 text-[10px] font-semibold tracking-[0.22em] uppercase">
               <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
-              The cast
+              Tonight&apos;s cast
             </p>
-            <h2 className="max-w-lg text-3xl font-semibold tracking-[-0.04em] text-foreground sm:text-4xl">
-              Pick a character. Make it yours.
+            <h2 className="max-w-xl text-3xl font-semibold tracking-[-0.045em] text-foreground sm:text-5xl">
+              One board.
+              <span className="text-muted"> Five characters.</span>
             </h2>
           </div>
+          <p className="max-w-xs text-sm leading-6 text-muted">
+            Editorial cast grid — tap a poster, open the drop. Same live catalog,
+            no fake extras.
+          </p>
+        </div>
+
+        <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-12 lg:grid-rows-2 lg:gap-4">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5 }}
+            className="relative min-h-[420px] sm:min-h-[520px] lg:col-span-7 lg:row-span-2"
+          >
+            <CastCard product={lead} index={0} featured className="absolute inset-0" />
+          </motion.div>
+
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: reduceMotion ? 0 : 0.06 }}
+            className="relative min-h-[280px] lg:col-span-5"
+          >
+            <CastCard product={second} index={1} className="absolute inset-0" />
+          </motion.div>
+
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: reduceMotion ? 0 : 0.1 }}
+            className="relative min-h-[280px] lg:col-span-5"
+          >
+            <CastCard product={third} index={2} className="absolute inset-0" />
+          </motion.div>
+        </div>
+
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+          {rest.map((product, index) => (
+            <motion.div
+              key={product.id}
+              initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{
+                duration: 0.45,
+                delay: reduceMotion ? 0 : 0.05 * index,
+              }}
+              className="relative min-h-[320px]"
+            >
+              <CastCard
+                product={product}
+                index={index + 3}
+                className="absolute inset-0"
+              />
+            </motion.div>
+          ))}
+
           <Link
             href="/shop"
-            className="text-sm font-semibold text-foreground underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+            className="group flex min-h-[320px] flex-col justify-between border border-border bg-surface p-6 transition-colors hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:col-span-2 lg:col-span-1"
           >
-            See all →
+            <p className="font-mono text-[10px] tracking-[0.2em] text-muted uppercase">
+              Scene {String(rest.length + 4).padStart(2, "0")}
+            </p>
+            <div>
+              <p className="font-display text-4xl tracking-wide text-foreground">
+                Full board
+              </p>
+              <p className="mt-2 max-w-[16rem] text-sm leading-6 text-muted">
+                Open shop for categories, sort, and every live tee in one place.
+              </p>
+              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">
+                Enter shop
+                <ArrowUpRight
+                  size={16}
+                  className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none"
+                  aria-hidden="true"
+                />
+              </span>
+            </div>
           </Link>
         </div>
-      </div>
-
-      <div className="mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-1 sm:gap-5 sm:px-8">
-        {products.map((product, index) => (
-          <motion.article
-            key={product.id}
-            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.25 }}
-            transition={{
-              duration: 0.4,
-              delay: reduceMotion ? 0 : index * 0.04,
-            }}
-            className="w-[72vw] max-w-xs shrink-0 snap-center sm:w-[38vw] lg:w-[22vw]"
-          >
-            <Link
-              href={`/product/${product.slug}`}
-              className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
-            >
-              <div className="relative aspect-[700/910] overflow-hidden bg-surface">
-                <Image
-                  src={product.image}
-                  alt={product.alt}
-                  fill
-                  sizes="(max-width: 640px) 72vw, (max-width: 1024px) 38vw, 22vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                />
-              </div>
-              <div className="mt-3 flex items-baseline justify-between gap-3">
-                <p className="text-sm font-semibold tracking-tight text-foreground">
-                  {product.name}
-                </p>
-                <p className="shrink-0 text-sm text-muted">
-                  {formatInrFromPaise(product.pricePaise)}
-                </p>
-              </div>
-            </Link>
-          </motion.article>
-        ))}
       </div>
     </section>
   );

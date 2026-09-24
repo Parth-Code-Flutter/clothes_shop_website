@@ -13,3 +13,4 @@
 - Footer uses dedicated `--footer` / `--footer-foreground` tokens so it stays dark and readable in both themes. Never use `bg-foreground` for large surfaces.
 - Preview overlays use `--overlay`, not `bg-foreground/…`, for the same reason.
 - Visual inspiration sources: always check **Dribbble** + **Pinterest** before chrome/homepage redesigns. Header/footer direction (Sep 2026): centered logo, red accent only on Bag/CTA, “Now showing” strip, numbered footer columns, oversized wordmark bookend.
+- Homepage creative pass: cinema “feature presentation” hero (soft dual-slide crossfade), inverted credits marquee, asymmetric “Tonight’s cast” billboard grid, intermission look with slide-2 — still verified catalog only.
