@@ -5,6 +5,7 @@ import { CartProvider } from "@/features/cart/cart-provider";
 import { WishlistProvider } from "@/features/wishlist/wishlist-provider";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { siteConfig } from "@/config/site";
 import "./globals.css";
@@ -43,15 +44,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ThemeProvider>
-          <AccountProvider>
-            <WishlistProvider>
-              <CartProvider>
-                <SiteHeader />
-                {children}
-                <SiteFooter />
-              </CartProvider>
-            </WishlistProvider>
-          </AccountProvider>
+          <SmoothScroll>
+            <AccountProvider>
+              <WishlistProvider>
+                <CartProvider>
+                  <SiteHeader />
+                  {children}
+                  <SiteFooter />
+                </CartProvider>
+              </WishlistProvider>
+            </AccountProvider>
+          </SmoothScroll>
         </ThemeProvider>
       </body>
     </html>

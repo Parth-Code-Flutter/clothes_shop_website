@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { ArrowUp, ArrowUpRight } from "lucide-react";
+import { useReducedMotion } from "motion/react";
 import { useState } from "react";
+import Magnet from "@/components/react-bits/Magnet";
 import { siteConfig } from "@/config/site";
 
 /**
@@ -35,6 +37,7 @@ const linkClass =
 export function SiteFooter() {
   const [notice, setNotice] = useState<string | null>(null);
   const { contact } = siteConfig;
+  const reduceMotion = useReducedMotion();
 
   function scrollTop() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -56,15 +59,17 @@ export function SiteFooter() {
               <span className="block text-footer-foreground/45">On you.</span>
             </h2>
           </div>
-          <Link
-            href="/shop"
-            className="group inline-flex min-h-14 w-fit items-center gap-6 rounded-full bg-accent py-3 pr-3 pl-6 text-sm font-semibold text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-          >
-            Find your tee
-            <span className="flex size-9 items-center justify-center rounded-full bg-accent-foreground/15 transition-transform group-hover:rotate-45 motion-reduce:transform-none">
-              <ArrowUpRight size={18} aria-hidden="true" />
-            </span>
-          </Link>
+          <Magnet padding={50} magnetStrength={3.2} disabled={!!reduceMotion}>
+            <Link
+              href="/shop"
+              className="group inline-flex min-h-14 w-fit items-center gap-6 rounded-full bg-accent py-3 pr-3 pl-6 text-sm font-semibold text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+            >
+              Find your tee
+              <span className="flex size-9 items-center justify-center rounded-full bg-accent-foreground/15 transition-transform group-hover:rotate-45 motion-reduce:transform-none">
+                <ArrowUpRight size={18} aria-hidden="true" />
+              </span>
+            </Link>
+          </Magnet>
         </div>
 
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 py-10 sm:py-12 lg:grid-cols-4">

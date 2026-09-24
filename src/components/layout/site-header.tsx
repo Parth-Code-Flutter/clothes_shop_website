@@ -12,7 +12,10 @@ import {
   User,
   X,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "motion/react";
+import Magnet from "@/components/react-bits/Magnet";
+import { useSmoothScroll } from "@/components/motion/smooth-scroll";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useCart } from "@/features/cart/cart-provider";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
@@ -49,6 +52,14 @@ export function SiteHeader() {
   const [openPath, setOpenPath] = useState<string | null>(null);
   const menuOpen = openPath === pathname;
   const menuButton = useRef<HTMLButtonElement>(null);
+  const { stop, start } = useSmoothScroll();
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (menuOpen) stop();
+    else start();
+    return () => start();
+  }, [menuOpen, stop, start]);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -170,21 +181,28 @@ export function SiteHeader() {
             ) : null}
           </Link>
           <ThemeToggle />
-          <Link
-            href="/cart"
-            aria-label={
-              itemCount > 0 ? `Bag, ${itemCount} items` : "Bag"
-            }
-            className="ml-1 inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-accent px-3.5 text-accent-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:px-4"
+          <Magnet
+            padding={36}
+            magnetStrength={3.8}
+            disabled={!!reduceMotion}
+            wrapperClassName="ml-1 inline-flex"
           >
-            <ShoppingBag size={17} aria-hidden="true" />
-            <span className="hidden text-[11px] font-semibold tracking-[0.14em] uppercase sm:inline">
-              Bag
-            </span>
-            <span className="min-w-[1.1ch] text-xs font-semibold tabular-nums">
-              {itemCount > 99 ? "99+" : itemCount}
-            </span>
-          </Link>
+            <Link
+              href="/cart"
+              aria-label={
+                itemCount > 0 ? `Bag, ${itemCount} items` : "Bag"
+              }
+              className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-accent px-3.5 text-accent-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:px-4"
+            >
+              <ShoppingBag size={17} aria-hidden="true" />
+              <span className="hidden text-[11px] font-semibold tracking-[0.14em] uppercase sm:inline">
+                Bag
+              </span>
+              <span className="min-w-[1.1ch] text-xs font-semibold tabular-nums">
+                {itemCount > 99 ? "99+" : itemCount}
+              </span>
+            </Link>
+          </Magnet>
         </div>
       </div>
 
@@ -192,6 +210,7 @@ export function SiteHeader() {
         <nav
           id="mobile-menu"
           aria-label="Mobile"
+          data-lenis-prevent
           className="max-h-[calc(100dvh-120px)] overflow-y-auto border-t border-border bg-background lg:hidden"
         >
           <div className="px-6 pt-6 pb-2">

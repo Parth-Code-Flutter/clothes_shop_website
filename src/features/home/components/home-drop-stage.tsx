@@ -3,17 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { motion, useReducedMotion } from "motion/react";
+import { useReducedMotion } from "motion/react";
+import BlurText from "@/components/react-bits/BlurText";
+import Magnet from "@/components/react-bits/Magnet";
+import { RevealOnScroll } from "@/components/motion/reveal-on-scroll";
 import { getAllProducts } from "@/features/catalog/data";
 import { formatInrFromPaise } from "@/lib/money";
 import { siteConfig } from "@/config/site";
 import type { CatalogProduct } from "@/features/catalog/types";
 import { cn } from "@/lib/utils";
-
-/**
- * Inspiration: Dribbble modular editorial grids (Almina / Bodega-style)
- * + Pinterest fashion lookbook boards. “Tonight’s cast” = cinema billboard.
- */
 
 const MARQUEE = [
   "Now showing",
@@ -32,6 +30,7 @@ export function HomeMarquee() {
     <section
       aria-label="Credits marquee"
       className="overflow-hidden border-y border-border bg-foreground text-background"
+      data-lenis-prevent-wheel
     >
       <div
         className={
@@ -130,15 +129,19 @@ export function HomeDropStage() {
     <section id="tonight" className="bg-background py-16 sm:py-20">
       <div className="mx-auto max-w-[1440px] px-6 sm:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
+          <div className="max-w-xl">
             <p className="mb-3 flex items-center gap-2 text-[10px] font-semibold tracking-[0.22em] uppercase">
               <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
               Tonight&apos;s cast
             </p>
-            <h2 className="max-w-xl text-3xl font-semibold tracking-[-0.045em] text-foreground sm:text-5xl">
-              One board.
-              <span className="text-muted"> Five characters.</span>
-            </h2>
+            <BlurText
+              text="One board. Five characters."
+              as="h2"
+              delay={80}
+              animateBy="words"
+              direction="bottom"
+              className="text-3xl font-semibold tracking-[-0.045em] text-foreground sm:text-5xl"
+            />
           </div>
           <p className="max-w-xs text-sm leading-6 text-muted">
             Editorial cast grid — tap a poster, open the drop. Same live catalog,
@@ -147,48 +150,30 @@ export function HomeDropStage() {
         </div>
 
         <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-12 lg:grid-rows-2 lg:gap-4">
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5 }}
-            className="relative min-h-[420px] sm:min-h-[520px] lg:col-span-7 lg:row-span-2"
-          >
+          <RevealOnScroll className="relative min-h-[420px] sm:min-h-[520px] lg:col-span-7 lg:row-span-2">
             <CastCard product={lead} index={0} featured className="absolute inset-0" />
-          </motion.div>
+          </RevealOnScroll>
 
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5, delay: reduceMotion ? 0 : 0.06 }}
+          <RevealOnScroll
+            delay={0.06}
             className="relative min-h-[280px] lg:col-span-5"
           >
             <CastCard product={second} index={1} className="absolute inset-0" />
-          </motion.div>
+          </RevealOnScroll>
 
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5, delay: reduceMotion ? 0 : 0.1 }}
+          <RevealOnScroll
+            delay={0.1}
             className="relative min-h-[280px] lg:col-span-5"
           >
             <CastCard product={third} index={2} className="absolute inset-0" />
-          </motion.div>
+          </RevealOnScroll>
         </div>
 
         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
           {rest.map((product, index) => (
-            <motion.div
+            <RevealOnScroll
               key={product.id}
-              initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{
-                duration: 0.45,
-                delay: reduceMotion ? 0 : 0.05 * index,
-              }}
+              delay={0.04 * index}
               className="relative min-h-[320px]"
             >
               <CastCard
@@ -196,33 +181,37 @@ export function HomeDropStage() {
                 index={index + 3}
                 className="absolute inset-0"
               />
-            </motion.div>
+            </RevealOnScroll>
           ))}
 
-          <Link
-            href="/shop"
-            className="group flex min-h-[320px] flex-col justify-between border border-border bg-surface p-6 transition-colors hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:col-span-2 lg:col-span-1"
+          <Magnet
+            padding={40}
+            magnetStrength={4}
+            disabled={!!reduceMotion}
+            wrapperClassName="sm:col-span-2 lg:col-span-1"
+            innerClassName="h-full"
           >
-            <p className="font-mono text-[10px] tracking-[0.2em] text-muted uppercase">
-              Scene {String(rest.length + 4).padStart(2, "0")}
-            </p>
-            <div>
-              <p className="font-display text-4xl tracking-wide text-foreground">
-                Full board
+            <Link
+              href="/shop"
+              className="group flex min-h-[320px] flex-col justify-between border border-border bg-surface p-6 transition-colors hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+            >
+              <p className="font-mono text-[10px] tracking-[0.2em] text-muted uppercase">
+                Scene {String(rest.length + 4).padStart(2, "0")}
               </p>
-              <p className="mt-2 max-w-[16rem] text-sm leading-6 text-muted">
-                Open shop for categories, sort, and every live tee in one place.
-              </p>
-              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">
-                Enter shop
-                <ArrowUpRight
-                  size={16}
-                  className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none"
-                  aria-hidden="true"
-                />
-              </span>
-            </div>
-          </Link>
+              <div>
+                <p className="font-display text-4xl tracking-wide text-foreground">
+                  Full board
+                </p>
+                <p className="mt-2 max-w-[16rem] text-sm leading-6 text-muted">
+                  Open shop for categories, sort, and every live tee in one place.
+                </p>
+                <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">
+                  Enter shop
+                  <ArrowUpRight size={16} aria-hidden="true" />
+                </span>
+              </div>
+            </Link>
+          </Magnet>
         </div>
       </div>
     </section>

@@ -4,13 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
+import Magnet from "@/components/react-bits/Magnet";
+import ShinyText from "@/components/react-bits/ShinyText";
+import { SplitWords } from "@/components/motion/split-words";
 import { siteConfig } from "@/config/site";
-
-/**
- * Inspiration: Dribbble editorial fashion heroes + Pinterest campaign lands.
- * Cinema title-card tone matches the header “Now showing” strip.
- * Soft wash only — product art stays the star.
- */
 
 const SLIDES = [
   {
@@ -61,24 +58,28 @@ export function HomeHero() {
         className="absolute inset-0 bg-gradient-to-r from-[#0d2248]/78 via-[#0d2248]/28 to-transparent"
         aria-hidden="true"
       />
-
-      {/* Decorative reel frame — edges only, no clutter on the product */}
       <div
         className="pointer-events-none absolute inset-x-4 top-[5.5rem] bottom-4 rounded-[1.25rem] border border-white/20 sm:inset-x-6 sm:top-28 sm:bottom-6 lg:inset-x-8"
         aria-hidden="true"
       />
 
       <div className="relative mx-auto flex min-h-[min(90svh,880px)] max-w-[1440px] flex-col justify-end px-6 pb-16 pt-32 sm:px-8 sm:pb-20 lg:justify-center lg:pb-24">
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-lg text-white"
-        >
-          <p className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.28em] uppercase">
-            <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
-            Feature presentation
-          </p>
+        <div className="max-w-lg text-white">
+          <div className="mb-4">
+            {reduceMotion ? (
+              <p className="text-[10px] font-semibold tracking-[0.28em] text-white/80 uppercase">
+                Feature presentation
+              </p>
+            ) : (
+              <ShinyText
+                text="FEATURE PRESENTATION"
+                speed={2.4}
+                color="rgba(255,255,255,0.55)"
+                shineColor="#ffffff"
+                className="text-[10px] font-semibold tracking-[0.28em]"
+              />
+            )}
+          </div>
 
           <Image
             src="/brand/house-of-bollywood-logo.png"
@@ -86,13 +87,16 @@ export function HomeHero() {
             width={1024}
             height={341}
             priority
-            className="mt-5 h-12 w-auto sm:h-[4.25rem]"
+            className="h-12 w-auto sm:h-[4.25rem]"
           />
 
-          <h1 className="mt-7 font-display text-[clamp(3.25rem,10vw,6.75rem)] leading-[0.88] tracking-tight">
-            Off screen.
-            <span className="block text-white/55">On you.</span>
-          </h1>
+          <SplitWords
+            as="h1"
+            text="Off screen. On you."
+            immediate
+            delay={0.06}
+            className="mt-7 font-display text-[clamp(3.25rem,10vw,6.75rem)] leading-[0.88] tracking-tight"
+          />
 
           <p className="mt-4 max-w-sm text-sm leading-6 text-white/75 sm:text-base">
             Pop-culture graphic tees from the live catalog. Real drops. Real
@@ -100,12 +104,19 @@ export function HomeHero() {
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link
-              href="/shop"
-              className="inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-7 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            <Magnet
+              padding={60}
+              magnetStrength={3.5}
+              disabled={!!reduceMotion}
+              wrapperClassName="inline-flex"
             >
-              Shop the board
-            </Link>
+              <Link
+                href="/shop"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-7 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              >
+                Shop the board
+              </Link>
+            </Magnet>
             <a
               href="#tonight"
               className="text-sm font-semibold text-white/80 underline-offset-4 hover:text-white hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
@@ -113,25 +124,7 @@ export function HomeHero() {
               Tonight&apos;s cast
             </a>
           </div>
-        </motion.div>
-
-        {!reduceMotion ? (
-          <div
-            className="absolute right-6 bottom-8 flex gap-2 sm:right-8"
-            aria-hidden="true"
-          >
-            {SLIDES.map((slide, slideIndex) => (
-              <span
-                key={slide.src}
-                className={
-                  slideIndex === index
-                    ? "h-1 w-8 rounded-full bg-accent"
-                    : "h-1 w-3 rounded-full bg-white/35"
-                }
-              />
-            ))}
-          </div>
-        ) : null}
+        </div>
       </div>
     </section>
   );

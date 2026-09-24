@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/shared/product-card";
+import { RevealOnScroll } from "@/components/motion/reveal-on-scroll";
+import { SplitWords } from "@/components/motion/split-words";
 import {
   getAllCategories,
   getAllProducts,
@@ -51,9 +53,11 @@ export function ShopListing() {
           <p className="text-xs font-semibold tracking-[0.28em] text-accent uppercase">
             Shop
           </p>
-          <h1 className="mt-3 font-display text-5xl tracking-tight text-foreground sm:text-6xl">
-            The drop board
-          </h1>
+          <SplitWords
+              as="h1"
+              text="The drop board"
+              className="mt-3 font-display text-5xl tracking-tight text-foreground sm:text-6xl"
+            />
           <p className="mt-3 max-w-xl text-sm text-muted">
             Built for Gen Z closet rotation — graphic tees live now, more
             categories ready for the next drop.
@@ -126,8 +130,10 @@ export function ShopListing() {
             {selectedCategory ? ` in ${selectedCategory.name}` : ""}
           </p>
           <div className="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {products.map((product, index) => (
+              <RevealOnScroll key={product.id} delay={Math.min(index * 0.04, 0.24)}>
+                <ProductCard product={product} />
+              </RevealOnScroll>
             ))}
           </div>
         </>

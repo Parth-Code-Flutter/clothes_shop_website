@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useReducedMotion } from "motion/react";
 import { ProductCard } from "@/components/shared/product-card";
+import { RevealOnScroll } from "@/components/motion/reveal-on-scroll";
+import BlurText from "@/components/react-bits/BlurText";
 import { homepageProducts } from "@/features/home/data";
 
 export function HomeProducts() {
-  const reduceMotion = useReducedMotion();
-
   return (
     <section id="tees" className="bg-background px-6 py-16 sm:px-8 sm:py-20">
       <div className="mx-auto max-w-[1440px]">
@@ -17,9 +16,12 @@ export function HomeProducts() {
               <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
               Full screening
             </p>
-            <h2 className="text-3xl font-semibold tracking-[-0.04em] text-foreground sm:text-4xl">
-              Every live tee
-            </h2>
+            <BlurText
+              text="Every live tee"
+              as="h2"
+              delay={90}
+              className="text-3xl font-semibold tracking-[-0.04em] text-foreground sm:text-4xl"
+            />
           </div>
           <Link
             href="/search"
@@ -31,18 +33,12 @@ export function HomeProducts() {
 
         <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {homepageProducts.map((product, index) => (
-            <motion.div
+            <RevealOnScroll
               key={product.id}
-              initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{
-                duration: 0.4,
-                delay: reduceMotion ? 0 : index * 0.04,
-              }}
+              delay={Math.min(index * 0.04, 0.2)}
             >
               <ProductCard product={product} />
-            </motion.div>
+            </RevealOnScroll>
           ))}
         </div>
       </div>
