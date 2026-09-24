@@ -6,14 +6,26 @@ import { Heart, Minus, Plus, Share2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PreviewNotice } from "@/components/shared/preview-notice";
+import { useCart } from "@/features/cart/cart-provider";
+import { getCategoryById } from "@/features/catalog/data";
 import { formatInrFromPaise } from "@/lib/money";
 import type { CatalogProduct } from "@/features/catalog/types";
 import { cn } from "@/lib/utils";
 
 export function ProductDetail({ product }: { product: CatalogProduct }) {
-  const [activeImage, setActiveImage] = useState(product.gallery[0] ?? product.image);
+  const { addProduct } = useCart();
+  const category = getCategoryById(product.categoryId);
+  const [activeImage, setActiveImage] = useState(
+    product.gallery[0] ?? product.image,
+  );
   const [quantity, setQuantity] = useState(1);
   const [preview, setPreview] = useState<string | null>(null);
+  const [added, setAdded] = useState(false);
+
+  function handleAdd() {
+    addProduct(product, quantity);
+    setAdded(true);
+  }
 
   return (
     <>
@@ -40,10 +52,17 @@ export function ProductDetail({ product }: { product: CatalogProduct }) {
                   aria-pressed={activeImage === src}
                   className={cn(
                     "relative aspect-[700/910] overflow-hidden bg-[#0a0705] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-                    activeImage === src && "ring-2 ring-accent ring-offset-2 ring-offset-background",
+                    activeImage === src &&
+                      "ring-2 ring-accent ring-offset-2 ring-offset-background",
                   )}
                 >
-                  <Image src={src} alt="" fill sizes="120px" className="object-cover" />
+                  <Image
+                    src={src}
+                    alt=""
+                    fill
+                    sizes="120px"
+                    className="object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -52,7 +71,7 @@ export function ProductDetail({ product }: { product: CatalogProduct }) {
 
         <div className="flex flex-col">
           <p className="text-xs font-semibold tracking-[0.28em] text-accent uppercase">
-            Graphic tee
+            {category?.name ?? "Drop"}
           </p>
           <h1 className="mt-3 font-display text-5xl tracking-tight text-foreground sm:text-6xl">
             {product.name}
@@ -86,28 +105,34 @@ export function ProductDetail({ product }: { product: CatalogProduct }) {
                 <Plus className="size-4" aria-hidden="true" />
               </button>
             </div>
-            <p className="text-xs text-muted">
-              Quantity is local only. Cart is not connected yet.
-            </p>
           </div>
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Button
-              className="w-full sm:flex-1"
-              onClick={() =>
-                setPreview(`Add ${quantity} × ${product.name} to cart`)
-              }
-            >
-              Add to cart
+            <Button className="w-full sm:flex-1" onClick={handleAdd}>
+              {added ? "Added to bag" : "Add to bag"}
             </Button>
             <Button
               variant="secondary"
               className="w-full sm:flex-1"
-              onClick={() => setPreview(`Buy ${product.name} now`)}
+              onClick={() => {
+                handleAdd();
+                setPreview(`Buy ${product.name} now`);
+              }}
             >
               Buy now
             </Button>
           </div>
+          {added ? (
+            <p className="mt-3 text-sm text-muted" role="status">
+              In your bag.{" "}
+              <Link
+                href="/cart"
+                className="font-medium text-foreground underline-offset-4 hover:underline"
+              >
+                Open bag
+              </Link>
+            </p>
+          ) : null}
 
           <div className="mt-4 flex flex-wrap gap-2">
             <Button

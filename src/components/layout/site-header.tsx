@@ -7,22 +7,24 @@ import { Menu, Search, ShoppingBag, User, X, Heart } from "lucide-react";
 import { useState } from "react";
 import { PreviewNotice } from "@/components/shared/preview-notice";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { useCart } from "@/features/cart/cart-provider";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Shop" },
+  { href: "/cart", label: "Bag" },
 ] as const;
 
-const ACTIONS = [
+const PREVIEW_ACTIONS = [
   { id: "search", label: "Search", icon: Search },
   { id: "account", label: "Account", icon: User },
   { id: "wishlist", label: "Wishlist", icon: Heart },
-  { id: "cart", label: "Cart", icon: ShoppingBag },
 ] as const;
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const { itemCount } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -80,7 +82,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-1 lg:flex">
-          {ACTIONS.map(({ id, label, icon: Icon }) => (
+          {PREVIEW_ACTIONS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
@@ -91,9 +93,33 @@ export function SiteHeader() {
               <Icon aria-hidden="true" className="size-5" />
             </button>
           ))}
+          <Link
+            href="/cart"
+            aria-label={itemCount > 0 ? `Bag, ${itemCount} items` : "Bag"}
+            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <ShoppingBag aria-hidden="true" className="size-5" />
+            {itemCount > 0 ? (
+              <span className="absolute top-1 right-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
+                {itemCount > 99 ? "99+" : itemCount}
+              </span>
+            ) : null}
+          </Link>
           <ThemeToggle />
         </div>
-        <div className="ml-auto flex items-center lg:hidden">
+        <div className="ml-auto flex items-center gap-1 lg:hidden">
+          <Link
+            href="/cart"
+            aria-label={itemCount > 0 ? `Bag, ${itemCount} items` : "Bag"}
+            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <ShoppingBag aria-hidden="true" className="size-5" />
+            {itemCount > 0 ? (
+              <span className="absolute top-1 right-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
+                {itemCount > 99 ? "99+" : itemCount}
+              </span>
+            ) : null}
+          </Link>
           <ThemeToggle />
         </div>
       </div>
@@ -116,9 +142,12 @@ export function SiteHeader() {
               )}
             >
               {link.label}
+              {link.href === "/cart" && itemCount > 0
+                ? ` (${itemCount})`
+                : ""}
             </Link>
           ))}
-          {ACTIONS.map(({ id, label }) => (
+          {PREVIEW_ACTIONS.map(({ id, label }) => (
             <button
               key={id}
               type="button"

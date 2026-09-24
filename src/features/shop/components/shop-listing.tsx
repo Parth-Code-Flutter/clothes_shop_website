@@ -2,8 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/shared/product-card";
-import { getAllProducts } from "@/features/catalog/data";
+import {
+  getAllCategories,
+  getAllProducts,
+  getProductsByCategory,
+} from "@/features/catalog/data";
 import type { CatalogProduct } from "@/features/catalog/types";
+import { cn } from "@/lib/utils";
 
 type SortKey = "featured" | "name-asc" | "price-asc" | "price-desc";
 
@@ -22,11 +27,22 @@ function sortProducts(products: CatalogProduct[], sort: SortKey) {
 }
 
 export function ShopListing() {
+  const categories = getAllCategories();
+  const [categoryId, setCategoryId] = useState<string>("all");
   const [sort, setSort] = useState<SortKey>("featured");
-  const products = useMemo(
-    () => sortProducts(getAllProducts(), sort),
-    [sort],
-  );
+
+  const selectedCategory =
+    categoryId === "all"
+      ? null
+      : categories.find((category) => category.id === categoryId) ?? null;
+
+  const products = useMemo(() => {
+    const base =
+      categoryId === "all"
+        ? getAllProducts()
+        : getProductsByCategory(categoryId);
+    return sortProducts(base, sort);
+  }, [categoryId, sort]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
@@ -36,10 +52,11 @@ export function ShopListing() {
             Shop
           </p>
           <h1 className="mt-3 font-display text-5xl tracking-tight text-foreground sm:text-6xl">
-            All tees
+            The drop board
           </h1>
-          <p className="mt-3 text-sm text-muted">
-            {products.length} products · ₹650 each as listed on the live store
+          <p className="mt-3 max-w-xl text-sm text-muted">
+            Built for Gen Z closet rotation — graphic tees live now, more
+            categories ready for the next drop.
           </p>
         </div>
         <label className="flex flex-col gap-2 text-sm text-muted sm:items-end">
@@ -57,11 +74,64 @@ export function ShopListing() {
         </label>
       </div>
 
-      <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+      <div className="mt-8 flex gap-2 overflow-x-auto pb-2">
+        <button
+          type="button"
+          onClick={() => setCategoryId("all")}
+          className={cn(
+            "shrink-0 rounded-full px-4 py-2 text-sm font-semibold tracking-wide focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+            categoryId === "all"
+              ? "bg-accent text-accent-foreground"
+              : "border border-border text-foreground",
+          )}
+        >
+          All
+        </button>
+        {categories.map((category) => (
+          <button
+            key={category.id}
+            type="button"
+            onClick={() => setCategoryId(category.id)}
+            className={cn(
+              "shrink-0 rounded-full px-4 py-2 text-sm font-semibold tracking-wide focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+              categoryId === category.id
+                ? "bg-accent text-accent-foreground"
+                : "border border-border text-foreground",
+            )}
+          >
+            {category.name}
+            {!category.available ? (
+              <span className="ml-2 text-[10px] tracking-[0.14em] uppercase opacity-70">
+                Soon
+              </span>
+            ) : null}
+          </button>
         ))}
       </div>
+
+      {selectedCategory && !selectedCategory.available ? (
+        <div className="mt-10 rounded-3xl border border-dashed border-border px-6 py-16 text-center">
+          <p className="font-display text-4xl tracking-wide text-foreground">
+            {selectedCategory.name} incoming
+          </p>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted">
+            {selectedCategory.description} We are not inventing products here —
+            this shelf lights up when real stock is ready.
+          </p>
+        </div>
+      ) : (
+        <>
+          <p className="mt-8 text-sm text-muted">
+            {products.length} {products.length === 1 ? "piece" : "pieces"}
+            {selectedCategory ? ` in ${selectedCategory.name}` : ""}
+          </p>
+          <div className="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

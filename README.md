@@ -16,10 +16,13 @@ Open [http://localhost:3000](http://localhost:3000).
 Built pages:
 
 - `/` homepage
-- `/shop` product listing with sort
-- `/product/[slug]` product detail with gallery and quantity UI
+- `/shop` product listing with categories + sort
+- `/product/[slug]` product detail with gallery and add-to-bag
+- `/cart` bag with quantity controls and subtotal
 
-Light and dark themes work from the header toggle. Home and Shop are real routes. Search, account, wishlist, cart, add to cart, buy now, share, and ask us still show a preview notice. The newsletter form does not save or send email. Phone and email links in the footer use the live contact details.
+Light and dark themes work from the header toggle. Home, Shop, and Bag are real routes. Search, account, wishlist, and checkout still show a preview notice. The newsletter form does not save or send email. Phone and email links in the footer use the live contact details.
+
+The catalog is multi-category ready (tees live; hoodies / accessories / limited drops marked soon). Tone is aimed at Gen Z shoppers.
 
 ## Stack
 

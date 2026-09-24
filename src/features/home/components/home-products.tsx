@@ -16,12 +16,12 @@ export function HomeProducts() {
               Catalog
             </p>
             <h2 className="mt-3 font-display text-4xl tracking-tight text-foreground sm:text-5xl">
-              Featured tees
+              Featured drops
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-6 text-muted">
-            Five graphic tees currently listed at ₹650. Ratings and reviews are
-            left out until they are verified.
+            Graphic tees live now at ₹650. Hoodies, accessories, and limited
+            drops are shelved for the next catalog update — no fake stock.
           </p>
         </div>
 
