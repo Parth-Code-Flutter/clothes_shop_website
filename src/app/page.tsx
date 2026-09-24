@@ -1,22 +1,23 @@
-import { HomeDropStage, HomeMarquee } from "@/features/home/components/home-drop-stage";
+import { HomeChapterNav } from "@/features/home/components/home-chapter-nav";
+import { HomeDropStage } from "@/features/home/components/home-drop-stage";
+import { HomeFinale } from "@/features/home/components/home-finale";
 import { HomeHero } from "@/features/home/components/home-hero";
 import { HomeLook } from "@/features/home/components/home-look";
-import { HomeNewsletter } from "@/features/home/components/home-newsletter";
-import { HomeProducts } from "@/features/home/components/home-products";
-import { HomeServices } from "@/features/home/components/home-services";
-import { HomeSpotlight } from "@/features/home/components/home-spotlight";
+import { HomeMedia } from "@/features/home/components/home-media";
 
+/**
+ * Homepage only — Rockstar VI–style scroll story.
+ * Uses existing House of Bollywood campaign + product images.
+ */
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col">
+    <main className="relative flex flex-1 flex-col bg-[#05070f] text-white">
+      <HomeChapterNav />
       <HomeHero />
-      <HomeMarquee />
-      <HomeSpotlight />
-      <HomeDropStage />
       <HomeLook />
-      <HomeProducts />
-      <HomeServices />
-      <HomeNewsletter />
+      <HomeDropStage />
+      <HomeMedia />
+      <HomeFinale />
     </main>
   );
 }

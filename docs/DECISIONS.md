@@ -16,3 +16,4 @@
 - Homepage creative pass: cinema “feature presentation” hero (soft dual-slide crossfade), inverted credits marquee, asymmetric “Tonight’s cast” billboard grid, intermission look with slide-2 — still verified catalog only.
 - Motion stack: **Lenis** (smooth scroll) + **GSAP / ScrollTrigger / @gsap/react** + selected **React Bits** (BlurText, Magnet, TiltedCard, ScrollReveal, ShinyText). Club GSAP SplitText is not used — free `SplitWords` instead. Reduced-motion disables Lenis and magnets/tilts.
 - Header: floating glass island (Pinterest/Dribbble); transparent over home hero, solid after scroll. Hero: GSAP pin + scrub (scale, dual-slide crossfade, giant type, progress bar) for a premium premiere feel.
+- Homepage (only): Rockstar VI–inspired scroll story — chapter rail, pinned opener, extended look boards, full-bleed cast chapters, media masonry, finale CTA. Uses existing campaign + product images only (no scraped brand art).
