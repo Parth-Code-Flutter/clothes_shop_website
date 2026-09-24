@@ -43,7 +43,7 @@ Live product slugs used for routes: `hulk-tshirt`, `spiderman-tshirt`, `deadpool
 | Local file | Remote source | Use |
 |---|---|---|
 | `public/images/homepage/slide-1.png` | `sli1.png` | Hero background |
-| `public/images/homepage/slide-2.png` | `sli2.png` | Reserved |
+| `public/images/homepage/slide-2.png` | `sli2.png` | Mid-page “Second act” look section |
 | `public/images/homepage/artboard-1.png` | `Artboard-1.png` | Reserved |
 
 ## Intentionally omitted

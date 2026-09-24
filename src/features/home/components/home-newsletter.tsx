@@ -21,13 +21,13 @@ export function HomeNewsletter() {
   }
 
   return (
-    <section className="bg-background px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 border border-border bg-[linear-gradient(135deg,rgba(234,25,22,0.08),transparent_55%)] px-6 py-10 sm:px-10 lg:flex-row lg:items-end lg:justify-between">
+    <section className="bg-background px-6 py-16 sm:px-8 sm:py-20">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-8 border-y border-border py-12 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-lg">
-          <p className="text-xs font-semibold tracking-[0.28em] text-gold uppercase">
+          <p className="text-[10px] font-semibold tracking-[0.28em] text-gold uppercase">
             Newsletter
           </p>
-          <h2 className="mt-3 font-display text-4xl tracking-tight text-foreground">
+          <h2 className="mt-3 font-display text-4xl tracking-tight text-foreground sm:text-5xl">
             Stay close to the next drop
           </h2>
           <p className="mt-3 text-sm leading-6 text-muted">

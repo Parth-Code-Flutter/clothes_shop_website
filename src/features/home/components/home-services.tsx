@@ -10,13 +10,13 @@ const ICONS = {
 
 export function HomeServices() {
   return (
-    <section className="border-y border-border bg-surface px-4 py-14 sm:px-6 lg:px-10">
-      <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
+    <section className="border-y border-border bg-surface px-6 py-14 sm:px-8">
+      <div className="mx-auto grid max-w-[1440px] gap-10 md:grid-cols-3 md:gap-8">
         {serviceItems.map((item) => {
           const Icon = ICONS[item.id as keyof typeof ICONS] ?? MapPin;
           return (
             <div key={item.id} className="flex gap-4">
-              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border text-accent">
+              <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-border text-accent">
                 <Icon aria-hidden="true" className="size-5" />
               </span>
               <div>

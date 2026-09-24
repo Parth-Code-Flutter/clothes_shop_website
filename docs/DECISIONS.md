@@ -8,7 +8,8 @@
 - Testimonials, blog, and brand logos are omitted until verified assets exist.
 - Catalog supports multiple categories. Only Graphic Tees have live products; Hoodies, Accessories, and Limited Drops stay “soon” until real stock exists.
 - Audience tone is Gen Z: bag language, drop board, bold display type, category chips — without inventing products or hype claims.
-- Homepage visual pass uses a cinematic hero, footer-colored marquee, and character drop stage while keeping verified product data only.
+- Homepage visual pass: lighter full-bleed hero that keeps product art visible, cast rail on the site background, and a second look using slide-2 — matched to the header/footer tone, verified product data only.
 - Search queries the local catalog by name, slug, summary, and category.
 - Footer uses dedicated `--footer` / `--footer-foreground` tokens so it stays dark and readable in both themes. Never use `bg-foreground` for large surfaces.
 - Preview overlays use `--overlay`, not `bg-foreground/…`, for the same reason.
+- Visual inspiration sources: always check **Dribbble** + **Pinterest** before chrome/homepage redesigns. Header/footer direction (Sep 2026): centered logo, red accent only on Bag/CTA, “Now showing” strip, numbered footer columns, oversized wordmark bookend.

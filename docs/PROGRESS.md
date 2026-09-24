@@ -14,6 +14,8 @@
 - Account at `/account` with device-only profile save/sign-out
 - Search at `/search` over the local catalog
 - Homepage polish: hero, marquee, character drop stage
+- Homepage redesign: brand-first full-bleed hero, Lenis smooth scroll, slide-2 look section, cast rail
+- Homepage cleaned up: lighter hero (art-first), no Lenis, cast + look aligned with header/footer
 - Multi-category shelf: Graphic Tees live; Hoodies, Accessories, Limited Drops marked soon
 - Gen Z tone in shop/bag/checkout/account copy without inventing merchandise
 - Shared catalog data using live store slugs and ₹650 prices
