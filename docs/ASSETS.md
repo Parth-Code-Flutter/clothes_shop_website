@@ -18,3 +18,30 @@ Colors sampled from the mark on 24 September 2026:
 | Cream | `#fbf7f2` | Warm white used with the light lettering |
 
 These values are the light-theme accents in `src/app/globals.css`. Dark theme uses the same red family, gold, and near-black, adjusted so text stays readable.
+
+## Product images
+
+Copied 24 September 2026 from https://houseofbollywood.in/wp-content/uploads/2026/09/
+
+| Local file | Remote source |
+|---|---|
+| `public/images/products/hulk.jpg` | `hulk-700x910.jpg` |
+| `public/images/products/spiderman.jpg` | `Spiderman-700x910.jpg` |
+| `public/images/products/deadpool.jpg` | `deadpool1-700x910.jpg` |
+| `public/images/products/batman-red.jpg` | `batman-700x910.jpg` |
+| `public/images/products/batman-yellow.jpg` | `batman2-700x910.jpg` |
+
+## Homepage imagery
+
+| Local file | Remote source | Use |
+|---|---|---|
+| `public/images/homepage/slide-1.png` | `sli1.png` | Hero background |
+| `public/images/homepage/slide-2.png` | `sli2.png` | Reserved |
+| `public/images/homepage/artboard-1.png` | `Artboard-1.png` | Reserved |
+
+## Intentionally omitted
+
+- Theme-demo testimonials (`Felicity Q.`, `Stevin Josh.`, and similar)
+- Generic blog article images from 2023
+- Brand carousel placeholders until ownership is confirmed
+- Shipping promises that conflict between dollars and rupees

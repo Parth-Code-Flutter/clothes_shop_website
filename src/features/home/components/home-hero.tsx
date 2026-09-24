@@ -1,0 +1,78 @@
+"use client";
+
+import Image from "next/image";
+import { motion, useReducedMotion } from "motion/react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { PreviewNotice } from "@/components/shared/preview-notice";
+import { siteConfig } from "@/config/site";
+
+export function HomeHero() {
+  const [preview, setPreview] = useState<string | null>(null);
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <section className="relative isolate min-h-[78vh] overflow-hidden bg-[#07162f] text-white sm:min-h-[86vh]">
+      <Image
+        src="/images/homepage/slide-1.png"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-right"
+      />
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-[#07162f] via-[#07162f]/85 to-[#07162f]/20"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(234,25,22,0.28),transparent_45%)]"
+        aria-hidden="true"
+      />
+
+      <div className="relative mx-auto flex min-h-[78vh] max-w-7xl flex-col justify-end px-4 py-16 sm:min-h-[86vh] sm:px-6 sm:py-24 lg:justify-center lg:px-10">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-xl"
+        >
+          <Image
+            src="/brand/house-of-bollywood-logo.png"
+            alt={siteConfig.name}
+            width={1024}
+            height={341}
+            priority
+            className="h-14 w-auto drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] sm:h-20 lg:h-24"
+          />
+          <h1 className="mt-8 font-display text-5xl leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl">
+            {siteConfig.tagline}
+          </h1>
+          <p className="mt-5 max-w-md text-base leading-7 text-white/80 sm:text-lg">
+            Oversized graphic tees from the live House of Bollywood catalog.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Button onClick={() => setPreview("Shop")}>Shop the drop</Button>
+            <Button
+              variant="secondary"
+              className="border-white/30 bg-transparent text-white hover:border-white hover:bg-white/10"
+              onClick={() => {
+                document
+                  .getElementById("tees")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            >
+              View tees
+            </Button>
+          </div>
+        </motion.div>
+      </div>
+
+      <PreviewNotice
+        open={preview !== null}
+        action={preview ?? ""}
+        onClose={() => setPreview(null)}
+      />
+    </section>
+  );
+}
