@@ -26,10 +26,17 @@ Copied 24 September 2026 from https://houseofbollywood.in/wp-content/uploads/202
 | Local file | Remote source |
 |---|---|
 | `public/images/products/hulk.jpg` | `hulk-700x910.jpg` |
+| `public/images/products/hulk-alt.jpg` | `hulk1-700x910.jpg` |
 | `public/images/products/spiderman.jpg` | `Spiderman-700x910.jpg` |
+| `public/images/products/spiderman-alt.jpg` | `spiderman1-700x910.jpg` |
 | `public/images/products/deadpool.jpg` | `deadpool1-700x910.jpg` |
+| `public/images/products/deadpool-alt.jpg` | `deadpool-700x910.jpg` |
 | `public/images/products/batman-red.jpg` | `batman-700x910.jpg` |
+| `public/images/products/batman-red-alt.jpg` | `batman1-700x910.jpg` |
 | `public/images/products/batman-yellow.jpg` | `batman2-700x910.jpg` |
+| `public/images/products/batman-yellow-alt.jpg` | `batmann-700x910.jpg` |
+
+Live product slugs used for routes: `hulk-tshirt`, `spiderman-tshirt`, `deadpool-tshirt`, `batman-red`, `batman-yellow`.
 
 ## Homepage imagery
 

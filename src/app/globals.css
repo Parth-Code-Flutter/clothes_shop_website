@@ -12,6 +12,9 @@
   --accent: #ea1916;
   --accent-foreground: #fffaf6;
   --gold: #a78650;
+  --footer: #130603;
+  --footer-foreground: #fbf7f2;
+  --overlay: rgb(19 6 3 / 0.45);
 }
 
 .dark {
@@ -23,6 +26,9 @@
   --accent: #ff3b30;
   --accent-foreground: #fffaf6;
   --gold: #d4b072;
+  --footer: #0a0604;
+  --footer-foreground: #fbf7f2;
+  --overlay: rgb(0 0 0 / 0.55);
 }
 
 @theme inline {
@@ -34,6 +40,9 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-gold: var(--gold);
+  --color-footer: var(--footer);
+  --color-footer-foreground: var(--footer-foreground);
+  --color-overlay: var(--overlay);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
   --font-mono: var(--font-geist-mono);

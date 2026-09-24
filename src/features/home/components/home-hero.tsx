@@ -1,14 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { PreviewNotice } from "@/components/shared/preview-notice";
 import { siteConfig } from "@/config/site";
+import { cn } from "@/lib/utils";
 
 export function HomeHero() {
-  const [preview, setPreview] = useState<string | null>(null);
   const reduceMotion = useReducedMotion();
 
   return (
@@ -52,10 +50,17 @@ export function HomeHero() {
             Oversized graphic tees from the live House of Bollywood catalog.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button onClick={() => setPreview("Shop")}>Shop the drop</Button>
-            <Button
-              variant="secondary"
-              className="border-white/30 bg-transparent text-white hover:border-white hover:bg-white/10"
+            <Link
+              href="/shop"
+              className={cn(
+                "inline-flex h-12 items-center justify-center rounded-full bg-accent px-6 text-sm font-semibold tracking-wide text-accent-foreground transition-colors hover:bg-[#c41010] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+              )}
+            >
+              Shop the drop
+            </Link>
+            <button
+              type="button"
+              className="inline-flex h-12 items-center justify-center rounded-full border border-white/30 bg-transparent px-6 text-sm font-semibold tracking-wide text-white transition-colors hover:border-white hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               onClick={() => {
                 document
                   .getElementById("tees")
@@ -63,16 +68,10 @@ export function HomeHero() {
               }}
             >
               View tees
-            </Button>
+            </button>
           </div>
         </motion.div>
       </div>
-
-      <PreviewNotice
-        open={preview !== null}
-        action={preview ?? ""}
-        onClose={() => setPreview(null)}
-      />
     </section>
   );
 }

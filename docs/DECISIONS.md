@@ -6,4 +6,5 @@
 - Motion uses the `motion` package for hero and product entrance only, with reduced-motion support.
 - Product cards are the only card-like interactive containers on the homepage.
 - Testimonials, blog, and brand logos are omitted until verified assets exist.
-- Commerce destinations stay in preview; no empty destination pages.
+- Footer uses dedicated `--footer` / `--footer-foreground` tokens so it stays dark and readable in both themes. Never use `bg-foreground` for large surfaces.
+- Preview overlays use `--overlay`, not `bg-foreground/…`, for the same reason.

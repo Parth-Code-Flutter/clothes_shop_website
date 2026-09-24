@@ -13,9 +13,13 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Current scope
 
-Only the homepage (`/`) is built. Light and dark themes work from the header toggle.
+Built pages:
 
-Shop, search, account, wishlist, cart, and add-to-cart show a preview notice and are not connected. The newsletter form does not save or send email. Phone and email links in the footer use the live contact details.
+- `/` homepage
+- `/shop` product listing with sort
+- `/product/[slug]` product detail with gallery and quantity UI
+
+Light and dark themes work from the header toggle. Home and Shop are real routes. Search, account, wishlist, cart, add to cart, buy now, share, and ask us still show a preview notice. The newsletter form does not save or send email. Phone and email links in the footer use the live contact details.
 
 ## Stack
 

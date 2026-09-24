@@ -28,7 +28,7 @@ export function PreviewNotice({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/40 p-4 sm:items-center">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-overlay p-4 sm:items-center">
       <div
         role="dialog"
         aria-modal="true"
