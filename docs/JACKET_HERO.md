@@ -2,6 +2,9 @@
 
 ## Current status
 
+Front, side, and back portraits are RGBA cutouts (transparent backgrounds) so the scroll turn composites cleanly on the hero paper.
+
+
 The homepage has a responsive campaign hero with an original generated front portrait. The scroll-controlled two-pose turn and lettering zoom are implemented but intentionally **disabled** until the matching rear portrait is available. This is not a completed animation deliverable yet.
 
 No video was generated: ChatCut returned FEATURE_NOT_INCLUDED. The user then selected AI stills with a stylized front-to-back transition. The built-in image tool generated the front portrait, but the rear-view edit returned usage_limit_reached. No paid fallback was started and no unrelated retail photograph was substituted.
