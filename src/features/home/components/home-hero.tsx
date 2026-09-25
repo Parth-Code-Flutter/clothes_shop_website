@@ -2,216 +2,177 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { useReducedMotion } from "motion/react";
 import { useRef } from "react";
-import Magnet from "@/components/react-bits/Magnet";
-import ShinyText from "@/components/react-bits/ShinyText";
-import { siteConfig } from "@/config/site";
+import { jacketHeroMedia } from "@/features/home/jacket-hero-media";
+import styles from "./home-hero.module.css";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-/** Rockstar VI–style pinned opener — cinematic stills, scrubbed by Lenis/GSAP. */
+/** Three matched photographic poses make a scroll-controlled editorial turn. */
 export function HomeHero() {
-  const reduceMotion = useReducedMotion();
-  const rootRef = useRef<HTMLElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
-  const slideARef = useRef<HTMLDivElement>(null);
-  const slideBRef = useRef<HTMLDivElement>(null);
-  const veilRef = useRef<HTMLDivElement>(null);
-  const copyRef = useRef<HTMLDivElement>(null);
-  const giantRef = useRef<HTMLParagraphElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
+  const root = useRef<HTMLElement>(null);
 
-  useGSAP(
-    () => {
-      const root = rootRef.current;
-      const stage = stageRef.current;
-      if (!root || !stage || reduceMotion) return;
+  useGSAP(() => {
+    const element = root.current;
+    if (!element) return;
+    const media = gsap.matchMedia();
+    media.add(
+      {
+        desktop: "(min-width: 1024px)",
+        mobile: "(max-width: 1023px)",
+        reduced: "(prefers-reduced-motion: reduce)",
+      },
+      (context) => {
+        const { desktop, reduced } = context.conditions!;
+        if (reduced) return;
+        const select = gsap.utils.selector(element);
+        const figure = select("[data-figure]");
+        const front = select("[data-front]");
+        const side = select("[data-side]");
+        const back = select("[data-back]");
+        const intro = select("[data-intro]");
+        const rearCopy = select("[data-rear-copy]");
+        const ending = select("[data-ending]");
+        const progress = select("[data-progress]");
+        const chrome = select("[data-chrome]");
+        const stamp = element.querySelector<HTMLElement>("[data-jacket-print]")!;
+        const anchor = element.querySelector<HTMLElement>("[data-figure-anchor]")!;
+        const stage = element.querySelector<HTMLElement>("[data-hero-stage]")!;
+        const label = element.querySelector<HTMLElement>("[data-scene-label]");
+        const number = element.querySelector<HTMLElement>("[data-scene-number]");
+        let currentScene = -1;
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: root,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.7,
-          pin: stage,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-      });
+        // Offset geometry is unaffected by transforms. Re-evaluate on refresh so
+        // the camera always lands on the lettering after a viewport/font change.
+        const stampCenter = () => stamp.offsetTop + stamp.offsetHeight / 2;
+        const cameraOrigin = () => `50% ${stampCenter()}px`;
+        const cameraY = () => stage.clientHeight * 0.47 - anchor.offsetTop - stampCenter();
+        const initialX = () => desktop ? element.clientWidth * 0.17 : 0;
 
-      gsap.set(slideARef.current, { scale: 1.2, opacity: 1 });
-      gsap.set(slideBRef.current, { scale: 1.25, opacity: 0 });
-      gsap.set(giantRef.current, { opacity: 0, yPercent: 20, scale: 0.9 });
-      gsap.set(copyRef.current, { opacity: 1, y: 0 });
-      gsap.set(veilRef.current, { opacity: 0.65 });
-      gsap.set(progressRef.current, { scaleX: 0 });
+        gsap.set(front, { autoAlpha: 1, rotationY: 0, xPercent: 0 });
+        gsap.set(side, { autoAlpha: 0, rotationY: -18, xPercent: 0 });
+        gsap.set(back, { autoAlpha: 0, rotationY: -28, xPercent: 0 });
+        gsap.set([rearCopy, ending], { autoAlpha: 0 });
+        gsap.set(progress, { scaleX: 0 });
 
-      tl.to(slideARef.current, { scale: 1, ease: "none", duration: 0.4 }, 0)
-        .to(veilRef.current, { opacity: 0.4, ease: "none", duration: 0.3 }, 0)
-        .to(
-          giantRef.current,
-          { opacity: 0.18, yPercent: 0, scale: 1, ease: "none", duration: 0.35 },
-          0.12,
-        )
-        .to(
-          slideBRef.current,
-          { opacity: 1, scale: 1.08, ease: "none", duration: 0.35 },
-          0.38,
-        )
-        .to(
-          slideARef.current,
-          { opacity: 0, scale: 1.06, ease: "none", duration: 0.28 },
-          0.42,
-        )
-        .to(
-          copyRef.current,
-          { opacity: 0, y: -56, ease: "none", duration: 0.28 },
-          0.52,
-        )
-        .to(
-          giantRef.current,
-          { opacity: 0.5, scale: 1.1, yPercent: -10, ease: "none", duration: 0.35 },
-          0.52,
-        )
-        .to(slideBRef.current, { scale: 1, ease: "none", duration: 0.35 }, 0.52)
-        .to(veilRef.current, { opacity: 0.2, ease: "none", duration: 0.28 }, 0.58)
-        .to(progressRef.current, { scaleX: 1, ease: "none", duration: 1 }, 0);
+        const timeline = gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: {
+            trigger: element,
+            start: () => `top top+=${desktop ? 88 : 72}`,
+            end: "bottom bottom",
+            scrub: 0.45,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              const scene = self.progress < 0.42 ? 0 : self.progress < 0.68 ? 1 : 2;
+              if (scene === currentScene) return;
+              currentScene = scene;
+              if (label) label.textContent = [
+                "Scroll to turn", "Leave your mark", "Welcome to the house",
+              ][scene];
+              if (number) number.textContent = `0${scene + 1}`;
+            },
+          },
+        });
 
-      return () => {
-        tl.scrollTrigger?.kill();
-        tl.kill();
-      };
-    },
-    { scope: rootRef, dependencies: [reduceMotion] },
-  );
+        timeline
+          .fromTo(figure, { x: initialX, y: 0, scale: 1 },
+            { x: 0, duration: 0.23, ease: "power1.inOut" }, 0.1)
+          .to(intro, { autoAlpha: 0, y: -30, duration: 0.14 }, 0.06)
+          .to(front, { rotationY: 36, duration: 0.16, ease: "power1.in" }, 0.19)
+          .to(side, { autoAlpha: 1, duration: 0.07 }, 0.26)
+          .to(front, { autoAlpha: 0, duration: 0.07 }, 0.27)
+          .to(side, { rotationY: 18, duration: 0.19 }, 0.27)
+          .to(back, { autoAlpha: 1, duration: 0.08 }, 0.41)
+          .to(side, { autoAlpha: 0, duration: 0.08 }, 0.42)
+          .to(back, { rotationY: 0, duration: 0.15, ease: "power1.out" }, 0.42)
+          .to(rearCopy, { autoAlpha: 1, duration: 0.08 }, 0.53)
+          .to(rearCopy, { autoAlpha: 0, duration: 0.07 }, 0.65)
+          .set(figure, { transformOrigin: cameraOrigin }, 0.67)
+          .to(figure, {
+            scale: desktop ? 5.5 : 4.5,
+            y: cameraY,
+            duration: 0.25,
+            ease: "power2.inOut",
+          }, 0.68)
+          .to(chrome, { autoAlpha: 0, duration: 0.08 }, 0.84)
+          .to(ending, { autoAlpha: 1, duration: 0.07 }, 0.93)
+          .to(progress, { scaleX: 1, duration: 1 }, 0);
+
+        return () => {
+          timeline.scrollTrigger?.kill();
+          timeline.kill();
+        };
+      },
+    );
+
+    let active = true;
+    document.fonts.ready.then(() => {
+      if (active) ScrollTrigger.refresh();
+    });
+    return () => {
+      active = false;
+      media.revert();
+    };
+  }, { scope: root });
 
   return (
-    <section
-      id="opener"
-      ref={rootRef}
-      className={
-        reduceMotion ? "relative bg-background" : "relative h-[260vh] bg-background"
-      }
-    >
-      <div
-        ref={stageRef}
-        className="relative flex h-[100svh] items-end overflow-hidden sm:items-center"
-      >
-        <div ref={slideARef} className="absolute inset-0 will-change-transform">
-          <Image
-            src="/images/homepage/slide-1.png"
-            alt="House of Bollywood oversized graphic tees"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-[78%_center] lg:object-right"
-          />
-        </div>
-        <div
-          ref={slideBRef}
-          className={
-            reduceMotion
-              ? "absolute inset-0 hidden"
-              : "absolute inset-0 will-change-transform"
-          }
-          aria-hidden="true"
-        >
-          <Image
-            src="/images/homepage/slide-2.png"
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover object-[78%_center] lg:object-right"
-          />
+    <section ref={root} id="opener" className={styles.hero} aria-label="House of Bollywood jacket story">
+      <h1 className={styles.accessibleTitle}>House of Bollywood. Good from every angle.</h1>
+      <div data-hero-stage className={styles.stage} tabIndex={0} aria-label="Jacket story. Scroll or use arrow keys to turn the model.">
+        <div className={styles.grain} aria-hidden="true" />
+        <div data-chrome className={styles.topline}>
+          <span><span className={styles.liveDot} /> House of Bollywood</span>
+          <span className={styles.edition}>Independent spirit. Everyday style.</span>
         </div>
 
-        <div
-          ref={veilRef}
-          className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/20 will-change-opacity sm:bg-gradient-to-r sm:from-black sm:via-black/55 sm:to-transparent"
-          aria-hidden="true"
-        />
+        <div data-intro className={styles.intro} aria-hidden="true">
+          <p className={styles.eyebrow}>Made for your main-character moment</p>
+          <p className={styles.title}>GOOD FROM<br /><span>EVERY</span><br />ANGLE.</p>
+          <p className={styles.description}>Make an entrance.<br />Leave an impression.</p>
+        </div>
 
-        <p
-          ref={giantRef}
-          aria-hidden="true"
-          className={
-            reduceMotion
-              ? "hidden"
-              : "pointer-events-none absolute inset-x-0 bottom-[6%] z-[1] select-none text-center font-display text-[clamp(4.5rem,18vw,15rem)] leading-[0.78] tracking-[-0.03em] text-white will-change-transform"
-          }
-        >
-          BOLLYWOOD
-        </p>
-
-        <div
-          ref={copyRef}
-          className="relative z-[2] mx-auto w-full max-w-[1440px] px-6 pb-20 pt-32 will-change-transform sm:px-8 lg:pb-24"
-        >
-          <div className="max-w-xl text-white">
-            <p className="mb-3 text-[10px] font-semibold tracking-[0.32em] text-accent uppercase">
-              House of Bollywood
-            </p>
-            {reduceMotion ? (
-              <p className="text-[10px] font-semibold tracking-[0.28em] text-white/70 uppercase">
-                Feature presentation
-              </p>
-            ) : (
-              <ShinyText
-                text="FEATURE PRESENTATION"
-                speed={2.2}
-                color="rgba(255,255,255,0.5)"
-                shineColor="#ffffff"
-                className="text-[10px] font-semibold tracking-[0.28em]"
-              />
-            )}
-
-            <Image
-              src="/brand/house-of-bollywood-logo.png"
-              alt={siteConfig.name}
-              width={1024}
-              height={341}
-              priority
-              className="mt-6 h-12 w-auto sm:h-16"
-            />
-
-            <h1 className="mt-8 font-display text-[clamp(3.5rem,11vw,7rem)] leading-[0.86] tracking-tight">
-              Off screen.
-              <span className="block text-white/55">On you.</span>
-            </h1>
-
-            <p className="mt-5 max-w-md text-sm leading-7 text-white/70 sm:text-base">
-              Pop-culture graphic tees. Scroll the premiere — then wear the cast.
-              Live catalog only.
-            </p>
-
-            <div className="mt-9 flex flex-wrap items-center gap-4">
-              <Magnet padding={50} magnetStrength={3.4} disabled={!!reduceMotion}>
-                <Link
-                  href="/shop"
-                  className="inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-8 text-sm font-semibold text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-                >
-                  Enter the shop
-                </Link>
-              </Magnet>
-              <a
-                href="#look"
-                className="text-sm font-semibold text-white/75 underline-offset-4 hover:text-white hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-              >
-                An extended look
-              </a>
+        <div data-chrome className={styles.outlineWord} aria-hidden="true">BOLLYWOOD</div>
+        <div data-figure-anchor className={styles.figureAnchor} role="img" aria-label="A model in a black jacket turns from front to side to back, revealing House of Bollywood on the jacket.">
+          <div data-figure className={styles.figure}>
+            <div data-front className={`${styles.pose} ${styles.front}`}>
+              <Image src={jacketHeroMedia.front} alt="" fill loading="eager" fetchPriority="high" sizes="(min-width: 1024px) 55vw, 100vw" className={styles.portrait} />
+            </div>
+            <div data-side className={`${styles.pose} ${styles.side}`}>
+              <Image src={jacketHeroMedia.side} alt="" fill loading="eager" sizes="(min-width: 1024px) 55vw, 100vw" className={styles.portrait} />
+            </div>
+            <div data-back className={`${styles.pose} ${styles.back}`}>
+              <Image src={jacketHeroMedia.back} alt="" fill loading="eager" sizes="(min-width: 1024px) 55vw, 100vw" className={styles.portrait} />
+              <div data-jacket-print className={styles.jacketPrint} aria-hidden="true">
+                <span>HOUSE</span><small>OF</small><span>BOLLYWOOD</span><i>INDIVIDUAL EXPRESSION</i>
+              </div>
             </div>
           </div>
         </div>
 
-        {!reduceMotion ? (
-          <div className="absolute inset-x-0 bottom-0 z-[3] h-0.5 bg-white/10" aria-hidden="true">
-            <div ref={progressRef} className="h-full origin-left bg-accent will-change-transform" />
+        <div data-rear-copy className={styles.rearCopy} aria-hidden="true">
+          <p className={styles.eyebrow}>The other side of ordinary</p>
+          <p>LEAVE<br /><span>YOUR MARK.</span></p>
+        </div>
+        <div data-ending className={styles.ending} aria-hidden="true">
+          <span>Welcome to</span><p>THE HOUSE.</p><ArrowDown size={22} />
+        </div>
+
+        <div className={styles.bottomline}>
+          <div className={styles.scene} aria-hidden="true">
+            <span data-scene-number className={styles.sceneNumber}>01</span>
+            <span data-scene-label>Scroll to turn</span><ArrowDown size={15} />
           </div>
-        ) : null}
+          <div className={styles.actions}>
+            <a href="#look" className={styles.skip}>Skip the story <ArrowDown size={13} aria-hidden="true" /></a>
+            <Link href="/shop" className={styles.shop}>Explore the collection <ArrowUpRight size={17} aria-hidden="true" /></Link>
+          </div>
+        </div>
+        <div className={styles.progressTrack} aria-hidden="true"><div data-progress className={styles.progress} /></div>
       </div>
     </section>
   );

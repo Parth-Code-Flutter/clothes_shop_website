@@ -21,18 +21,29 @@ export function HomeChapterNav() {
     ) as HTMLElement[];
     if (!nodes.length) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible?.target.id) setActive(visible.target.id);
-      },
-      { threshold: [0.25, 0.45, 0.6], rootMargin: "-10% 0px -35% 0px" },
-    );
-
-    nodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
+    // Tall pinned chapters may never reach a useful intersection ratio.
+    // Select the last chapter whose top crosses the reading line instead.
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const readingLine = window.innerHeight * 0.4;
+      let current = nodes[0].id;
+      for (const node of nodes) {
+        if (node.getBoundingClientRect().top <= readingLine) current = node.id;
+      }
+      setActive(current);
+    };
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
   }, []);
 
   return (
@@ -44,6 +55,7 @@ export function HomeChapterNav() {
         <a
           key={chapter.id}
           href={`#${chapter.id}`}
+          aria-current={active === chapter.id ? "location" : undefined}
           className={cn(
             "pointer-events-auto group flex items-center justify-end gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent",
             active === chapter.id
