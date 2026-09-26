@@ -3,18 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import { ChevronDown, Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { HeaderMegaMenu } from "@/components/layout/header-mega-menu";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useSmoothScroll } from "@/components/motion/smooth-scroll";
-import { getAllCategories } from "@/features/catalog/data";
+import { clothingGroups, featuredNavigation } from "@/config/navigation";
 import { useCart } from "@/features/cart/cart-provider";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
 
 const iconBtn =
   "relative inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-foreground/5 focus-visible:outline-2 focus-visible:outline-offset-2";
-
-const categories = getAllCategories();
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -25,6 +24,8 @@ function HeaderContent() {
   const { itemCount } = useCart();
   const { count } = useWishlist();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [menOpen, setMenOpen] = useState(false);
+  const [mobileMenOpen, setMobileMenOpen] = useState(true);
   const menuButton = useRef<HTMLButtonElement>(null);
   const { stop, start } = useSmoothScroll();
 
@@ -34,7 +35,10 @@ function HeaderContent() {
     return () => start();
   }, [mobileOpen, stop, start]);
 
-  const close = () => setMobileOpen(false);
+  const close = () => {
+    setMobileOpen(false);
+    setMenOpen(false);
+  };
 
   return (
     <header
@@ -73,14 +77,15 @@ function HeaderContent() {
             className="h-auto w-[108px] sm:w-[132px]"
           />
         </Link>
-        <nav aria-label="Primary" className="ml-6 hidden items-center gap-6 lg:flex">
-          {categories.map((category) => (
+        <nav aria-label="Primary" className="relative ml-7 hidden h-full items-center gap-7 lg:flex">
+          <HeaderMegaMenu open={menOpen} onOpenChange={setMenOpen} />
+          {featuredNavigation.map((item) => (
             <Link
-              key={category.id}
-              href={`/shop?category=${category.id}`}
-              className="text-[11px] font-semibold tracking-[0.16em] text-foreground uppercase hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4"
+              key={item.label}
+              href={item.href}
+              className={`relative flex h-full items-center text-[11px] font-bold tracking-[0.16em] uppercase hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${"accent" in item && item.accent ? "text-accent" : "text-foreground"}`}
             >
-              {category.name}
+              {item.label}
             </Link>
           ))}
         </nav>
@@ -124,23 +129,30 @@ function HeaderContent() {
           data-lenis-prevent
           className="max-h-[calc(100dvh-68px)] overflow-y-auto border-t border-border bg-background px-5 pb-6 lg:hidden"
         >
+          <div className="border-b border-border py-3">
+            <button type="button" aria-expanded={mobileMenOpen} onClick={() => setMobileMenOpen((open) => !open)} className="flex min-h-14 w-full items-center justify-between font-display text-4xl tracking-wide focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+              Men <ChevronDown size={20} aria-hidden="true" className={`transition-transform ${mobileMenOpen ? "rotate-180" : ""}`} />
+            </button>
+            {mobileMenOpen ? (
+              <ul className="grid grid-cols-2 gap-x-4 pb-4">
+                {clothingGroups.map((group, index) => (
+                  <li key={group.label} className="border-t border-border">
+                    <Link href={group.href} onClick={close} className="flex min-h-12 items-center gap-2 text-sm font-semibold">
+                      <span className="font-mono text-[9px] text-muted">0{index + 1}</span>{group.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
           <ul className="divide-y divide-border">
-            {categories.map((category) => (
-              <li key={category.id}>
-                <Link
-                  href={`/shop?category=${category.id}`}
-                  onClick={close}
-                  className="flex min-h-14 items-center font-display text-3xl tracking-wide"
-                >
-                  {category.name}
+            {featuredNavigation.map((item) => (
+              <li key={item.label}>
+                <Link href={item.href} onClick={close} className={`flex min-h-14 items-center justify-between font-display text-3xl tracking-wide ${"accent" in item && item.accent ? "text-accent" : ""}`}>
+                  {item.label}<span className="font-mono text-[9px] tracking-normal text-muted">Explore</span>
                 </Link>
               </li>
             ))}
-            <li>
-              <Link href="/shop" onClick={close} className="flex min-h-14 items-center text-sm font-semibold">
-                Shop all
-              </Link>
-            </li>
           </ul>
           <div className="mt-4 grid grid-cols-2 gap-3">
             <Link href="/wishlist" onClick={close} className="flex min-h-12 items-center gap-2 border border-border px-3 text-sm">

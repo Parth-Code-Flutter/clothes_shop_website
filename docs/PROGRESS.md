@@ -16,6 +16,7 @@
 - Homepage polish: hero, marquee, character drop stage
 - Homepage redesign: brand-first full-bleed hero, Lenis smooth scroll, slide-2 look section, cast rail
 - Homepage post-hero redesign: asymmetric editorial category wall, lead-product feature, supporting product grid, and customer journey cues
+- Header merchandising redesign: Men mega menu with category links and editorial imagery; New In, Trending, Best Sellers, and Offers navigation; matching mobile accordion
 - Homepage cleaned up: lighter hero (art-first), no Lenis, cast + look aligned with header/footer
 - Motion modernization: Lenis + GSAP + React Bits (BlurText, Magnet, TiltedCard, ScrollReveal, ShinyText)
 - Multi-category shelf: Graphic Tees live; Hoodies, Accessories, Limited Drops marked soon
@@ -29,6 +30,7 @@
 - Lint: passed
 - Build: passed
 - 26 Sep homepage redesign: targeted ESLint passed, typecheck passed, production build passed, desktop and 390px mobile visually checked
+- 26 Sep header redesign: targeted ESLint and typecheck passed; desktop mega menu and 390px mobile navigation visually checked
 - Routes: `/`, `/shop`, `/product/[slug]`, `/cart`, `/checkout`, `/wishlist`, `/account`, `/search`
 
 ## Known limitations
