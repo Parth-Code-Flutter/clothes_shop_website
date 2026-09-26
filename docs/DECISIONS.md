@@ -1,5 +1,8 @@
 # Decisions
 
+- Authentication remains explicitly frontend-only until a real identity service is chosen. The preview validates passwords but never stores or transmits them; only the display name and email are kept locally for demonstrating the signed-in journey.
+- The account route omits the global footer so sign-in and registration remain focused, compact, and free from competing navigation.
+- Authentication errors belong directly beneath their field with `aria-invalid` and `aria-describedby`; avoid a single detached form-level message that makes customers search for the problem.
 - Cart and wishlist actions should reduce purchase mistakes: wishlist items route through product size selection, while the cart exposes quantity, sizing, shipping progress, and checkout reassurance in one scan.
 - App lives at the workspace root instead of a nested `house-of-bollywood/` folder.
 - Theme colors come from the owner logo; light page background stays white by request.

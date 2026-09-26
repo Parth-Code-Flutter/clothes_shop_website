@@ -2,6 +2,7 @@
 
 ## Done
 
+- Built a complete frontend account journey: collectible House Pass sign-in and registration views, per-field inline validation, password visibility and matching, terms consent, recovery messaging, local-session creation, sign-out, and a customer account dashboard.
 - Redesigned the cart, wishlist, and footer as a connected editorial shopping journey, including checkout progress, free-shipping feedback, size-safe wishlist actions, stronger empty states, and a branded footer ticker.
 - Next.js 16 app at workspace root with light/dark theme tokens and `next-themes`
 - Shared header with Home/Shop links, mobile menu, theme toggle, and preview actions

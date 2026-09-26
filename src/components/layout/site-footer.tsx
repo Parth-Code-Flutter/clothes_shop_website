@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowRight, ArrowUp, Camera, MapPin } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { siteConfig } from "@/config/site";
@@ -26,6 +27,7 @@ const linkClass =
 
 /** One close for the site: the house line, the note, and the wardrobe index. */
 export function SiteFooter() {
+  const pathname = usePathname();
   const [notice, setNotice] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -46,6 +48,8 @@ export function SiteFooter() {
     }
     setMessage("Subscriptions are not connected yet. Your email was not saved or sent.");
   }
+
+  if (pathname === "/account") return null;
 
   return (
     <footer id="shop" className="mt-auto bg-footer text-footer-foreground">

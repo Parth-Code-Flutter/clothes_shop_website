@@ -3,7 +3,7 @@ import { AccountView } from "@/features/account/components/account-view";
 
 export const metadata: Metadata = {
   title: "Account | House of Bollywood",
-  description: "Local account preview for House of Bollywood.",
+  description: "Sign in or create your House of Bollywood account.",
   robots: { index: false, follow: false },
 };
 
