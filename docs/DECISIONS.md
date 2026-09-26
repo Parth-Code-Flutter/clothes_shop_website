@@ -1,5 +1,6 @@
 # Decisions
 
+- Cart and wishlist actions should reduce purchase mistakes: wishlist items route through product size selection, while the cart exposes quantity, sizing, shipping progress, and checkout reassurance in one scan.
 - App lives at the workspace root instead of a nested `house-of-bollywood/` folder.
 - Theme colors come from the owner logo; light page background stays white by request.
 - Display type uses Bebas Neue; body type uses Manrope for a fashion-store feel without a default Inter look.
