@@ -2,27 +2,28 @@ import Image from "next/image";
 import Link from "next/link";
 import { getAllCategories } from "@/features/catalog/data";
 
-/** Category tiles that open the shop, in the style of a fashion edit. */
+/** Category shortcuts into the shop — compact tiles, easy to tap. */
 export function HomeCategories() {
   const categories = getAllCategories();
 
   return (
-    <section id="categories" className="bg-background px-4 py-20 text-foreground sm:px-8 sm:py-28 lg:px-10">
-      <div className="mx-auto max-w-[1440px]">
-        <div className="flex flex-wrap items-end justify-between gap-6 border-b border-border pb-6">
+    <section id="categories" className="bg-background py-10 text-foreground sm:py-12 lg:pr-16">
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-[10px] font-semibold tracking-[0.32em] text-gold uppercase">
-              Categories
+            <p className="text-[11px] font-semibold tracking-[0.2em] text-muted uppercase">
+              Shop by
             </p>
-            <h2 className="mt-3 font-display text-5xl tracking-tight sm:text-6xl">
-              Dress the day.
-            </h2>
+            <h2 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">Categories</h2>
           </div>
-          <p className="max-w-xs text-sm leading-6 text-muted">
-            Five shelves. Shirts through jackets. Open any one.
-          </p>
+          <Link
+            href="/shop"
+            className="inline-flex min-h-10 items-center text-[13px] font-semibold text-accent hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
+          >
+            Shop all
+          </Link>
         </div>
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
           {categories.map((category) => (
             <Link
               key={category.id}
@@ -34,11 +35,11 @@ export function HomeCategories() {
                   src={category.image}
                   alt=""
                   fill
-                  sizes="(max-width: 1024px) 50vw, 20vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-[1.04] motion-reduce:transition-none"
+                  sizes="(max-width: 640px) 50vw, 20vw"
+                  className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
                 />
               </span>
-              <span className="mt-3 block text-sm font-medium tracking-wide">
+              <span className="mt-2 block text-[13px] font-bold tracking-tight">
                 {category.name}
               </span>
             </Link>

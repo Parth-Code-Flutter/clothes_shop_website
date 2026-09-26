@@ -33,17 +33,17 @@
 .pose { position: absolute; inset: 0; backface-visibility: hidden; transform-origin: 50% 50%; will-change: transform, opacity; }
 .portrait { object-fit: contain; mask-image: linear-gradient(to right, transparent, black 18%, black 82%, transparent), linear-gradient(to bottom, transparent, black 5%, black 95%, transparent); mask-composite: intersect; }
 .side, .back { visibility: hidden; opacity: 0; }
-.jacketPrint { position: absolute; left: 29%; top: 30%; width: 42%; text-align: center; color: #e8dfc9; font-family: var(--font-display), sans-serif; line-height: .9; transform: rotate(-1deg); mix-blend-mode: screen; opacity: .9; container-type: inline-size; text-shadow: 0 1px 1px rgb(0 0 0 / 30%); }
-.jacketPrint > span { display: block; font-size: 25cqw; letter-spacing: -.025em; }
-.jacketPrint > span:first-child { font-size: 31cqw; letter-spacing: .06em; }
-.jacketPrint small { display: block; font-size: 10cqw; letter-spacing: .2em; margin: 4% 0; }
-.jacketPrint i { display: block; font-family: var(--font-body), sans-serif; font-size: 3.4cqw; letter-spacing: .25em; font-style: normal; margin-top: 7%; }
+.jacketPrint { position: absolute; left: 28%; top: 31%; width: 44%; text-align: center; font-family: var(--font-display), sans-serif; line-height: .82; transform: rotate(-1deg); container-type: inline-size; }
+.printHouse { display: block; color: #fff6ea; font-size: 16cqw; letter-spacing: .12em; -webkit-text-stroke: .4px #e4c36a; text-shadow: 0 1px 0 #2a1a08, 0 0 8px rgb(228 195 106 / 45%); }
+.printWood { display: block; margin-top: 6%; color: #ef1b16; font-size: 30cqw; letter-spacing: -.02em; -webkit-text-stroke: .7px #f0d78a; text-shadow: 0 1px 0 #1a0604, 0 2px 0 #3a120c, 0 0 12px rgb(239 27 22 / 40%); }
 .rearCopy { position: absolute; top: 39%; left: 7%; z-index: 3; opacity: 0; visibility: hidden; }
 .rearCopy > p:last-child { font-family: var(--font-display), sans-serif; font-size: clamp(40px, 5vw, 82px); line-height: .9; margin-top: 15px; }
 .rearCopy > p:last-child span { color: var(--hero-red); }
-.ending { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 4; background: var(--background); color: var(--foreground); opacity: 0; visibility: hidden; }
-.ending > span { font-size: 10px; text-transform: uppercase; letter-spacing: .3em; }
-.ending > p { font-family: var(--font-display), sans-serif; font-size: clamp(80px, 15vw, 230px); line-height: 1; margin-top: 20px; }
+.ending { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 4; background: var(--hero-paper); color: var(--hero-ink); opacity: 0; visibility: hidden; }
+.ending > span { font-size: 10px; text-transform: uppercase; letter-spacing: .3em; color: var(--hero-soft); }
+.ending > p { margin-top: 18px; font-family: var(--font-display), sans-serif; font-size: clamp(72px, 12vw, 188px); line-height: .82; text-align: center; }
+.endingHouse { display: block; color: #fff6ea; font-size: .34em; letter-spacing: .16em; -webkit-text-stroke: 1px #e4c36a; text-shadow: 0 2px 0 #2a1a08; }
+.endingWood { display: block; margin-top: .06em; color: #ef1b16; letter-spacing: -.02em; -webkit-text-stroke: 2px #f0d78a; text-shadow: 0 4px 0 #1a0604, 0 0 28px rgb(239 27 22 / 35%); }
 .bottomline { position: absolute; bottom: 0; inset-inline: 4%; min-height: 86px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-top: 1px solid var(--hero-line); z-index: 6; background: linear-gradient(transparent, var(--hero-paper) 55%); }
 .scene { display: flex; gap: 15px; align-items: center; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .14em; }
 .sceneNumber { font-family: var(--font-geist-mono), monospace; font-size: 11px; color: var(--hero-red); }
@@ -63,7 +63,7 @@
   .intro { left: 6%; top: 12%; max-width: 85%; }
   .title { font-size: clamp(62px, 12vw, 108px); margin-top: 10px; }
   .eyebrow { font-size: 8px; letter-spacing: .13em; }
-  .description { display: none; }
+  .description { margin-top: 12px; font-size: 12px; }
   .figureAnchor { top: 14%; bottom: -3%; }
   .figure { transform: none; }
   .intro { z-index: 1; }
@@ -103,7 +103,7 @@
   .topline { height: 36px; }
   .intro { top: 17%; }
   .title { font-size: clamp(36px, 15svh, 90px); margin-top: 8px; }
-  .description { display: none; }
+  .description { margin-top: 8px; font-size: 11px; }
   .figureAnchor { top: 9%; bottom: -15%; }
   .bottomline { min-height: 64px; flex-direction: row; align-items: center; }
   .scene { font-size: 8px; }

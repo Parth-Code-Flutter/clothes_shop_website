@@ -72,7 +72,7 @@ export function HomeHero() {
               if (scene === currentScene) return;
               currentScene = scene;
               if (label) label.textContent = [
-                "Scroll to turn", "Leave your mark", "Welcome to the house",
+                "Scroll to turn", "Peep the back", "House of Bollywood",
               ][scene];
               if (number) number.textContent = `0${scene + 1}`;
             },
@@ -90,17 +90,18 @@ export function HomeHero() {
           .to(back, { autoAlpha: 1, duration: 0.08 }, 0.41)
           .to(side, { autoAlpha: 0, duration: 0.08 }, 0.42)
           .to(back, { rotationY: 0, duration: 0.15, ease: "power1.out" }, 0.42)
-          .to(rearCopy, { autoAlpha: 1, duration: 0.08 }, 0.53)
-          .to(rearCopy, { autoAlpha: 0, duration: 0.07 }, 0.65)
-          .set(figure, { transformOrigin: cameraOrigin }, 0.67)
+          .to(rearCopy, { autoAlpha: 1, duration: 0.08 }, 0.48)
+          .to(rearCopy, { autoAlpha: 0, duration: 0.06 }, 0.56)
+          .set(figure, { transformOrigin: cameraOrigin }, 0.6)
           .to(figure, {
             scale: desktop ? 5.5 : 4.5,
             y: cameraY,
-            duration: 0.25,
+            duration: 0.16,
             ease: "power2.inOut",
-          }, 0.68)
-          .to(chrome, { autoAlpha: 0, duration: 0.08 }, 0.84)
-          .to(ending, { autoAlpha: 1, duration: 0.07 }, 0.93)
+          }, 0.6)
+          .to(chrome, { autoAlpha: 0, duration: 0.06 }, 0.72)
+          .to(figure, { autoAlpha: 0, duration: 0.08 }, 0.74)
+          .to(ending, { autoAlpha: 1, duration: 0.1 }, 0.74)
           .to(progress, { scaleX: 1, duration: 1 }, 0);
 
         return () => {
@@ -122,21 +123,35 @@ export function HomeHero() {
 
   return (
     <section ref={root} id="opener" className={styles.hero} aria-label="House of Bollywood jacket story">
-      <h1 className={styles.accessibleTitle}>House of Bollywood. Good from every angle.</h1>
-      <div data-hero-stage className={styles.stage} tabIndex={0} aria-label="Jacket story. Scroll or use arrow keys to turn the model.">
+      <h1 className={styles.accessibleTitle}>House of Bollywood. Main character energy.</h1>
+      <div
+        data-hero-stage
+        className={styles.stage}
+        tabIndex={0}
+        aria-label="Jacket story. Scroll or use arrow keys to turn the model."
+        onKeyDown={(event) => {
+          if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+          const story = root.current;
+          if (!story) return;
+          event.preventDefault();
+          const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          const step = story.offsetHeight * 0.22 * (event.key === "ArrowDown" ? 1 : -1);
+          window.scrollBy({ top: step, behavior: reduce ? "auto" : "smooth" });
+        }}
+      >
         <div className={styles.grain} aria-hidden="true" />
         <div data-chrome className={styles.topline}>
           <span><span className={styles.liveDot} /> House of Bollywood</span>
-          <span className={styles.edition}>Independent spirit. Everyday style.</span>
+          <span className={styles.edition}>Main character, daily</span>
         </div>
 
         <div data-intro className={styles.intro} aria-hidden="true">
-          <p className={styles.eyebrow}>Made for your main-character moment</p>
-          <p className={styles.title}>GOOD FROM<br /><span>EVERY</span><br />ANGLE.</p>
-          <p className={styles.description}>Make an entrance.<br />Leave an impression.</p>
+          <p className={styles.eyebrow}>No basic fits</p>
+          <p className={styles.title}>MAIN<br /><span>CHARACTER</span><br />ENERGY.</p>
+          <p className={styles.description}>Scroll. The fit turns with you.</p>
         </div>
 
-        <div data-chrome className={styles.outlineWord} aria-hidden="true">BOLLYWOOD</div>
+        <div data-chrome className={styles.outlineWord} aria-hidden="true">ENERGY</div>
         <div data-figure-anchor className={styles.figureAnchor} role="img" aria-label="A model in a black jacket turns from front to side to back, revealing House of Bollywood on the jacket.">
           <div data-figure className={styles.figure}>
             <div data-front className={`${styles.pose} ${styles.front}`}>
@@ -148,18 +163,24 @@ export function HomeHero() {
             <div data-back className={`${styles.pose} ${styles.back}`}>
               <Image src={jacketHeroMedia.back} alt="" fill loading="eager" sizes="(min-width: 1024px) 55vw, 100vw" className={styles.portrait} />
               <div data-jacket-print className={styles.jacketPrint} aria-hidden="true">
-                <span>HOUSE</span><small>OF</small><span>BOLLYWOOD</span><i>INDIVIDUAL EXPRESSION</i>
+                <span className={styles.printHouse}>House of</span>
+                <span className={styles.printWood}>Bollywood</span>
               </div>
             </div>
           </div>
         </div>
 
         <div data-rear-copy className={styles.rearCopy} aria-hidden="true">
-          <p className={styles.eyebrow}>The other side of ordinary</p>
-          <p>LEAVE<br /><span>YOUR MARK.</span></p>
+          <p className={styles.eyebrow}>Plot twist</p>
+          <p>THE BACK<br /><span>HITS DIFFERENT.</span></p>
         </div>
         <div data-ending className={styles.ending} aria-hidden="true">
-          <span>Welcome to</span><p>THE HOUSE.</p><ArrowDown size={22} />
+          <span>You made it</span>
+          <p>
+            <span className={styles.endingHouse}>House of</span>
+            <span className={styles.endingWood}>Bollywood</span>
+          </p>
+          <ArrowDown size={22} />
         </div>
 
         <div className={styles.bottomline}>
@@ -168,8 +189,8 @@ export function HomeHero() {
             <span data-scene-label>Scroll to turn</span><ArrowDown size={15} />
           </div>
           <div className={styles.actions}>
-            <a href="#look" className={styles.skip}>Skip the story <ArrowDown size={13} aria-hidden="true" /></a>
-            <Link href="/shop" className={styles.shop}>Explore the collection <ArrowUpRight size={17} aria-hidden="true" /></Link>
+            <a href="#categories" className={styles.skip}>Skip ahead <ArrowDown size={13} aria-hidden="true" /></a>
+            <Link href="/shop" className={styles.shop}>Shop the fit <ArrowUpRight size={17} aria-hidden="true" /></Link>
           </div>
         </div>
         <div className={styles.progressTrack} aria-hidden="true"><div data-progress className={styles.progress} /></div>

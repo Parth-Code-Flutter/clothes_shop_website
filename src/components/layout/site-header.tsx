@@ -46,7 +46,7 @@ function HeaderContent() {
         }
       }}
     >
-      <div className="mx-auto flex h-[68px] max-w-[1440px] items-center gap-3 px-3 sm:px-8 lg:h-[76px]">
+      <div className="flex h-[68px] items-center gap-3 px-3 lg:h-[76px]">
         <button
           ref={menuButton}
           type="button"
