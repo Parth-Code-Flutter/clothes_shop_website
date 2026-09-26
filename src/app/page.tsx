@@ -1,7 +1,6 @@
 import { HomeArrivals } from "@/features/home/components/home-arrivals";
 import { HomeCategories } from "@/features/home/components/home-categories";
 import { HomeChapterNav } from "@/features/home/components/home-chapter-nav";
-import { HomeFinale } from "@/features/home/components/home-finale";
 import { HomeHero } from "@/features/home/components/home-hero";
 
 /**
@@ -15,7 +14,6 @@ export default function Home() {
       <HomeHero />
       <HomeCategories />
       <HomeArrivals />
-      <HomeFinale />
     </main>
   );
 }
