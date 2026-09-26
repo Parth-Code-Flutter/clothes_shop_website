@@ -15,6 +15,7 @@
 - Search at `/search` over the local catalog
 - Homepage polish: hero, marquee, character drop stage
 - Homepage redesign: brand-first full-bleed hero, Lenis smooth scroll, slide-2 look section, cast rail
+- Homepage post-hero redesign: asymmetric editorial category wall, lead-product feature, supporting product grid, and customer journey cues
 - Homepage cleaned up: lighter hero (art-first), no Lenis, cast + look aligned with header/footer
 - Motion modernization: Lenis + GSAP + React Bits (BlurText, Magnet, TiltedCard, ScrollReveal, ShinyText)
 - Multi-category shelf: Graphic Tees live; Hoodies, Accessories, Limited Drops marked soon
@@ -27,6 +28,7 @@
 - Typecheck: passed
 - Lint: passed
 - Build: passed
+- 26 Sep homepage redesign: targeted ESLint passed, typecheck passed, production build passed, desktop and 390px mobile visually checked
 - Routes: `/`, `/shop`, `/product/[slug]`, `/cart`, `/checkout`, `/wishlist`, `/account`, `/search`
 
 ## Known limitations
@@ -38,4 +40,5 @@
 - Empty categories intentionally have no fake products
 - Newsletter validates format locally and does not store or send email
 - Size and stock are omitted until verified on the live product pages
+- Full-project lint is currently blocked by macOS `._*` metadata files; changed homepage files pass targeted ESLint
 - WooCommerce / Razorpay integration still future work
