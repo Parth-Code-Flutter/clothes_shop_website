@@ -36,9 +36,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const product = getProductBySlug(slug);
   if (!product) notFound();
 
-  const related = getAllProducts()
-    .filter((item) => item.id !== product.id)
-    .slice(0, 4);
+  const others = getAllProducts().filter((item) => item.id !== product.id);
+  const related = [
+    ...others.filter((item) => item.categoryId === product.categoryId),
+    ...others.filter((item) => item.categoryId !== product.categoryId),
+  ].slice(0, 4);
 
   return (
     <main className="flex flex-1 flex-col bg-background">

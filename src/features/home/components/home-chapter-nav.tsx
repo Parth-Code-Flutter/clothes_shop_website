@@ -5,10 +5,9 @@ import { cn } from "@/lib/utils";
 
 const CHAPTERS = [
   { id: "opener", label: "Opener" },
-  { id: "look", label: "Look" },
-  { id: "cast", label: "Cast" },
-  { id: "media", label: "Media" },
-  { id: "shop", label: "Shop" },
+  { id: "categories", label: "Categories" },
+  { id: "arrivals", label: "New in" },
+  { id: "shop", label: "House" },
 ] as const;
 
 /** Side chapter rail — theme-aware (not locked to white-on-black). */

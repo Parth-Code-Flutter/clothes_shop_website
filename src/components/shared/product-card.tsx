@@ -2,12 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, Plus } from "lucide-react";
-import { useReducedMotion } from "motion/react";
-import { useState, type MouseEvent } from "react";
-import Magnet from "@/components/react-bits/Magnet";
-import { useCart } from "@/features/cart/cart-provider";
+import { Heart } from "lucide-react";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
+import { getCategoryById } from "@/features/catalog/data";
 import { formatInrFromPaise } from "@/lib/money";
 import type { CatalogProduct } from "@/features/catalog/types";
 import { cn } from "@/lib/utils";
@@ -18,127 +15,63 @@ type ProductCardProps = {
   featured?: boolean;
 };
 
-export function ProductCard({
-  product,
-  index,
-  featured = false,
-}: ProductCardProps) {
-  const { addProduct } = useCart();
+export function ProductCard({ product }: ProductCardProps) {
   const { hasProduct, toggleProduct } = useWishlist();
   const saved = hasProduct(product.id);
   const href = `/product/${product.slug}`;
-  const reduceMotion = useReducedMotion();
-  const [justAdded, setJustAdded] = useState(false);
-
-  function handleAdd(event: MouseEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    addProduct(product, 1);
-    setJustAdded(true);
-    window.setTimeout(() => setJustAdded(false), 1600);
-  }
+  const category = getCategoryById(product.categoryId);
 
   return (
-    <article className="group relative h-full">
-      <div
-        className={cn(
-          "relative h-full overflow-hidden bg-[#0a0705]",
-          featured ? "min-h-[420px] sm:min-h-[560px]" : "aspect-[3/4]",
-        )}
-      >
+    <article className="group flex h-full flex-col">
+      <div className="relative aspect-[3/4] overflow-hidden bg-[#f3f0eb] dark:bg-footer">
         <Link
           href={href}
-          className="absolute inset-0 block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          className="absolute inset-0 block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
           aria-label={`View ${product.name}`}
         >
           <Image
             src={product.image}
             alt={product.alt}
             fill
-            sizes={
-              featured
-                ? "(max-width: 640px) 100vw, 66vw"
-                : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            }
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.045] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-          />
-          <span
-            className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30"
-            aria-hidden="true"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
           />
         </Link>
-
-        {typeof index === "number" ? (
-          <span className="pointer-events-none absolute top-4 left-4 z-[1] font-mono text-[10px] tracking-[0.2em] text-white/70">
-            {String(index + 1).padStart(2, "0")}
+        <button
+          type="button"
+          aria-label={saved ? `Remove ${product.name} from wishlist` : `Save ${product.name}`}
+          aria-pressed={saved}
+          onClick={() => toggleProduct(product)}
+          className="absolute top-3 right-3 inline-flex size-10 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+        >
+          <Heart
+            className={cn("size-4", saved && "fill-accent text-accent")}
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+      <div className="flex flex-1 flex-col pt-3">
+        <p className="text-[10px] font-semibold tracking-[0.18em] text-muted uppercase">
+          {category?.name ?? "House"}
+        </p>
+        <h3 className="mt-1 text-sm font-medium tracking-tight text-foreground">
+          <Link
+            href={href}
+            className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+          >
+            {product.name}
+          </Link>
+        </h3>
+        <p className="mt-2 flex items-baseline gap-2 text-sm">
+          <span className="font-medium tabular-nums">
+            {formatInrFromPaise(product.pricePaise)}
           </span>
-        ) : null}
-
-        <div className="absolute top-3 right-3 z-10">
-          <Magnet
-            padding={24}
-            magnetStrength={3}
-            disabled={!!reduceMotion}
-            wrapperClassName="block"
-          >
-            <button
-              type="button"
-              aria-label={
-                saved
-                  ? `Remove ${product.name} from wishlist`
-                  : `Save ${product.name}`
-              }
-              aria-pressed={saved}
-              onClick={() => toggleProduct(product)}
-              className="inline-flex size-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition-colors hover:bg-black/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            >
-              <Heart
-                className={cn("size-4", saved && "fill-accent text-accent")}
-                aria-hidden="true"
-              />
-            </button>
-          </Magnet>
-        </div>
-
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] flex items-end justify-between gap-3 p-4 sm:p-5">
-          <div className="min-w-0">
-            <Link
-              href={href}
-              className="pointer-events-auto block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-            >
-              <h3
-                className={cn(
-                  "font-display tracking-wide text-white transition-colors hover:text-white/80",
-                  featured ? "text-3xl sm:text-5xl" : "text-2xl sm:text-3xl",
-                )}
-              >
-                {product.name.replace(/ t-?shirt$/i, "")}
-              </h3>
-            </Link>
-            <p className="mt-1 text-sm tabular-nums text-white/75">
-              {formatInrFromPaise(product.pricePaise)}
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleAdd}
-            aria-label={
-              justAdded ? `${product.name} added` : `Add ${product.name} to bag`
-            }
-            className="pointer-events-auto inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-white text-[#130603] transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          >
-            <Plus
-              size={18}
-              strokeWidth={2.25}
-              aria-hidden="true"
-              className={cn(
-                "transition-transform duration-300",
-                justAdded && "rotate-45",
-              )}
-            />
-          </button>
-        </div>
+          {product.mrpPaise && product.mrpPaise > product.pricePaise ? (
+            <span className="text-xs text-muted line-through tabular-nums">
+              {formatInrFromPaise(product.mrpPaise)}
+            </span>
+          ) : null}
+        </p>
       </div>
     </article>
   );

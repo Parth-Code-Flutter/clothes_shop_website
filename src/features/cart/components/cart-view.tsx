@@ -57,7 +57,7 @@ export function CartView() {
         <ul className="divide-y divide-border">
           {lines.map((line) => (
             <li
-              key={line.productId}
+              key={`${line.productId}-${line.size ?? "os"}`}
               className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center"
             >
               <Link
@@ -82,6 +82,7 @@ export function CartView() {
                       {line.name}
                     </Link>
                     <p className="mt-1 text-sm text-muted">
+                      {line.size ? `Size ${line.size} · ` : ""}
                       {formatInrFromPaise(line.pricePaise)} each
                     </p>
                   </div>
@@ -96,7 +97,7 @@ export function CartView() {
                       aria-label={`Decrease ${line.name}`}
                       className="inline-flex h-11 w-11 items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                       onClick={() =>
-                        setQuantity(line.productId, line.quantity - 1)
+                        setQuantity(line.productId, line.quantity - 1, line.size)
                       }
                     >
                       <Minus className="size-4" aria-hidden="true" />
@@ -109,7 +110,7 @@ export function CartView() {
                       aria-label={`Increase ${line.name}`}
                       className="inline-flex h-11 w-11 items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                       onClick={() =>
-                        setQuantity(line.productId, line.quantity + 1)
+                        setQuantity(line.productId, line.quantity + 1, line.size)
                       }
                     >
                       <Plus className="size-4" aria-hidden="true" />
@@ -118,7 +119,7 @@ export function CartView() {
                   <button
                     type="button"
                     aria-label={`Remove ${line.name}`}
-                    onClick={() => removeLine(line.productId)}
+                    onClick={() => removeLine(line.productId, line.size)}
                     className="inline-flex h-11 items-center gap-2 rounded-full px-3 text-sm text-muted hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
                     <Trash2 className="size-4" aria-hidden="true" />

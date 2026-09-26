@@ -16,7 +16,7 @@ export function RelatedProducts({ products }: { products: CatalogProduct[] }) {
         </p>
         <SplitWords
           as="h2"
-          text="More from the drop"
+          text="You may also like"
           className="mt-3 font-display text-3xl tracking-tight text-foreground sm:text-4xl lg:text-5xl"
         />
         <div className="mt-10 grid gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">

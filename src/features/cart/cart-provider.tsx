@@ -22,9 +22,9 @@ type CartContextValue = {
   lines: CartLine[];
   itemCount: number;
   subtotalPaise: number;
-  addProduct: (product: CatalogProduct, quantity?: number) => void;
-  setQuantity: (productId: string, quantity: number) => void;
-  removeLine: (productId: string) => void;
+  addProduct: (product: CatalogProduct, quantity?: number, size?: string) => void;
+  setQuantity: (productId: string, quantity: number, size?: string) => void;
+  removeLine: (productId: string, size?: string) => void;
   clearCart: () => void;
 };
 
@@ -72,14 +72,16 @@ function getServerSnapshot() {
 export function CartProvider({ children }: { children: ReactNode }) {
   const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  const addProduct = useCallback((product: CatalogProduct, quantity = 1) => {
+  const addProduct = useCallback((product: CatalogProduct, quantity = 1, size?: string) => {
     const qty = Math.max(1, quantity);
     const current = getSnapshot();
-    const existing = current.lines.find((line) => line.productId === product.id);
+    const existing = current.lines.find(
+      (line) => line.productId === product.id && (line.size ?? "") === (size ?? ""),
+    );
     if (existing) {
       writeCart({
         lines: current.lines.map((line) =>
-          line.productId === product.id
+          line.productId === product.id && (line.size ?? "") === (size ?? "")
             ? { ...line, quantity: line.quantity + qty }
             : line,
         ),
@@ -94,16 +96,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
       alt: product.alt,
       pricePaise: product.pricePaise,
       quantity: qty,
+      size,
     };
     writeCart({ lines: [...current.lines, next] });
   }, []);
 
-  const setQuantity = useCallback((productId: string, quantity: number) => {
+  const setQuantity = useCallback((productId: string, quantity: number, size?: string) => {
     const current = getSnapshot();
     writeCart({
       lines: current.lines
         .map((line) =>
-          line.productId === productId
+          line.productId === productId && (line.size ?? "") === (size ?? "")
             ? { ...line, quantity: Math.max(0, quantity) }
             : line,
         )
@@ -111,10 +114,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const removeLine = useCallback((productId: string) => {
+  const removeLine = useCallback((productId: string, size?: string) => {
     const current = getSnapshot();
     writeCart({
-      lines: current.lines.filter((line) => line.productId !== productId),
+      lines: current.lines.filter(
+        (line) => !(line.productId === productId && (line.size ?? "") === (size ?? "")),
+      ),
     });
   }, []);
 

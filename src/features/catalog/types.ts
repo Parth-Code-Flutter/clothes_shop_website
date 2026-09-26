@@ -3,7 +3,7 @@ export type CatalogCategory = {
   name: string;
   slug: string;
   description: string;
-  /** When false, show the category in nav but mark it as coming soon. */
+  image: string;
   available: boolean;
 };
 
@@ -16,6 +16,9 @@ export type CatalogProduct = {
   gallery: string[];
   alt: string;
   pricePaise: number;
+  /** Optional compare-at price, shown struck through. */
+  mrpPaise?: number;
+  sizes: string[];
   sourceUrl: string;
   summary: string;
 };

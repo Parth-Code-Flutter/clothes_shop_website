@@ -6,6 +6,7 @@ export type CartLine = {
   alt: string;
   pricePaise: number;
   quantity: number;
+  size?: string;
 };
 
 export type CartState = {
