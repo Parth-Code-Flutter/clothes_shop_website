@@ -69,10 +69,22 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
   }, [allowSmooth, pathname]);
 
   useEffect(() => {
-    if (!allowSmooth) return;
-    lenisRef.current?.lenis?.scrollTo(0, { immediate: true });
-    ScrollTrigger.refresh();
-  }, [pathname, allowSmooth]);
+    // Next can preserve the old scroll position when navigating between pages
+    // that share a layout (especially between dynamic product routes). Reset
+    // both the native scroller and Lenis so every new page starts at its top.
+    const resetScroll = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      lenisRef.current?.lenis?.scrollTo(0, { immediate: true, force: true });
+    };
+
+    resetScroll();
+    const frame = window.requestAnimationFrame(() => {
+      resetScroll();
+      ScrollTrigger.refresh();
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [pathname]);
 
   const stop = useCallback(() => {
     lenisRef.current?.lenis?.stop();

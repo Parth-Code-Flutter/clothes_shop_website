@@ -17,6 +17,9 @@
 - Homepage redesign: brand-first full-bleed hero, Lenis smooth scroll, slide-2 look section, cast rail
 - Homepage post-hero redesign: asymmetric editorial category wall, lead-product feature, supporting product grid, and customer journey cues
 - Header merchandising redesign: Men mega menu with category links and editorial imagery; New In, Trending, Best Sellers, and Offers navigation; matching mobile accordion
+- Product-detail redesign: editorial split gallery, sticky buying panel, offer hierarchy, size guide, wishlist, quantity, add/buy actions, share, PIN-code preview, disclosures, mobile purchase bar, and related-product chapter
+- Product gallery upgrade: click-to-zoom fullscreen lightbox with thumbnails, previous/next controls, Escape and arrow-key navigation; four-image denim editorial prototype
+- Product gallery UX refinement: persistent numbered vertical thumbnail rail on desktop, horizontal mobile rail, main-stage previous/next controls, and 100–300% fullscreen zoom with reset
 - Homepage cleaned up: lighter hero (art-first), no Lenis, cast + look aligned with header/footer
 - Motion modernization: Lenis + GSAP + React Bits (BlurText, Magnet, TiltedCard, ScrollReveal, ShinyText)
 - Multi-category shelf: Graphic Tees live; Hoodies, Accessories, Limited Drops marked soon
@@ -31,6 +34,7 @@
 - Build: passed
 - 26 Sep homepage redesign: targeted ESLint passed, typecheck passed, production build passed, desktop and 390px mobile visually checked
 - 26 Sep header redesign: targeted ESLint and typecheck passed; desktop mega menu and 390px mobile navigation visually checked
+- 26 Sep product-detail redesign: targeted ESLint and typecheck passed; desktop and 390px mobile visually checked; size selection and add-to-bag verified
 - Routes: `/`, `/shop`, `/product/[slug]`, `/cart`, `/checkout`, `/wishlist`, `/account`, `/search`
 
 ## Known limitations

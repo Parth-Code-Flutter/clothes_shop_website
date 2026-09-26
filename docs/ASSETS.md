@@ -38,6 +38,17 @@ Copied 24 September 2026 from https://houseofbollywood.in/wp-content/uploads/202
 
 Live product slugs used for routes: `hulk-tshirt`, `spiderman-tshirt`, `deadpool-tshirt`, `batman-red`, `batman-yellow`.
 
+### Temporary denim editorial set
+
+Downloaded from Unsplash on 26 September 2026 for the `Indigo Denim Overshirt` gallery prototype. These are coordinated editorial demonstration images, not verified photographs of one exact sellable SKU. Replace them with the owner’s front, back, side, detail, and on-model product photography before launch. Source images remain subject to the [Unsplash License](https://unsplash.com/license).
+
+| Local file | Source |
+|---|---|
+| `public/images/products/denim-editorial-1.jpg` | `https://images.unsplash.com/photo-1643858040625-3e806a9e5be3` |
+| `public/images/products/denim-editorial-2.jpg` | `https://images.unsplash.com/photo-1527016021513-b09758b777bd` |
+| `public/images/products/denim-editorial-3.jpg` | `https://images.unsplash.com/photo-1740711152088-88a009e877bb` |
+| `public/images/products/denim-editorial-4.jpg` | `https://images.unsplash.com/photo-1761426857312-7931f596e6f3` |
+
 ## Homepage imagery
 
 | Local file | Remote source | Use |
