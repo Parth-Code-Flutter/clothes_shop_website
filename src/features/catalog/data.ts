@@ -14,6 +14,21 @@ const PRICE_PAISE: Record<CategoryId, number> = {
   trousers: 159900,
 };
 
+// Sample compare-at (MRP) prices so offers can be previewed. Replace with client-confirmed MRPs.
+const SAMPLE_MRP_PAISE: Partial<Record<string, number>> = {
+  "bring-em-on-purple-tee": 89900,
+  "dark-knight-brown-tee": 99900,
+  "sage-emblem-tee": 79900,
+  "hulk-rage-black-tee": 79900,
+  "embroidered-plaid-flannel-shirt": 199900,
+  "rust-twill-overshirt": 189900,
+  "floral-embroidered-taupe-shirt": 179900,
+  "jet-black-slim-jeans": 229900,
+  "charcoal-acid-wash-jeans": 249900,
+  "khaki-drawstring-chinos": 199900,
+  "black-drawstring-trousers": 219900,
+};
+
 const TEE_SUMMARY = "Premium oversized graphic T-shirt with bold artwork, soft cotton fabric, and a relaxed streetwear fit.";
 
 const DEFAULTS: Record<CategoryId, Pick<CatalogProduct, "fit" | "fabric" | "pattern" | "occasion" | "care">> = {
@@ -75,6 +90,7 @@ function piece({ views, ...draft }: Draft): CatalogProduct {
     gallery,
     summary: draft.summary ?? TEE_SUMMARY,
     pricePaise: PRICE_PAISE[draft.categoryId],
+    mrpPaise: SAMPLE_MRP_PAISE[draft.id],
     sizes: draft.categoryId === "jeans" || draft.categoryId === "trousers" ? BOTTOMS : TOPS,
     sourceUrl: "/shop",
     rating: Number((3.8 + (seed % 12) / 10).toFixed(1)),

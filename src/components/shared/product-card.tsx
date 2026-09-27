@@ -108,8 +108,7 @@ export function ProductCard({ product, index = 0, variant = "default" }: Product
             <span className={styles.price}>{formatInrFromPaise(product.pricePaise)}</span>
             {hasOffer ? (
               <span className={styles.was}>
-                <s>{formatInrFromPaise(product.mrpPaise!)}</s>
-                <b>{off}% off</b>
+                <s>{formatInrFromPaise(product.mrpPaise!)}</s> <b>{off}% off</b>
               </span>
             ) : null}
           </p>

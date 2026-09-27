@@ -92,9 +92,10 @@
 @media (hover: none) {
   .stub { opacity: 1; transform: none; }
 }
-.price { font-family: var(--font-display), sans-serif; font-size: 18px; line-height: 1; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
-.was { display: block; margin-top: 3px; font-size: 9px; color: var(--ink-soft); }
-.was s { margin-right: 4px; }
+.stub p { line-height: 1; }
+.price { display: block; font-family: var(--font-display), sans-serif; font-size: 18px; line-height: 1; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+.was { display: block; margin-top: 3px; font-size: 9px; line-height: 1; white-space: nowrap; color: var(--ink-soft); }
+.was s { margin-right: 1px; }
 .was b { font-weight: 700; color: var(--red); }
 .barcode { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; color: var(--ink-soft); }
 .barcode i {
