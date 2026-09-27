@@ -1,60 +1,115 @@
-/* "cinema" variant: each tile reads as a single film frame. Light = matinee print, dark = night show. */
-.frame {
-  --frame-bg: #fffaf0;
-  --frame-media: #efe6d6;
-  --frame-line: rgb(154 106 34 / 22%);
-  --frame-sprocket: rgb(29 11 6 / 20%);
-  --frame-glow: rgb(200 20 26 / 22%);
-  --frame-hover: rgb(154 106 34 / 70%);
-  --frame-brand: #9a6a22;
-  --frame-edge: rgb(154 106 34 / 75%);
-  --ticket-bg: linear-gradient(180deg, #b3151b, #8e0f14);
-  --ticket-ink: #fff3dc;
+/*
+ * "cinema" variant: each tile is an admission ticket. The outer element carries the shadow and the inner
+ * paper carries the notch mask, because a mask on the same element would also cut its drop-shadow away.
+ * The price stub hangs below the ticket in the grid's row gap, so revealing it never reflows the grid.
+ */
+.ticket {
+  --stub: 42px;
+  --notch: 7px;
+  --paper: #ffffff;
+  --paper-line: rgb(154 106 34 / 32%);
+  --ink: #1d0b06;
+  --ink-soft: #6f5d4e;
+  --gold: #9a6a22;
+  --red: #c8141a;
+  --stub-bg: #fbf5ea;
+  --shadow: rgb(29 11 6 / 16%);
+  --shadow-hover: rgb(160 20 20 / 26%);
   position: relative;
-  padding: 17px 7px 9px;
-  background: var(--frame-bg);
-  box-shadow: 0 0 0 1px var(--frame-line), 0 10px 24px -18px rgb(29 11 6 / 35%);
-  transition: transform .45s cubic-bezier(.2, .8, .2, 1), box-shadow .45s;
+  height: 100%;
+  filter: drop-shadow(0 1px 0 var(--paper-line)) drop-shadow(0 10px 16px var(--shadow));
+  transition: transform .45s cubic-bezier(.2, .8, .2, 1), filter .45s;
 }
-:global(.dark) .frame {
-  --frame-bg: #1a0f0b;
-  --frame-media: #140a07;
-  --frame-line: rgb(231 189 98 / 14%);
-  --frame-sprocket: rgb(239 227 200 / 50%);
-  --frame-glow: rgb(240 38 30 / 50%);
-  --frame-hover: rgb(231 189 98 / 65%);
-  --frame-brand: #e7bd62;
-  --frame-edge: rgb(231 189 98 / 50%);
-  --ticket-bg: linear-gradient(180deg, #f8ecd0, #ecd9b0);
-  --ticket-ink: #1d0b06;
+:global(.dark) .ticket {
+  --paper: #1c110c;
+  --paper-line: rgb(231 189 98 / 22%);
+  --ink: #fbf1de;
+  --ink-soft: #b9a68e;
+  --gold: #e7bd62;
+  --red: #ff4a3d;
+  --stub-bg: #251710;
+  --shadow: rgb(0 0 0 / 55%);
+  --shadow-hover: rgb(240 38 30 / 30%);
 }
-.frame::before {
-  content: "";
-  position: absolute; top: 5px; left: 7px; right: 7px; height: 5px;
-  background: repeating-linear-gradient(90deg, var(--frame-sprocket) 0 7px, transparent 7px 15px);
-}
-.media { background: var(--frame-media); }
 @media (hover: hover) {
-  .frame:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 0 0 1px var(--frame-hover), 0 22px 40px -20px var(--frame-glow), 0 0 34px rgb(231 189 98 / 12%);
+  .ticket:hover {
+    transform: translateY(-5px) rotate(-.6deg);
+    filter: drop-shadow(0 1px 0 var(--paper-line)) drop-shadow(0 18px 22px var(--shadow-hover));
   }
 }
-.brand { font-size: 9px; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; color: var(--frame-brand); }
-.ticket {
-  display: inline-flex; align-items: center; padding: 5px 12px;
-  background: var(--ticket-bg); color: var(--ticket-ink);
-  font-weight: 800; font-variant-numeric: tabular-nums;
-  -webkit-mask: radial-gradient(circle 4px at 0 50%, transparent 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 4px at 100% 50%, transparent 97%, #000) right / 51% 100% no-repeat;
-  mask: radial-gradient(circle 4px at 0 50%, transparent 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 4px at 100% 50%, transparent 97%, #000) right / 51% 100% no-repeat;
+
+.paper {
+  display: flex; flex-direction: column; height: 100%;
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--paper-line);
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 0 100%, #0000 97%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 100%, #0000 97%, #000) right / 51% 100% no-repeat;
+  mask:
+    radial-gradient(circle var(--notch) at 0 100%, #0000 97%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 100%, #0000 97%, #000) right / 51% 100% no-repeat;
 }
-.edge {
-  margin-top: 9px; display: flex; justify-content: space-between; gap: 8px;
-  font-family: var(--font-geist-mono), monospace; font-size: 8px; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--frame-edge);
+
+.admit {
+  display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px 7px;
+  font-size: 8px; font-weight: 800; letter-spacing: .24em; text-transform: uppercase;
+}
+.admit span:first-child { color: var(--red); }
+.admit span:last-child { font-family: var(--font-geist-mono), monospace; font-weight: 500; letter-spacing: .08em; color: var(--ink-soft); }
+
+.poster { margin: 0 8px; border-radius: 3px; overflow: hidden; background: #efe6d6; }
+:global(.dark) .poster { background: #120906; }
+
+.details { display: flex; flex-direction: column; gap: 3px; padding: 10px 10px 12px; }
+.row { font-size: 8px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); }
+.name { font-size: 12.5px; font-weight: 600; line-height: 1.3; }
+.meta { font-size: 11px; color: var(--ink-soft); }
+
+.stub {
+  position: absolute; z-index: -1; top: 100%; left: 0; right: 0; height: var(--stub);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px;
+  border-radius: 0 0 6px 6px;
+  background: var(--stub-bg); color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--paper-line);
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 0 0, #0000 97%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 0, #0000 97%, #000) right / 51% 100% no-repeat;
+  mask:
+    radial-gradient(circle var(--notch) at 0 0, #0000 97%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 0, #0000 97%, #000) right / 51% 100% no-repeat;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: transform .45s cubic-bezier(.2, .8, .2, 1), opacity .25s;
+}
+.stub::before {
+  content: ""; position: absolute; top: 0; left: calc(var(--notch) + 5px); right: calc(var(--notch) + 5px); height: 1px;
+  background: repeating-linear-gradient(90deg, var(--paper-line) 0 5px, transparent 5px 10px);
+}
+.ticket:hover .stub,
+.ticket:focus-within .stub { opacity: 1; transform: none; }
+@media (hover: none) {
+  .stub { opacity: 1; transform: none; }
+}
+.price { font-family: var(--font-display), sans-serif; font-size: 18px; line-height: 1; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+.was { display: block; margin-top: 3px; font-size: 9px; color: var(--ink-soft); }
+.was s { margin-right: 4px; }
+.was b { font-weight: 700; color: var(--red); }
+.barcode { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; color: var(--ink-soft); }
+.barcode i {
+  display: block; width: 40px; height: 16px; opacity: .35;
+  background: repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 3px, currentColor 3px 5px, transparent 5px 6px, currentColor 6px 7px, transparent 7px 10px);
+}
+.barcode small { font-family: var(--font-geist-mono), monospace; font-size: 7px; letter-spacing: .14em; opacity: .8; }
+
+@media (max-width: 639px) {
+  .ticket { --stub: 38px; --notch: 6px; }
+  .price { font-size: 17px; }
+  .barcode i { width: 30px; height: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .frame { transition: none; }
-  .frame:hover { transform: none; }
+  .ticket, .stub { transition: none; }
+  .ticket:hover { transform: none; }
 }
