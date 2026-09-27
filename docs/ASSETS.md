@@ -21,33 +21,27 @@ These values are the light-theme accents in `src/app/globals.css`. Dark theme us
 
 ## Product images
 
-Copied 24 September 2026 from https://houseofbollywood.in/wp-content/uploads/2026/09/
+The owner's product photos (76 files, sent 27 September 2026 as WhatsApp exports) live in one place:
 
-| Local file | Remote source |
-|---|---|
-| `public/images/products/hulk.jpg` | `hulk-700x910.jpg` |
-| `public/images/products/hulk-alt.jpg` | `hulk1-700x910.jpg` |
-| `public/images/products/spiderman.jpg` | `Spiderman-700x910.jpg` |
-| `public/images/products/spiderman-alt.jpg` | `spiderman1-700x910.jpg` |
-| `public/images/products/deadpool.jpg` | `deadpool1-700x910.jpg` |
-| `public/images/products/deadpool-alt.jpg` | `deadpool-700x910.jpg` |
-| `public/images/products/batman-red.jpg` | `batman-700x910.jpg` |
-| `public/images/products/batman-red-alt.jpg` | `batman1-700x910.jpg` |
-| `public/images/products/batman-yellow.jpg` | `batman2-700x910.jpg` |
-| `public/images/products/batman-yellow-alt.jpg` | `batmann-700x910.jpg` |
+```
+public/images/products/<category>/<product-id>/<view>.jpg
+```
 
-Live product slugs used for routes: `hulk-tshirt`, `spiderman-tshirt`, `deadpool-tshirt`, `batman-red`, `batman-yellow`.
+- `category` is `t-shirts`, `shirts`, `jeans`, or `trousers`.
+- `product-id` matches the product `id` and URL slug in `src/features/catalog/data.ts`.
+- `view` is `front`, `back`, `alt` (a second front angle), or `detail`. The first view listed in `data.ts` is the listing photo.
 
-### Temporary denim editorial set
+43 products, 73 images. Four files were exact duplicates and were left out. Photos of the same garment from different angles were grouped by matching the print, colour, and construction, since the file names carried only timestamps.
 
-Downloaded from Unsplash on 26 September 2026 for the `Indigo Denim Overshirt` gallery prototype. These are coordinated editorial demonstration images, not verified photographs of one exact sellable SKU. Replace them with the owner’s front, back, side, detail, and on-model product photography before launch. Source images remain subject to the [Unsplash License](https://unsplash.com/license).
+Preparation:
 
-| Local file | Source |
-|---|---|
-| `public/images/products/denim-editorial-1.jpg` | `https://images.unsplash.com/photo-1643858040625-3e806a9e5be3` |
-| `public/images/products/denim-editorial-2.jpg` | `https://images.unsplash.com/photo-1527016021513-b09758b777bd` |
-| `public/images/products/denim-editorial-3.jpg` | `https://images.unsplash.com/photo-1740711152088-88a009e877bb` |
-| `public/images/products/denim-editorial-4.jpg` | `https://images.unsplash.com/photo-1761426857312-7931f596e6f3` |
+- Square 1024×1024 renders were extended to 3:4 (1024×1365) by repeating the top and bottom edge rows, so they fill the site's portrait frames without cropping the garment.
+- One photo showing the acid-wash jeans front and back side by side was split into `acid-wash-panel-jeans/front.jpg` and `back.jpg`.
+- 682×1024 portrait photos are used as sent.
+
+To add a product: create its folder, drop the views in, and add a `piece({ id, categoryId, views: [...] })` entry to `data.ts`.
+
+Groupings worth a second look from the owner: Monsters Blue Splatter (front and back prints differ), Dark Knight Brown, Bat Flight Mustard (kept separate from Batman Splatter Yellow), Bandana Paisley, Avengers Graffiti, and Teddy Bear Navy.
 
 ## Homepage imagery
 
@@ -63,9 +57,16 @@ Downloaded from Unsplash on 26 September 2026 for the `Indigo Denim Overshirt` g
 - Generic blog article images from 2023
 - Brand carousel placeholders until ownership is confirmed
 - Shipping promises that conflict between dollars and rupees
-# Virtual try-on preparation assets
 
-- `public/images/try-on/denim-shirt.png` — generated transparent light-wash denim overshirt overlay.
-- `public/images/try-on/white-tee.png` — generated transparent white crew-neck T-shirt overlay.
-- `public/images/try-on/black-jacket.png` — generated transparent black biker-jacket overlay.
-- Generated with the built-in image-generation workflow as photorealistic, front-facing ecommerce garment cutouts on genuine transparent backgrounds; no people, mannequins, logos, text, or props. They are now used for both the live overlay and the garment input to the realistic-photo route (flattened on white). The white tee is shared by Studio White Tee and Air Tee. Replace them with cut-outs of the real products (`scripts/try-on/cutout.mjs`) before launch.
+## Virtual try-on garments
+
+Transparent cut-outs of real products, made from their `front.jpg` with `scripts/try-on/cutout.mjs` (tolerance 45, wire radius 3):
+
+- `public/images/try-on/venom-mustard-tee.png`
+- `public/images/try-on/messi-10-ivory-tee.png`
+- `public/images/try-on/deadpool-ivory-tee.png`
+- `public/images/try-on/black-panther-ivory-tee.png`
+- `public/images/try-on/spider-emblem-beige-tee.png`
+- `public/images/try-on/bat-flight-mustard-tee.png`
+
+They feed both the live overlay and the realistic-photo route (flattened on white). Shoulder and hem anchors are in `data.ts`. Other fronts were tried and left out: the purple Bring 'Em On tee cut out with ragged edges, and angled or hanger shots (shirts, jeans, trousers) do not give a clean front silhouette. A flat, straight-on photo on a plain backdrop is enough to add more.

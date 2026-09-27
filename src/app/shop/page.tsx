@@ -4,7 +4,7 @@ import { ShopListing } from "@/features/shop/components/shop-listing";
 
 export const metadata: Metadata = {
   title: "Shop | House of Bollywood",
-  description: "Shirts, t-shirts, jeans, trousers, and jackets.",
+  description: "Oversized graphic t-shirts, shirts, jeans, and trousers.",
   robots: { index: false, follow: false },
 };
 

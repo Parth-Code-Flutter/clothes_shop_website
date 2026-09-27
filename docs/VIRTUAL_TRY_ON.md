@@ -73,9 +73,9 @@ Measured on the official Space: about 32 seconds per photo, including queueing.
 
 ## Adding a garment
 
-1. Photograph the garment flat or on a hanger, front facing, on a plain light background.
-2. Run `node scripts/try-on/cutout.mjs <photo> public/images/try-on/<name>.png`. The script prints the silhouette so the anchors can be read off.
-3. Add an entry to `TRY_ON` in `src/features/catalog/data.ts`: `leftShoulder` and `rightShoulder` are the shoulder seam points and `hemY` is the hem line, all as fractions of the image (0–1). Set `tryOn` on the product.
+1. Photograph the garment flat or on a hanger, straight on, on a plain light or dark background.
+2. Run `node scripts/try-on/cutout.mjs <photo> public/images/try-on/<product-id>.png [tolerance] [wireRadius]`. It removes the background (including pockets trapped behind display wires), strips thin wires and stray logos, and prints the silhouette so the anchors can be read off. The house renders on black cut cleanly at tolerance 45, wire radius 3.
+3. In `src/features/catalog/data.ts`, set `tryOn: tee("<product-id>", { leftShoulder, rightShoulder, hemY })` on the product. The shoulders are the points where the body meets the sleeve and `hemY` is the hem line, all as fractions of the image (0–1).
 
 ## Privacy
 

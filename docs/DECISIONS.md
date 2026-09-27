@@ -50,8 +50,17 @@
 - The fitting room is now hybrid: a real-time live preview on the camera or an uploaded photo (MediaPipe Pose, in the browser) plus an on-demand realistic photo (FASHN VTON 1.5). Realistic live-video try-on has no free option, so the live part is a style preview and the photo is the realistic result.
 - The backend is chosen with `VTON_MODE` (`gradio`, `http`, `fashn`). The free default is the official `fashn-ai/fashn-vton-1.5` Hugging Face Space; `services/vton` lets us run the same model on our own ZeroGPU Space, Colab/Kaggle or a rented GPU.
 - The AI route sends the product's transparent try-on cut-out (flattened on white) as a flat-lay garment, not the lifestyle catalog photo, because the catalog photos show models and scenes.
-- Try-on is offered only on products with `tryOn` data: Indigo Oxford Shirt, Studio White Tee, Air Tee and Black Leather Jacket. Air Tee reuses the white tee cut-out because its catalog image is a white tee.
+- Try-on is offered only on products with `tryOn` data. Since the real catalog (27 Sep) that is six graphic tees cut out from the owner's photos: Venom Mustard, Messi 10 Ivory, Deadpool Ivory, Black Panther Ivory, Spider Emblem Beige and Bat Flight Mustard.
 - Garment cut-outs are made with a local sharp script (`scripts/try-on/cutout.mjs`) instead of a Python background-removal model, so no extra runtime is needed.
 - FASHN hosted API moderation is set to `conservative`.
 - The separate `/api/try-on/start` route was folded into `/api/try-on/generate`; `/api/try-on/status/[id]` stays for the paid FASHN polling.
 - `fashn-human-parser` is research/evaluation-only; it must be replaced or cleared with FASHN AI before commercial launch.
+# Real product catalog — 27 Sep 2026
+
+- The placeholder catalog was replaced with the owner's own photos: 43 products in four categories (T-Shirts, Shirts, Jeans, Trousers). Jackets was removed because there are no jacket products yet; the rust overshirt sits in Shirts.
+- Every product keeps all its angles in one folder, `public/images/products/<category>/<product-id>/`, and `data.ts` lists the views in display order.
+- Graphic tees use the live store's ₹650 price and copy. Shirt (₹1,499), jeans (₹1,799) and trouser (₹1,599) prices are placeholders in `PRICE_PAISE` until the owner confirms them. No compare-at prices are set, so the site shows no discounts; discount filters and sorting reappear automatically once any product has an `mrpPaise`.
+- Fabric wording is limited to what the photos show (for example "Brushed flannel", "Washed denim") and should be confirmed by the owner.
+- Product names avoid third-party brand names that appear on some prints (e.g. "Court 23", "GT3 RS", "Teddy Bear").
+- The homepage leads with a fixed `FEATURED` mix across all four categories.
+- Saved bags and wishlists are checked against the live catalog on load, so retired pieces drop out and prices stay current.

@@ -2,15 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { getAllCategories, getProductsByCategory } from "@/features/catalog/data";
-import { cn } from "@/lib/utils";
-
-const tileStyles = [
-  "md:col-span-7 md:row-span-2",
-  "md:col-span-5",
-  "md:col-span-5",
-  "md:col-span-4",
-  "md:col-span-8",
-] as const;
 
 /** Editorial category wall: discovery first, without making the customer decode it. */
 export function HomeCategories() {
@@ -28,7 +19,7 @@ export function HomeCategories() {
           </div>
           <div className="max-w-md border-l border-border pl-5 lg:mb-2">
             <p className="text-sm leading-7 text-muted">
-              Start with the mood, not the menu. Five wardrobe chapters, arranged for quick browsing and a little discovery.
+              Start with the mood, not the menu. Four wardrobe chapters, arranged for quick browsing and a little discovery.
             </p>
             <Link href="/shop" className="mt-6 inline-flex min-h-11 items-center gap-3 text-xs font-bold tracking-[0.16em] uppercase hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">
               Enter the wardrobe <ArrowUpRight size={16} aria-hidden="true" />
@@ -40,8 +31,8 @@ export function HomeCategories() {
           {categories.map((category, index) => {
             const count = getProductsByCategory(category.id).length;
             return (
-              <Link key={category.id} href={`/shop?category=${category.id}`} className={cn("group relative isolate overflow-hidden bg-footer text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent", tileStyles[index])}>
-                <Image src={category.image} alt="" fill sizes={index === 0 ? "(max-width: 768px) 100vw, 60vw" : "(max-width: 768px) 100vw, 45vw"} className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.045] motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
+              <Link key={category.id} href={`/shop?category=${category.id}`} className="group relative isolate row-span-2 overflow-hidden bg-footer text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent md:col-span-6 lg:col-span-3">
+                <Image src={category.image} alt="" fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.045] motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
                 <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-black/10" aria-hidden="true" />
                 <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-7">
                   <span>

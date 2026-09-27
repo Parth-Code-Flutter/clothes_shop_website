@@ -82,7 +82,7 @@ export function SiteFooter() {
               Dress like the <span className="text-accent">scene is yours.</span>
             </p>
             <p className="mt-4 max-w-md text-[13px] leading-6 text-footer-foreground/55">
-              The wardrobe is open. Shirts, denim, trousers, and jackets from {contact.city}.
+              The wardrobe is open. Graphic tees, shirts, denim, and trousers from {contact.city}.
             </p>
             <Link
               href="/shop"

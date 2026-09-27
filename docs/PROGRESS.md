@@ -80,3 +80,12 @@
 - Connected to the official free Space: a realistic photo generated end to end in about 32 seconds.
 - Checks: TypeScript and ESLint passed; desktop and 390px mobile checked in the browser (upload, live tracking, garment switch, consent gate, generation, result, save).
 - Known limits: the live preview is a flat cut-out (no arm wrapping or folds); free GPU quota allows a handful of photos per day; the human parser needs a commercial licence decision before launch.
+# Real product catalog — 27 Sep 2026
+
+- Imported the owner's 76 photos into `public/images/products/<category>/<product-id>/`: 43 products and 73 images (4 exact duplicates skipped), with multi-angle shots grouped per garment.
+- Rewrote `src/features/catalog/data.ts` for four categories: 24 T-Shirts, 7 Shirts, 8 Jeans, 4 Trousers. Removed Jackets from navigation, mega menu, footer, search and shop copy; the homepage category wall is now four portrait tiles.
+- Replaced the generated try-on cut-outs with six real graphic-tee cut-outs; `scripts/try-on/cutout.mjs` now handles dark backdrops, display wires, and logos.
+- Removed the old placeholder images (`public/images/catalog/`, the scraped tee photos, the Unsplash denim set, and the generated try-on PNGs).
+- Bags and wishlists saved before the change drop retired products and pick up current prices.
+- Open with the owner: shirt, jeans and trouser prices; fabric details; sizes; six less certain photo groupings (listed in `ASSETS.md`).
+- Checks: TypeScript and ESLint passed; shop, category filters, product galleries, homepage, fitting room garment switcher and bag checked in the browser on desktop and 390px mobile.

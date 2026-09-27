@@ -84,7 +84,7 @@ export function HeaderMegaMenu({ open, onOpenChange }: HeaderMegaMenuProps) {
         >
           <div className="mx-auto grid max-w-[1440px] grid-cols-12 gap-8 px-8 py-8 xl:px-12">
             <Link href="/shop" onClick={() => onOpenChange(false)} className="group relative col-span-4 min-h-[330px] overflow-hidden bg-footer text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">
-              <Image src="/images/catalog/jacket-suede.jpg" alt="Black leather jacket" fill sizes="33vw" className="object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none" />
+              <Image src="/images/products/t-shirts/black-panther-ivory-tee/back.jpg" alt="Ivory oversized tee with Black Panther back artwork" fill sizes="33vw" className="object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none" />
               <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/5" aria-hidden="true" />
               <span className="absolute inset-x-0 bottom-0 p-7">
                 <span className="text-[9px] font-bold tracking-[0.25em] text-white/65 uppercase">The men&apos;s edit</span>
@@ -99,7 +99,7 @@ export function HeaderMegaMenu({ open, onOpenChange }: HeaderMegaMenuProps) {
                   <p className="text-[9px] font-bold tracking-[0.25em] text-accent uppercase">Wardrobe</p>
                   <p className="mt-1 font-display text-3xl tracking-wide">Shop clothing</p>
                 </div>
-                <span className="font-mono text-[10px] text-muted">01—05</span>
+                <span className="font-mono text-[10px] text-muted">01—{String(clothingGroups.length).padStart(2, "0")}</span>
               </div>
               <ul className="mt-2">
                 {clothingGroups.map((group, index) => (
@@ -122,8 +122,8 @@ export function HeaderMegaMenu({ open, onOpenChange }: HeaderMegaMenuProps) {
                 <Link href="/shop" onClick={() => onOpenChange(false)} className="text-xs font-semibold underline decoration-accent underline-offset-4">View all</Link>
               </div>
               <div className="mt-5 grid grid-cols-2 gap-3">
-                <MenuEdit image="/images/catalog/tee-white.jpg" label="Everyday layers" href="/shop?category=t-shirts" onClick={() => onOpenChange(false)} />
-                <MenuEdit image="/images/catalog/jean-wash.jpg" label="Denim rotation" href="/shop?category=jeans" onClick={() => onOpenChange(false)} />
+                <MenuEdit image="/images/products/t-shirts/messi-10-ivory-tee/back.jpg" label="Graphic tees" href="/shop?category=t-shirts" onClick={() => onOpenChange(false)} />
+                <MenuEdit image="/images/products/jeans/belted-light-wash-jeans/front.jpg" label="Denim rotation" href="/shop?category=jeans" onClick={() => onOpenChange(false)} />
               </div>
               <p className="mt-5 border-t border-border pt-4 text-xs leading-5 text-muted">Explore the full wardrobe or jump directly into the category you came for.</p>
             </div>

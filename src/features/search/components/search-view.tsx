@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useMemo, useState } from "react";
 import { productGridClass, ProductCard } from "@/components/shared/product-card";
-import { getAllCategories } from "@/features/catalog/data";
+import { catalogHasOffers, getAllCategories } from "@/features/catalog/data";
 import { searchCatalog } from "@/features/search/utils";
 import { emptyFilters, filterAndSortProducts, type SortKey } from "@/features/catalog/filtering";
 import { SortSelect } from "@/features/shop/components/shop-listing";
@@ -54,7 +54,7 @@ export function SearchView() {
           key={urlQuery}
           defaultValue={urlQuery}
           onChange={(event) => setDraft(event.target.value)}
-          placeholder="Search for shirts, denim, jackets…"
+          placeholder="Search for graphic tees, shirts, denim…"
           autoComplete="off"
           className="h-11 min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted"
         />
@@ -99,7 +99,7 @@ export function SearchView() {
       </div>
 
       <div className="mt-4 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Quick filters">
-        {([['all', 'All results'], ['under', 'Under ₹1,500'], ['rating', 'Rated 4+'], ['discount', '20% off+']] as const).map(([value, label]) => <button key={value} onClick={() => setQuickFilter(value)} className={cn("h-9 shrink-0 rounded-full border px-4 text-[11px] font-semibold", quickFilter === value ? "border-foreground bg-foreground text-background" : "border-border text-muted hover:text-foreground")}>{label}</button>)}
+        {([['all', 'All results'], ['under', 'Under ₹1,500'], ['rating', 'Rated 4+'], ['discount', '20% off+']] as const).filter(([value]) => catalogHasOffers || value !== "discount").map(([value, label]) => <button key={value} onClick={() => setQuickFilter(value)} className={cn("h-9 shrink-0 rounded-full border px-4 text-[11px] font-semibold", quickFilter === value ? "border-foreground bg-foreground text-background" : "border-border text-muted hover:text-foreground")}>{label}</button>)}
         <Link href="/shop" className="inline-flex h-9 shrink-0 items-center px-3 text-[11px] font-semibold text-accent">Advanced filters →</Link>
       </div>
 
@@ -107,7 +107,7 @@ export function SearchView() {
         <div className="mt-8 border-t border-border pt-8">
           <p className="text-base font-semibold text-foreground">No products found</p>
           <p className="mt-1 max-w-md text-[13px] leading-6 text-muted">
-            Try shirts, denim, hoodies, or jackets — or open the full shop.
+            Try tees, shirts, denim, or trousers — or open the full shop.
           </p>
           <Link
             href="/shop"
