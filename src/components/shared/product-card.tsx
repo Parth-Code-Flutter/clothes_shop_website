@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
 import { getCategoryById } from "@/features/catalog/data";
 import { formatInrFromPaise } from "@/lib/money";
@@ -65,6 +65,10 @@ export function ProductCard({ product }: ProductCardProps) {
         >
           <Heart className={cn("size-3.5", saved && "fill-foreground")} aria-hidden="true" />
         </button>
+        <span className="absolute bottom-2 left-2 inline-flex items-center gap-1 bg-background/90 px-2 py-1 text-[10px] font-bold tabular-nums shadow-sm">
+          {product.rating.toFixed(1)} <Star className="size-2.5 fill-accent text-accent" aria-hidden="true" />
+          <span className="font-normal text-muted">| {product.reviewCount}</span>
+        </span>
       </div>
       <div className="flex flex-1 flex-col pt-2.5">
         <p className="truncate text-[13px] font-bold tracking-tight text-foreground">
@@ -76,7 +80,7 @@ export function ProductCard({ product }: ProductCardProps) {
             className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
           >
             {product.name}
-            {category ? ` · ${category.name}` : ""}
+            {category ? ` · ${product.color} · ${product.fit}` : ""}
           </Link>
         </h3>
         <p className="mt-1.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-[13px] leading-none">

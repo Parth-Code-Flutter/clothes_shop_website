@@ -14,6 +14,7 @@ import {
   Ruler,
   Share2,
   ShoppingBag,
+  Star,
   RotateCcw,
   X,
   ZoomIn,
@@ -181,9 +182,13 @@ export function ProductDetail({ product }: { product: CatalogProduct }) {
                 <span className="text-xl font-bold tabular-nums">{price}</span>
                 {hasOffer ? <span className="text-sm text-muted line-through tabular-nums">{formatInrFromPaise(product.mrpPaise!)}</span> : null}
                 {discount ? <span className="bg-accent/10 px-2 py-1 text-xs font-bold text-accent">{discount}% OFF</span> : null}
+                <span className="ml-auto inline-flex items-center gap-1 border border-border px-2 py-1 text-xs font-bold tabular-nums">{product.rating.toFixed(1)} <Star className="size-3 fill-accent text-accent" aria-hidden="true" /> <span className="font-normal text-muted">{product.reviewCount} reviews</span></span>
               </div>
 
               <p className="mt-6 text-sm leading-7 text-muted">{product.summary}</p>
+              <dl className="mt-5 grid grid-cols-2 gap-px overflow-hidden border border-border bg-border">
+                {[['Colour', product.color], ['Fit', product.fit], ['Fabric', product.fabric], ['Pattern', product.pattern]].map(([label, value]) => <div key={label} className="bg-background p-3"><dt className="text-[9px] font-bold tracking-[.15em] text-muted uppercase">{label}</dt><dd className="mt-1 text-xs font-semibold leading-5">{value}</dd></div>)}
+              </dl>
 
               <fieldset className="mt-8">
                 <div className="flex items-center justify-between gap-4">
@@ -228,9 +233,9 @@ export function ProductDetail({ product }: { product: CatalogProduct }) {
               </div>
 
               <div className="divide-y divide-border">
-                <DetailDisclosure title="Product details"><p>{product.summary}</p><p className="mt-2">Category: {category?.name ?? "Clothing"}. Available sizes: {product.sizes.join(", ")}.</p></DetailDisclosure>
-                <DetailDisclosure title="Fabric & care"><p>Fabric composition and care instructions are being confirmed for this item and will be shown before launch.</p></DetailDisclosure>
-                <DetailDisclosure title="Delivery & returns"><p>This is a storefront preview. Delivery estimates, shipping charges, and the final returns policy will be connected to the live fulfilment system.</p></DetailDisclosure>
+                <DetailDisclosure title="Product details"><p>{product.summary}</p><ul className="mt-3 list-inside list-disc space-y-1">{product.details.map((detail) => <li key={detail}>{detail}</li>)}</ul><p className="mt-3">Best for: {product.occasion}. Available sizes: {product.sizes.join(", ")}.</p></DetailDisclosure>
+                <DetailDisclosure title="Fabric & care"><p className="font-semibold text-foreground">{product.fabric}</p><p className="mt-2">{product.care}</p></DetailDisclosure>
+                <DetailDisclosure title="Delivery & returns"><p>Free standard delivery on orders over ₹1,999. Easy returns within 14 days in original condition with tags attached. Your exact delivery date appears after a valid PIN code is entered.</p></DetailDisclosure>
               </div>
 
               <button type="button" onClick={shareProduct} className="mt-5 inline-flex min-h-11 items-center gap-2 text-xs font-bold tracking-[0.12em] uppercase hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"><Share2 size={15} aria-hidden="true" /> Share this piece</button>

@@ -11,18 +11,21 @@ import { useSmoothScroll } from "@/components/motion/smooth-scroll";
 import { clothingGroups, featuredNavigation } from "@/config/navigation";
 import { useCart } from "@/features/cart/cart-provider";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
+import { useAccount } from "@/features/account/account-provider";
 
 const iconBtn =
   "relative inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-foreground/5 focus-visible:outline-2 focus-visible:outline-offset-2";
 
 export function SiteHeader() {
   const pathname = usePathname();
+  if (pathname === "/account") return null;
   return <HeaderContent key={pathname} />;
 }
 
 function HeaderContent() {
   const { itemCount } = useCart();
   const { count } = useWishlist();
+  const { signedIn } = useAccount();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [menOpen, setMenOpen] = useState(false);
   const [mobileMenOpen, setMobileMenOpen] = useState(true);
@@ -104,7 +107,7 @@ function HeaderContent() {
             </Link>
           </div>
           <div className="hidden lg:block">
-            <Link href="/account" aria-label="Account" className={iconBtn}>
+            <Link href={signedIn ? "/dashboard" : "/account"} aria-label={signedIn ? "Dashboard" : "Account"} className={iconBtn}>
               <User size={20} aria-hidden="true" />
             </Link>
           </div>
@@ -158,8 +161,8 @@ function HeaderContent() {
             <Link href="/wishlist" onClick={close} className="flex min-h-12 items-center gap-2 border border-border px-3 text-sm">
               <Heart size={17} aria-hidden="true" /> Wishlist ({count})
             </Link>
-            <Link href="/account" onClick={close} className="flex min-h-12 items-center gap-2 border border-border px-3 text-sm">
-              <User size={17} aria-hidden="true" /> Account
+            <Link href={signedIn ? "/dashboard" : "/account"} onClick={close} className="flex min-h-12 items-center gap-2 border border-border px-3 text-sm">
+              <User size={17} aria-hidden="true" /> {signedIn ? "Dashboard" : "Account"}
             </Link>
           </div>
           <div className="mt-5 flex items-center justify-between border-t border-border pt-4">

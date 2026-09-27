@@ -1,6 +1,7 @@
 export type LocalAccount = {
   name: string;
   email: string;
+  role: "admin" | "customer";
 };
 
 export const ACCOUNT_STORAGE_KEY = "hob-account-v1";
@@ -25,6 +26,7 @@ export function parseAccount(raw: string | null): LocalAccount | null {
     return {
       name: parsed.name.trim(),
       email: parsed.email.trim(),
+      role: parsed.role === "admin" || parsed.email.trim() === "admin" ? "admin" : "customer",
     };
   } catch {
     return null;

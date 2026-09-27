@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { ArrowRight, ArrowUp, Camera, MapPin } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { siteConfig } from "@/config/site";
+import { useAccount } from "@/features/account/account-provider";
 
 const shopping = [
   { label: "Shop all", href: "/shop" },
@@ -28,6 +29,7 @@ const linkClass =
 /** One close for the site: the house line, the note, and the wardrobe index. */
 export function SiteFooter() {
   const pathname = usePathname();
+  const { signedIn } = useAccount();
   const [notice, setNotice] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -136,7 +138,7 @@ export function SiteFooter() {
             <ul className="mt-2">
               {shopping.map((link, index) => (
                 <li key={link.href}>
-                  <Link href={link.href} className={linkClass}>
+                  <Link href={link.href === "/account" && signedIn ? "/dashboard" : link.href} className={linkClass}>
                     <span className="mr-3 font-mono text-[9px] text-gold/70">{String(index + 1).padStart(2, "0")}</span>{link.label}
                   </Link>
                 </li>

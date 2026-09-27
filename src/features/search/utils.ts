@@ -14,6 +14,11 @@ export function searchCatalog(query: string): CatalogProduct[] {
       product.slug,
       product.summary,
       product.alt,
+      product.color,
+      product.fit,
+      product.fabric,
+      product.pattern,
+      product.occasion,
       category?.name ?? "",
       category?.slug ?? "",
     ]

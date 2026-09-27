@@ -4,10 +4,32 @@ const TOPS = ["S", "M", "L", "XL"];
 const BOTTOMS = ["30", "32", "34", "36"];
 
 function piece(
-  product: Omit<CatalogProduct, "gallery" | "sourceUrl"> & { gallery?: string[] },
+  product: Omit<CatalogProduct, "gallery" | "sourceUrl" | "rating" | "reviewCount" | "color" | "fit" | "fabric" | "pattern" | "occasion" | "care" | "details" | "popularity" | "isNew"> & { gallery?: string[]; color?: string; fit?: string; fabric?: string; pattern?: string },
 ): CatalogProduct {
+  const seed = product.id.split("").reduce((total, char) => total + char.charCodeAt(0), 0);
+  const isBottom = product.categoryId === "jeans" || product.categoryId === "trousers";
+  const defaults = product.categoryId === "jeans"
+    ? { fit: product.name.includes("Slim") ? "Slim fit" : product.name.includes("Relaxed") ? "Relaxed fit" : "Straight fit", fabric: "98% cotton, 2% elastane denim", pattern: "Solid washed denim", occasion: "Everyday / casual", care: "Machine wash cold, inside out. Wash with similar colours and line dry.", details: ["Mid-rise waist", "Five-pocket construction", "Button-and-zip closure", "Comfort stretch denim"] }
+    : product.categoryId === "trousers"
+      ? { fit: "Relaxed tailored fit", fabric: product.name.includes("Wool") ? "Wool-blend twill" : "Cotton-blend twill", pattern: "Solid", occasion: "Smart casual / occasion", care: "Gentle machine wash or dry clean as marked on the garment.", details: ["Mid-rise waist", "Front pleat detail", "Side and back pockets", "Button-and-zip closure"] }
+      : product.categoryId === "jackets"
+        ? { fit: "Regular fit", fabric: product.name.includes("Leather") ? "Faux leather outer, polyester lining" : "Structured woven outer", pattern: "Solid", occasion: "Layering / evening", care: "Specialist clean only. Store on a broad hanger.", details: ["Fully lined", "Functional front pockets", "Long sleeves", "Secure front fastening"] }
+        : { fit: product.name.includes("Hoodie") ? "Relaxed fit" : "Regular fit", fabric: product.categoryId === "t-shirts" ? "100% combed cotton" : product.name.includes("Denim") ? "Cotton denim" : "Breathable cotton weave", pattern: product.name.includes("Check") ? "Check" : "Solid", occasion: "Everyday / casual", care: "Machine wash cold with similar colours. Warm iron on reverse.", details: [isBottom ? "Mid-rise waist" : "Classic neckline", "Easy everyday construction", "Soft-touch finish", "Designed for repeat wear"] };
+  const colourWords = ["white", "ivory", "indigo", "coral", "blue", "black", "stone", "grey", "mustard", "midnight", "pale", "taupe", "sea", "charcoal", "wine", "navy", "rust", "camel"];
+  const colour = colourWords.find((word) => `${product.name} ${product.alt}`.toLowerCase().includes(word));
   return {
     ...product,
+    color: product.color ?? (colour ? colour[0].toUpperCase() + colour.slice(1) : "Neutral"),
+    fit: product.fit ?? defaults.fit,
+    fabric: product.fabric ?? defaults.fabric,
+    pattern: product.pattern ?? defaults.pattern,
+    occasion: defaults.occasion,
+    care: defaults.care,
+    details: defaults.details,
+    rating: Number((3.8 + (seed % 12) / 10).toFixed(1)),
+    reviewCount: 18 + (seed % 184),
+    popularity: 40 + (seed % 61),
+    isNew: seed % 3 === 0,
     gallery: product.gallery ?? [product.image],
     sourceUrl: "/shop",
   };

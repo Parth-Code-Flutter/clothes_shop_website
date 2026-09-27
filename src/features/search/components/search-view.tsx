@@ -6,6 +6,8 @@ import { type FormEvent, useMemo, useState } from "react";
 import { productGridClass, ProductCard } from "@/components/shared/product-card";
 import { getAllCategories } from "@/features/catalog/data";
 import { searchCatalog } from "@/features/search/utils";
+import { emptyFilters, filterAndSortProducts, type SortKey } from "@/features/catalog/filtering";
+import { SortSelect } from "@/features/shop/components/shop-listing";
 import { cn } from "@/lib/utils";
 
 export function SearchView() {
@@ -13,8 +15,16 @@ export function SearchView() {
   const searchParams = useSearchParams();
   const urlQuery = searchParams.get("q") ?? "";
   const [draft, setDraft] = useState(urlQuery);
+  const [sort, setSort] = useState<SortKey>("recommended");
+  const [quickFilter, setQuickFilter] = useState<"all" | "under" | "rating" | "discount">("all");
 
-  const results = useMemo(() => searchCatalog(urlQuery), [urlQuery]);
+  const results = useMemo(() => {
+    const filters = { ...emptyFilters };
+    if (quickFilter === "under") filters.price = ["under-1500"];
+    if (quickFilter === "rating") filters.minRating = 4;
+    if (quickFilter === "discount") filters.minDiscount = 20;
+    return filterAndSortProducts(searchCatalog(urlQuery), filters, sort);
+  }, [urlQuery, quickFilter, sort]);
   const categories = getAllCategories().filter((category) => category.available);
   const query = urlQuery.trim();
 
@@ -80,13 +90,17 @@ export function SearchView() {
         </Link>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h1 className="text-lg font-bold tracking-tight text-foreground">
+      <div className="mt-6 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
+        <div><p className="text-[10px] font-bold tracking-[.22em] text-accent uppercase">Discover</p><h1 className="mt-1 font-display text-4xl tracking-wide">
           {query ? `Results for “${query}”` : "Search the wardrobe"}
-        </h1>
-        <p className="text-[13px] text-muted">
+        </h1><p className="mt-1 text-[12px] text-muted">
           - {results.length} {results.length === 1 ? "item" : "items"}
-        </p>
+        </p></div><SortSelect value={sort} onChange={setSort}/>
+      </div>
+
+      <div className="mt-4 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Quick filters">
+        {([['all', 'All results'], ['under', 'Under ₹1,500'], ['rating', 'Rated 4+'], ['discount', '20% off+']] as const).map(([value, label]) => <button key={value} onClick={() => setQuickFilter(value)} className={cn("h-9 shrink-0 rounded-full border px-4 text-[11px] font-semibold", quickFilter === value ? "border-foreground bg-foreground text-background" : "border-border text-muted hover:text-foreground")}>{label}</button>)}
+        <Link href="/shop" className="inline-flex h-9 shrink-0 items-center px-3 text-[11px] font-semibold text-accent">Advanced filters →</Link>
       </div>
 
       {results.length === 0 ? (

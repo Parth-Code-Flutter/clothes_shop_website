@@ -79,6 +79,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     writeAccount({
       name: next.name.trim(),
       email: next.email.trim(),
+      role: next.role,
     });
   }, []);
 

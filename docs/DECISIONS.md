@@ -2,6 +2,9 @@
 
 - Authentication remains explicitly frontend-only until a real identity service is chosen. The preview validates passwords but never stores or transmits them; only the display name and email are kept locally for demonstrating the signed-in journey.
 - The account route omits the global footer so sign-in and registration remain focused, compact, and free from competing navigation.
+- The account route also omits the global commerce header. A floating logo and “Back to store” link provide escape routes without exposing the full shopping navigation during authentication.
+- Temporary preview credentials are `admin` / `admin` for the admin persona and `house` / `house` for the customer persona. They are client-side QA scaffolding only and must be removed when real authentication is connected.
+- Authentication and account continuation use separate routes: `/account` owns sign-in/signup, while `/dashboard` owns the protected signed-in experience. Shared account links adapt to session state instead of relying on a visible redirect.
 - Authentication errors belong directly beneath their field with `aria-invalid` and `aria-describedby`; avoid a single detached form-level message that makes customers search for the problem.
 - Cart and wishlist actions should reduce purchase mistakes: wishlist items route through product size selection, while the cart exposes quantity, sizing, shipping progress, and checkout reassurance in one scan.
 - App lives at the workspace root instead of a nested `house-of-bollywood/` folder.
@@ -26,3 +29,9 @@
 - Product-detail direction (26 Sep): use an editorial split-screen scene with immersive media and a sticky, task-focused buying panel. Include expected clothing-store basics—price/offer clarity, size selection and guide, quantity, wishlist, add to bag, buy now, delivery PIN entry, share, expandable details, mobile purchase bar, and related products—but explicitly mark fulfilment, fabric/care, measurements, and returns as pending when verified data is unavailable.
 - Product galleries (26 Sep): every `CatalogProduct.gallery` may contain any number of images. The main media opens a fullscreen, keyboard-navigable lightbox. A four-image Unsplash denim set demonstrates the experience, but is explicitly documented as temporary editorial imagery rather than four verified views of one SKU; owner-supplied front/back/side/detail photography must replace it before launch.
 - Gallery interaction refinement: prioritize low-effort comparison over decorative media blocks. Desktop keeps every view in a persistent numbered vertical rail; mobile changes that rail to horizontal. Previous/next controls remain on the main stage, and the fullscreen viewer exposes zoom out, percentage, zoom in, reset, thumbnails, arrows, click-to-toggle zoom, and keyboard controls.
+# Commerce UX decisions — 27 Sep 2026
+
+- Myntra is used only as a reference for familiar filter/sort vocabulary. Visual styling, writing, hierarchy, and brand interaction remain original to House of Bollywood.
+- Ratings, review counts, popularity, and garment specifications are deterministic prototype catalog data. They are suitable for UX demonstration and must be replaced by backend merchandising/review data before production launch.
+- Filters are client-side for the current local catalog. The same filter model is intentionally reusable when product APIs and URL-backed faceting are introduced.
+- The dashboard stays useful without inventing fake orders or addresses: empty states explain the next action and only show data the preview genuinely has.

@@ -3,6 +3,8 @@
 ## Done
 
 - Built a complete frontend account journey: collectible House Pass sign-in and registration views, per-field inline validation, password visibility and matching, terms consent, recovery messaging, local-session creation, sign-out, and a customer account dashboard.
+- Authentication is now a distraction-free full-screen portal without the global shopping header or footer; temporary QA access supports `admin` / `admin` and customer access through `house` / `house`.
+- Successful sign-in and registration now navigate to the protected `/dashboard`; unauthenticated dashboard visits return to `/account`, sign-out returns to authentication, and account links resolve directly to the dashboard for signed-in customers.
 - Redesigned the cart, wishlist, and footer as a connected editorial shopping journey, including checkout progress, free-shipping feedback, size-safe wishlist actions, stronger empty states, and a branded footer ticker.
 - Next.js 16 app at workspace root with light/dark theme tokens and `next-themes`
 - Shared header with Home/Shop links, mobile menu, theme toggle, and preview actions
@@ -50,3 +52,12 @@
 - Size and stock are omitted until verified on the live product pages
 - Full-project lint is currently blocked by macOS `._*` metadata files; changed homepage files pass targeted ESLint
 - WooCommerce / Razorpay integration still future work
+# Premium commerce completion pass — 27 Sep 2026
+
+- Added a shared merchandising model for rating, reviews, colour, fit, fabric, pattern, occasion, care, popularity, and detailed garment construction.
+- Rebuilt the shop browse experience with price, size, colour, customer-rating, and discount filters; seven sort modes; active-filter count; mobile filter drawer; and no-results recovery.
+- Added sorting and quick filters to search, and expanded search matching to product attributes.
+- Added rating and decision-making metadata to product cards.
+- Replaced placeholder PDP copy with garment-specific specifications, fabric/care, construction details, review summary, and a clear delivery/returns promise.
+- Upgraded the customer dashboard with a House Pass membership card, profile completion, personal/delivery/style panels, and clearer privacy messaging.
+- Verified targeted ESLint, TypeScript, and a full production build (31 static pages).
