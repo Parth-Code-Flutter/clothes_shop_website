@@ -26,17 +26,20 @@ export function HomeArrivals() {
         </div>
 
         <article className="mt-10 grid overflow-hidden border border-white/15 lg:grid-cols-12">
-          <Link href={`/product/${lead.slug}`} className="group relative min-h-[520px] overflow-hidden bg-[#e9dfd1] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#fa5d50] sm:min-h-[680px] lg:col-span-7" aria-label={`View ${lead.name}`}>
+          <div className="group relative min-h-[520px] overflow-hidden bg-[#e9dfd1] sm:min-h-[680px] lg:col-span-7">
             <ProductMedia
               images={lead.gallery}
               alt={lead.alt}
               sizes="(max-width: 1024px) 100vw, 60vw"
               showViewLabel={false}
+              navClassName="right-5 bottom-5 sm:right-7 sm:bottom-7"
               className="absolute inset-0"
               imageClassName="transition-transform duration-1000 ease-out group-hover:scale-[1.035] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-            />
-            <span className="pointer-events-none absolute top-5 left-5 border border-black/15 bg-white/90 px-3 py-2 text-[9px] font-bold tracking-[0.22em] text-black uppercase backdrop-blur sm:top-7 sm:left-7">Opening look</span>
-          </Link>
+            >
+              <Link href={`/product/${lead.slug}`} className="absolute inset-0 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#fa5d50]" aria-label={`View ${lead.name}`} />
+              <span className="pointer-events-none absolute top-5 left-5 border border-black/15 bg-white/90 px-3 py-2 text-[9px] font-bold tracking-[0.22em] text-black uppercase backdrop-blur sm:top-7 sm:left-7">Opening look</span>
+            </ProductMedia>
+          </div>
 
           <div className="flex flex-col justify-between bg-[#f3ede4] p-6 text-[#171310] sm:p-10 lg:col-span-5 lg:p-12">
             <div>

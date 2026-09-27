@@ -49,6 +49,7 @@ export function WishlistView() {
                   alt={item.alt}
                   sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
                   showViewLabel={false}
+                  navClassName="right-3 bottom-[4.25rem]"
                   className="aspect-[3/4] bg-[#eee8de]"
                   imageClassName="transition-transform duration-700 group-hover:scale-[1.04] motion-reduce:transition-none"
                 >

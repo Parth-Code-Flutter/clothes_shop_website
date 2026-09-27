@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type FocusEvent, type PointerEvent, type ReactNode } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, type FocusEvent, type MouseEvent, type PointerEvent, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const VIEW_LABELS: Record<string, string> = { front: "Front", back: "Back", alt: "Angle", detail: "Detail" };
@@ -20,6 +21,8 @@ type ProductMediaProps = {
   imageClassName?: string;
   /** Shows the "02/02 · Back" chip; turn off where the corner is already used. */
   showViewLabel?: boolean;
+  /** Where the previous/next pill sits; defaults to the bottom-right corner, level with the rating chip. */
+  navClassName?: string;
   children?: ReactNode;
 };
 
@@ -27,12 +30,13 @@ type ProductMediaProps = {
  * Product photo that turns into a small scene on hover: the next angle drops in
  * like a stage curtain, a soft spotlight follows the cursor, and a strip shows
  * how many angles there are. With three or more angles the cursor position
- * scrubs between them. Touch devices keep the resting photo; keyboard focus
- * reveals the second angle.
+ * scrubs between them. Previous/next arrows step through the same angles on any
+ * device; once used, the shopper's pick stays put instead of following the cursor.
  */
-export function ProductMedia({ images, alt, sizes, className, imageClassName, showViewLabel = true, children }: ProductMediaProps) {
+export function ProductMedia({ images, alt, sizes, className, imageClassName, showViewLabel = true, navClassName = "right-2 bottom-2", children }: ProductMediaProps) {
   const [active, setActive] = useState(0);
   const [hovering, setHovering] = useState(false);
+  const [picked, setPicked] = useState(false);
   // Extra angles load on first intent, so grids only fetch the resting photo up front.
   const [armed, setArmed] = useState(false);
   const count = images.length;
@@ -43,7 +47,7 @@ export function ProductMedia({ images, alt, sizes, className, imageClassName, sh
     const y = Math.min(Math.max((event.clientY - rect.top) / rect.height, 0), 1);
     event.currentTarget.style.setProperty("--spot-x", `${(x * 100).toFixed(1)}%`);
     event.currentTarget.style.setProperty("--spot-y", `${(y * 100).toFixed(1)}%`);
-    if (count > 1) setActive(1 + Math.floor(x * (count - 1)));
+    if (count > 1 && !picked) setActive(1 + Math.floor(x * (count - 1)));
   };
 
   const enter = (event: PointerEvent<HTMLDivElement>) => {
@@ -55,24 +59,40 @@ export function ProductMedia({ images, alt, sizes, className, imageClassName, sh
 
   const leave = () => {
     setHovering(false);
-    setActive(0);
+    if (!picked) setActive(0);
   };
 
   const focus = (event: FocusEvent<HTMLDivElement>) => {
-    if (!event.target.matches(":focus-visible")) return;
     setArmed(true);
+    if (picked || !event.target.matches(":focus-visible") || event.target.closest("[data-media-nav]")) return;
     setActive(count > 1 ? 1 : 0);
   };
 
   const blur = (event: FocusEvent<HTMLDivElement>) => {
-    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setActive(0);
+    if (!picked && !event.currentTarget.contains(event.relatedTarget as Node | null)) setActive(0);
+  };
+
+  const step = (event: MouseEvent<HTMLButtonElement>, direction: 1 | -1) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const next = (active + direction + count) % count;
+    setPicked(true);
+    if (armed) {
+      setActive(next);
+      return;
+    }
+    // Mount the hidden angles first so the curtain animates in rather than popping.
+    setArmed(true);
+    window.setTimeout(() => setActive(next), 40);
   };
 
   const showing = hovering || active > 0;
+  const navButtonClass =
+    "inline-flex h-full w-6 items-center justify-center transition-colors hover:bg-foreground hover:text-background active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-foreground";
 
   return (
     <div
-      className={cn("relative isolate overflow-hidden", className)}
+      className={cn("group/media relative isolate overflow-hidden", className)}
       onPointerEnter={enter}
       onPointerMove={(event) => event.pointerType === "mouse" && aim(event)}
       onPointerLeave={leave}
@@ -135,6 +155,25 @@ export function ProductMedia({ images, alt, sizes, className, imageClassName, sh
       ) : null}
 
       {children}
+
+      {count > 1 ? (
+        // Hover-only on mouse devices; touch screens have no hover, so the pill stays visible there.
+        <div
+          data-media-nav
+          className={cn(
+            "absolute z-10 flex h-[23px] items-center bg-background/90 text-foreground shadow-sm transition-[opacity,transform] duration-300 [@media(hover:hover)]:pointer-events-none [@media(hover:hover)]:translate-y-1 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-focus-within/media:pointer-events-auto [@media(hover:hover)]:group-focus-within/media:translate-y-0 [@media(hover:hover)]:group-focus-within/media:opacity-100 [@media(hover:hover)]:group-hover/media:pointer-events-auto [@media(hover:hover)]:group-hover/media:translate-y-0 [@media(hover:hover)]:group-hover/media:opacity-100",
+            navClassName,
+          )}
+        >
+          <button type="button" onPointerDown={() => setArmed(true)} onClick={(event) => step(event, -1)} aria-label={`Previous photo, ${viewLabel(images[(active - 1 + count) % count], (active - 1 + count) % count)}`} className={navButtonClass}>
+            <ChevronLeft className="size-3.5" aria-hidden="true" />
+          </button>
+          <span className="min-w-7 text-center text-[10px] font-bold tabular-nums" aria-hidden="true">{active + 1}/{count}</span>
+          <button type="button" onPointerDown={() => setArmed(true)} onClick={(event) => step(event, 1)} aria-label={`Next photo, ${viewLabel(images[(active + 1) % count], (active + 1) % count)}`} className={navButtonClass}>
+            <ChevronRight className="size-3.5" aria-hidden="true" />
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }
