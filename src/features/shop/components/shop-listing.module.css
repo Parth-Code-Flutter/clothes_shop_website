@@ -1,5 +1,62 @@
 /* Cinema marquee framing for the product listing; mirrors the homepage premiere palette. */
 
+/*
+ * Re-points the theme tokens so every token-styled control on the page (filters, sort, drawer, cards) follows the hall.
+ * Light theme is a "matinee" (ivory poster paper, maroon ink); dark theme is the "night show" from the premiere.
+ */
+.hall {
+  --background: #f6eee0;
+  --foreground: #1d0b06;
+  --surface: #fffaf0;
+  --muted: #6f5d4e;
+  --border: #e3d3bb;
+  --accent: #c8141a;
+  --accent-foreground: #fffaf6;
+  --gold: #9a6a22;
+  --overlay: rgb(29 11 6 / 45%);
+  --glow: rgb(200 20 26 / 9%);
+  --velvet: rgb(160 20 20 / 9%);
+  --hairline: rgb(154 106 34 / 24%);
+  --sprocket: rgb(29 11 6 / 18%);
+  color-scheme: light;
+  background:
+    radial-gradient(ellipse 70% 460px at 50% 0%, var(--glow), transparent 70%),
+    linear-gradient(90deg, var(--velvet), transparent 110px, transparent calc(100% - 110px), var(--velvet)),
+    var(--background);
+  color: var(--foreground);
+}
+:global(.dark) .hall {
+  --background: #0e0806;
+  --foreground: #fbf1de;
+  --surface: #1a0f0b;
+  --muted: #b9a68e;
+  --border: #34221a;
+  --accent: #f0261e;
+  --gold: #e7bd62;
+  --overlay: rgb(0 0 0 / 60%);
+  --glow: rgb(240 38 30 / 13%);
+  --velvet: rgb(120 12 10 / 24%);
+  --hairline: rgb(231 189 98 / 18%);
+  --sprocket: rgb(239 227 200 / 35%);
+  color-scheme: dark;
+}
+
+.boxOffice {
+  position: relative;
+  padding: 18px 16px 4px;
+  border-radius: 4px;
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--hairline);
+}
+.boxOffice::before {
+  content: "";
+  position: absolute; top: 6px; left: 12px; right: 12px; height: 4px;
+  background: repeating-linear-gradient(90deg, var(--sprocket) 0 6px, transparent 6px 13px);
+}
+.boxOfficeHead { padding: 6px 0 12px; }
+.boxOfficeHead p:first-child { font-size: 9px; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); }
+.boxOfficeHead p:last-child { margin-top: 2px; font-family: var(--font-display), sans-serif; font-size: 30px; line-height: 1; letter-spacing: .04em; text-transform: uppercase; }
+
 .marquee {
   --night: #0b0706;
   --gold: #e7bd62;

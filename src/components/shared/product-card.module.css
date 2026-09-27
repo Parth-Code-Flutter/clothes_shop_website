@@ -1,0 +1,60 @@
+/* "cinema" variant: each tile reads as a single film frame. Light = matinee print, dark = night show. */
+.frame {
+  --frame-bg: #fffaf0;
+  --frame-media: #efe6d6;
+  --frame-line: rgb(154 106 34 / 22%);
+  --frame-sprocket: rgb(29 11 6 / 20%);
+  --frame-glow: rgb(200 20 26 / 22%);
+  --frame-hover: rgb(154 106 34 / 70%);
+  --frame-brand: #9a6a22;
+  --frame-edge: rgb(154 106 34 / 75%);
+  --ticket-bg: linear-gradient(180deg, #b3151b, #8e0f14);
+  --ticket-ink: #fff3dc;
+  position: relative;
+  padding: 17px 7px 9px;
+  background: var(--frame-bg);
+  box-shadow: 0 0 0 1px var(--frame-line), 0 10px 24px -18px rgb(29 11 6 / 35%);
+  transition: transform .45s cubic-bezier(.2, .8, .2, 1), box-shadow .45s;
+}
+:global(.dark) .frame {
+  --frame-bg: #1a0f0b;
+  --frame-media: #140a07;
+  --frame-line: rgb(231 189 98 / 14%);
+  --frame-sprocket: rgb(239 227 200 / 50%);
+  --frame-glow: rgb(240 38 30 / 50%);
+  --frame-hover: rgb(231 189 98 / 65%);
+  --frame-brand: #e7bd62;
+  --frame-edge: rgb(231 189 98 / 50%);
+  --ticket-bg: linear-gradient(180deg, #f8ecd0, #ecd9b0);
+  --ticket-ink: #1d0b06;
+}
+.frame::before {
+  content: "";
+  position: absolute; top: 5px; left: 7px; right: 7px; height: 5px;
+  background: repeating-linear-gradient(90deg, var(--frame-sprocket) 0 7px, transparent 7px 15px);
+}
+.media { background: var(--frame-media); }
+@media (hover: hover) {
+  .frame:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 0 1px var(--frame-hover), 0 22px 40px -20px var(--frame-glow), 0 0 34px rgb(231 189 98 / 12%);
+  }
+}
+.brand { font-size: 9px; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; color: var(--frame-brand); }
+.ticket {
+  display: inline-flex; align-items: center; padding: 5px 12px;
+  background: var(--ticket-bg); color: var(--ticket-ink);
+  font-weight: 800; font-variant-numeric: tabular-nums;
+  -webkit-mask: radial-gradient(circle 4px at 0 50%, transparent 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 4px at 100% 50%, transparent 97%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle 4px at 0 50%, transparent 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 4px at 100% 50%, transparent 97%, #000) right / 51% 100% no-repeat;
+}
+.edge {
+  margin-top: 9px; display: flex; justify-content: space-between; gap: 8px;
+  font-family: var(--font-geist-mono), monospace; font-size: 8px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--frame-edge);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame { transition: none; }
+  .frame:hover { transform: none; }
+}
