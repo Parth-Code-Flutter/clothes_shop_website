@@ -1,6 +1,6 @@
-/* Theatre canopy: ivory by day, night-show black after dark, with a gold rail of marquee bulbs along the bottom. */
+/* Theatre canopy: warm off-white by day, night-show black after dark, with a gold rail of marquee bulbs along the bottom. */
 .header {
-  --canopy: rgb(248 241 228 / 94%);
+  --canopy: rgb(253 251 247 / 94%);
   --rail: #9a6a22;
   --bulb: rgb(154 106 34 / 45%);
   --bulb-lit: #f5b945;

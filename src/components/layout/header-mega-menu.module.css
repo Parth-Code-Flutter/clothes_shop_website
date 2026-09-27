@@ -1,14 +1,14 @@
 /* The Men menu drops like a stage curtain and reads as a cinema programme; tokens follow the shop's matinee / night show. */
 .stage {
-  --background: #f6eee0;
+  --background: #fdfbf7;
   --foreground: #1d0b06;
-  --surface: #fffaf0;
+  --surface: #ffffff;
   --muted: #6f5d4e;
-  --border: #e3d3bb;
+  --border: #ece3d3;
   --accent: #c8141a;
   --gold: #9a6a22;
-  --glow: rgb(200 20 26 / 8%);
-  --velvet: rgb(160 20 20 / 9%);
+  --glow: transparent;
+  --velvet: transparent;
   --hairline: rgb(154 106 34 / 26%);
   --frame: #140806;
   --sprocket: rgb(255 243 220 / 55%);
