@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { ProductCard, productGridClass } from "@/components/shared/product-card";
+import { ProductCard } from "@/components/shared/product-card";
+import { productGridClass } from "@/components/shared/product-grid";
 import { ProductMedia } from "@/components/shared/product-media";
 import { getAllProducts, getCategoryById } from "@/features/catalog/data";
 import { formatInrFromPaise } from "@/lib/money";
+import { cn } from "@/lib/utils";
 import styles from "./home-cinema.module.css";
 
 /** Product chapter with one memorable lead piece and a low-friction browse grid. */
@@ -76,9 +78,9 @@ export function HomeArrivals() {
           </Link>
         </div>
 
-        <div className={`${styles.cast} mt-8 bg-background p-3 text-foreground sm:p-5 lg:p-7`}>
-          <div className={productGridClass}>
-            {supporting.map((product) => <ProductCard key={product.id} product={product} />)}
+        <div className={`${styles.cast} mt-8`}>
+          <div className={cn(productGridClass, "gap-y-14 sm:gap-y-16")}>
+            {supporting.map((product, index) => <ProductCard key={product.id} product={product} index={index + 1} variant="cinema" />)}
           </div>
         </div>
 

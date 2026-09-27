@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { productGridClass, ProductCard } from "@/components/shared/product-card";
+import { ProductCard } from "@/components/shared/product-card";
+import { productGridClass } from "@/components/shared/product-grid";
 import type { CatalogProduct } from "@/features/catalog/types";
 
 export function RelatedProducts({ products }: { products: CatalogProduct[] }) {

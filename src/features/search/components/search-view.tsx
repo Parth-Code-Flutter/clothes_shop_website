@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useMemo, useState } from "react";
-import { productGridClass, ProductCard } from "@/components/shared/product-card";
+import { ProductCard } from "@/components/shared/product-card";
+import { productGridClass } from "@/components/shared/product-grid";
 import { catalogHasOffers, getAllCategories } from "@/features/catalog/data";
 import { searchCatalog } from "@/features/search/utils";
 import { emptyFilters, filterAndSortProducts, type SortKey } from "@/features/catalog/filtering";
