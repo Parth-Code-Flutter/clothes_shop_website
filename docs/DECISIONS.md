@@ -35,3 +35,13 @@
 - Ratings, review counts, popularity, and garment specifications are deterministic prototype catalog data. They are suitable for UX demonstration and must be replaced by backend merchandising/review data before production launch.
 - Filters are client-side for the current local catalog. The same filter model is intentionally reusable when product APIs and URL-backed faceting are introduced.
 - The dashboard stays useful without inventing fake orders or addresses: empty states explain the next action and only show data the preview genuinely has.
+# Virtual try-on decisions — 27 Sep 2026
+
+- Replaced the initial movable-overlay prototype with identity-preserving generative virtual try-on.
+- Prefer the open-source, Apache-2.0 licensed [FASHN VTON 1.5](https://github.com/fashn-AI/fashn-vton-1.5) model over the paid hosted API. Run it as a separate private Python inference service and call it through a Next.js server route.
+- The server sends the consented person image and the selected product's real catalog image to the private inference service; model infrastructure and credentials never reach the browser.
+- The UI requires explicit photo-use consent before transmission. Temporary input and output retention must be minimized and documented before production launch.
+- Camera is used to capture a still person image. This is near-real-time generation (typically seconds), not live-video garment rendering.
+- Try-on is limited to shirts, tees, hoodies, and jackets until the catalog has production-ready bottom garment imagery.
+- A GPU is recommended for usable latency. Hugging Face ZeroGPU is acceptable for a constrained demo, while production requires a reliable GPU deployment, access control, rate limiting, and monitoring.
+- Full architecture, customer flow, deployment guidance, and privacy requirements are recorded in [`VIRTUAL_TRY_ON.md`](./VIRTUAL_TRY_ON.md).

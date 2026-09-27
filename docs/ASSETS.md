@@ -63,3 +63,9 @@ Downloaded from Unsplash on 26 September 2026 for the `Indigo Denim Overshirt` g
 - Generic blog article images from 2023
 - Brand carousel placeholders until ownership is confirmed
 - Shipping promises that conflict between dollars and rupees
+# Virtual try-on preparation assets
+
+- `public/images/try-on/denim-shirt.png` — generated transparent light-wash denim overshirt overlay.
+- `public/images/try-on/white-tee.png` — generated transparent white crew-neck T-shirt overlay.
+- `public/images/try-on/black-jacket.png` — generated transparent black biker-jacket overlay.
+- Generated with the built-in image-generation workflow as photorealistic, front-facing ecommerce garment cutouts on genuine transparent backgrounds; no people, mannequins, logos, text, or props. These are retained as flat-lay fallback/reference assets; the production AI route uses each selected product's actual catalog image.

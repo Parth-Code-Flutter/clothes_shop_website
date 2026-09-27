@@ -61,3 +61,12 @@
 - Replaced placeholder PDP copy with garment-specific specifications, fabric/care, construction details, review summary, and a clear delivery/returns promise.
 - Upgraded the customer dashboard with a House Pass membership card, profile completion, personal/delivery/style panels, and clearer privacy messaging.
 - Verified targeted ESLint, TypeScript, and a full production build (31 static pages).
+# AI virtual fitting room — 27 Sep 2026
+
+- Added `AI try-on` entry points to eligible product cards and product-detail pages.
+- Replaced the visual overlay prototype with a real person-photo + selected-garment generation pipeline.
+- Added camera capture, photo selection, consent gate, progress states, provider errors, garment switching, generated result preview, and download.
+- Added server-only FASHN start/status proxy routes and `.env.example` configuration.
+- Jeans and trousers remain deliberately gated until their production try-on pipeline is ready.
+- Selected open-source FASHN VTON 1.5 as the preferred replacement for the paid hosted provider and documented the service architecture, customer flow, deployment options, limitations, and privacy requirements in [`VIRTUAL_TRY_ON.md`](./VIRTUAL_TRY_ON.md).
+- The open-source inference service is documented but not yet deployed or connected; the existing hosted-provider route remains the current implementation until migration is completed and tested.

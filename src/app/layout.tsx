@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { siteConfig } from "@/config/site";
+import { VirtualTryOn } from "@/features/try-on/virtual-try-on";
 import "./globals.css";
 
 const display = Bebas_Neue({
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   <SiteHeader />
                   {children}
                   <SiteFooter />
+                  <VirtualTryOn />
                 </CartProvider>
               </WishlistProvider>
             </AccountProvider>

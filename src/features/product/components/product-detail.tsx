@@ -28,6 +28,7 @@ import { useWishlist } from "@/features/wishlist/wishlist-provider";
 import { formatInrFromPaise } from "@/lib/money";
 import type { CatalogProduct } from "@/features/catalog/types";
 import { cn } from "@/lib/utils";
+import { TryOnButton } from "@/features/try-on/virtual-try-on";
 
 export function ProductDetail({ product }: { product: CatalogProduct }) {
   const router = useRouter();
@@ -221,6 +222,7 @@ export function ProductDetail({ product }: { product: CatalogProduct }) {
                 <Button className="rounded-none bg-foreground text-background hover:bg-accent hover:text-white" onClick={addToBag}><ShoppingBag className="mr-2 size-4" aria-hidden="true" />{added ? "Added" : "Add to bag"}</Button>
                 <Button className="rounded-none" onClick={buyNow}>Buy now <ArrowRight className="ml-2 size-4" aria-hidden="true" /></Button>
               </div>
+              {!["jeans", "trousers"].includes(product.categoryId) ? <TryOnButton product={product} className="mt-2 hidden w-full border-accent text-accent hover:bg-accent hover:text-white sm:flex"/> : <p className="mt-3 hidden text-[10px] leading-5 text-muted sm:block">Virtual try-on is currently available for shirts, tees, and jackets. Full-body denim preview is coming next.</p>}
               {added ? <p className="mt-3 hidden text-sm text-muted sm:block" role="status">Added in size {size}. <Link href="/cart" className="font-bold text-foreground underline decoration-accent underline-offset-4">Open bag</Link></p> : null}
 
               <div className="mt-8 border-y border-border py-5">
@@ -248,7 +250,7 @@ export function ProductDetail({ product }: { product: CatalogProduct }) {
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:hidden">
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1"><p className="truncate text-sm font-bold">{product.name}</p><p className="text-sm tabular-nums">{price}{size ? ` · ${size}` : ""}</p></div>
-          <Button className="shrink-0 rounded-none bg-foreground px-5 text-background" onClick={addToBag}>{added ? "Added" : "Add to bag"}</Button>
+          {!["jeans", "trousers"].includes(product.categoryId) ? <TryOnButton product={product} compact className="shrink-0"/> : null}<Button className="shrink-0 rounded-none bg-foreground px-5 text-background" onClick={addToBag}>{added ? "Added" : "Add to bag"}</Button>
         </div>
         {sizeError ? <p className="mt-2 text-xs text-accent" role="alert">Select a size first.</p> : null}
       </div>

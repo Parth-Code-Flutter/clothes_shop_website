@@ -8,6 +8,7 @@ import { getCategoryById } from "@/features/catalog/data";
 import { formatInrFromPaise } from "@/lib/money";
 import type { CatalogProduct } from "@/features/catalog/types";
 import { cn } from "@/lib/utils";
+import { TryOnButton } from "@/features/try-on/virtual-try-on";
 
 type ProductCardProps = {
   product: CatalogProduct;
@@ -69,6 +70,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.rating.toFixed(1)} <Star className="size-2.5 fill-accent text-accent" aria-hidden="true" />
           <span className="font-normal text-muted">| {product.reviewCount}</span>
         </span>
+        {!["jeans", "trousers"].includes(product.categoryId) ? <TryOnButton product={product} compact className="absolute right-2 bottom-2 border-0 bg-background/95 shadow-sm"/> : null}
       </div>
       <div className="flex flex-1 flex-col pt-2.5">
         <p className="truncate text-[13px] font-bold tracking-tight text-foreground">
