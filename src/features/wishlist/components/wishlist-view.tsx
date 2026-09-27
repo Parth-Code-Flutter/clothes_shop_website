@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { ProductMedia } from "@/components/shared/product-media";
 import { ArrowRight, Heart, Sparkles, Trash2 } from "lucide-react";
 import { getProductBySlug } from "@/features/catalog/data";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
@@ -44,12 +44,19 @@ export function WishlistView() {
             const product = getProductBySlug(item.slug);
             return (
               <li key={item.productId} className="group flex min-w-0 flex-col">
-                <div className="relative aspect-[3/4] overflow-hidden bg-[#eee8de]">
-                  <Link href={`/product/${item.slug}`} aria-label={`View ${item.name}`} className="absolute inset-0 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-accent"><Image src={item.image} alt={item.alt} fill sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.04] motion-reduce:transition-none" /></Link>
+                <ProductMedia
+                  images={product?.gallery ?? [item.image]}
+                  alt={item.alt}
+                  sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                  showViewLabel={false}
+                  className="aspect-[3/4] bg-[#eee8de]"
+                  imageClassName="transition-transform duration-700 group-hover:scale-[1.04] motion-reduce:transition-none"
+                >
+                  <Link href={`/product/${item.slug}`} aria-label={`View ${item.name}`} className="absolute inset-0 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-accent" />
                   <span className="pointer-events-none absolute top-3 left-3 bg-white/90 px-2 py-1 font-mono text-[9px] text-black">SAVE {String(index + 1).padStart(2, "0")}</span>
                   <button type="button" onClick={() => removeProduct(item.productId)} aria-label={`Remove ${item.name} from saved pieces`} className="absolute top-3 right-3 flex size-10 items-center justify-center rounded-full bg-white/90 text-black opacity-100 transition-opacity hover:bg-accent hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"><Trash2 size={15} aria-hidden="true" /></button>
                   <Link href={`/product/${item.slug}`} className="absolute inset-x-3 bottom-3 flex min-h-12 translate-y-2 items-center justify-between bg-[#160604] px-4 text-[10px] font-bold tracking-[0.13em] text-white uppercase opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100 focus-visible:translate-y-0 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">Choose size <ArrowRight size={15} aria-hidden="true" /></Link>
-                </div>
+                </ProductMedia>
                 <div className="flex items-start justify-between gap-3 pt-3">
                   <div className="min-w-0"><p className="text-[9px] font-bold tracking-[0.18em] text-accent uppercase">House of Bollywood</p><h2 className="mt-1 truncate text-sm font-bold"><Link href={`/product/${item.slug}`} className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">{item.name}</Link></h2>{product ? <p className="mt-1 text-[11px] text-muted">{product.sizes.length} sizes available</p> : null}</div>
                   <p className="shrink-0 text-sm font-bold tabular-nums">{formatInrFromPaise(item.pricePaise)}</p>

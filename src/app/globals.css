@@ -72,6 +72,61 @@ body {
   font-family: var(--font-display), sans-serif;
 }
 
+/* Two stacked range inputs: only the thumbs take pointer events so both stay draggable. */
+.price-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  pointer-events: none;
+}
+
+.price-range::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+.price-range::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--foreground);
+  border-radius: 9999px;
+  background: var(--background);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.18);
+  cursor: grab;
+  appearance: none;
+  pointer-events: auto;
+  transition: transform 150ms ease;
+}
+
+.price-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--foreground);
+  border-radius: 9999px;
+  background: var(--background);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.18);
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.price-range:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+
+.price-range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.price-range:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

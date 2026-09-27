@@ -20,7 +20,7 @@ export function SearchView() {
 
   const results = useMemo(() => {
     const filters = { ...emptyFilters };
-    if (quickFilter === "under") filters.price = ["under-1500"];
+    if (quickFilter === "under") filters.price = { min: 0, max: 149_999 };
     if (quickFilter === "rating") filters.minRating = 4;
     if (quickFilter === "discount") filters.minDiscount = 20;
     return filterAndSortProducts(searchCatalog(urlQuery), filters, sort);

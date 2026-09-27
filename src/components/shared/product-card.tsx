@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star } from "lucide-react";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
@@ -8,7 +7,8 @@ import { getCategoryById } from "@/features/catalog/data";
 import { formatInrFromPaise } from "@/lib/money";
 import type { CatalogProduct } from "@/features/catalog/types";
 import { cn } from "@/lib/utils";
-import { TryOnButton } from "@/features/try-on/virtual-try-on";
+// import { TryOnButton } from "@/features/try-on/virtual-try-on";
+import { ProductMedia } from "./product-media";
 
 type ProductCardProps = {
   product: CatalogProduct;
@@ -38,20 +38,18 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <article className="group flex h-full flex-col">
-      <div className="relative aspect-[3/4] overflow-hidden bg-[#f3f0eb] dark:bg-footer">
+      <ProductMedia
+        images={product.gallery}
+        alt={product.alt}
+        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
+        className="aspect-[3/4] bg-[#f3f0eb] dark:bg-footer"
+        imageClassName="transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+      >
         <Link
           href={href}
-          className="absolute inset-0 block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+          className="absolute inset-0 block focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-foreground"
           aria-label={`View ${product.name}`}
-        >
-          <Image
-            src={product.image}
-            alt={product.alt}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
-            className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-          />
-        </Link>
+        />
         <button
           type="button"
           aria-label={saved ? `Remove ${product.name} from wishlist` : `Save ${product.name}`}
@@ -70,8 +68,9 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.rating.toFixed(1)} <Star className="size-2.5 fill-accent text-accent" aria-hidden="true" />
           <span className="font-normal text-muted">| {product.reviewCount}</span>
         </span>
-        <TryOnButton product={product} compact className="absolute right-2 bottom-2 border-0 bg-background/95 shadow-sm"/>
-      </div>
+        {/* Try-on is paused until it works reliably.
+        <TryOnButton product={product} compact className="absolute right-2 bottom-2 border-0 bg-background/95 shadow-sm"/> */}
+      </ProductMedia>
       <div className="flex flex-1 flex-col pt-2.5">
         <p className="truncate text-[13px] font-bold tracking-tight text-foreground">
           House
@@ -79,7 +78,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <h3 className="mt-0.5 line-clamp-2 text-[12px] leading-snug font-normal text-muted">
           <Link
             href={href}
-            className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+            className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat transition-[color,background-size] duration-500 group-hover:bg-[length:100%_1px] group-hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground motion-reduce:transition-none"
           >
             {product.name}
             {category ? ` · ${product.color} · ${product.fit}` : ""}

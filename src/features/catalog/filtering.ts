@@ -1,17 +1,51 @@
 import type { CatalogProduct } from "./types";
 
 export type SortKey = "recommended" | "new" | "popular" | "discount" | "price-desc" | "price-asc" | "rating";
-export type PriceKey = "under-1500" | "1500-2499" | "2500-plus";
+/** Inclusive bounds in paise. */
+export type PriceRange = { min: number; max: number };
 
 export type CatalogFilters = {
   sizes: string[];
   colors: string[];
-  price: PriceKey[];
+  price: PriceRange | null;
   minDiscount: number;
   minRating: number;
 };
 
-export const emptyFilters: CatalogFilters = { sizes: [], colors: [], price: [], minDiscount: 0, minRating: 0 };
+export const emptyFilters: CatalogFilters = { sizes: [], colors: [], price: null, minDiscount: 0, minRating: 0 };
+
+export const PRICE_STEP_PAISE = 5_000;
+
+export function priceBounds(products: CatalogProduct[]): PriceRange {
+  if (!products.length) return { min: 0, max: 0 };
+  const prices = products.map((product) => product.pricePaise);
+  return { min: Math.min(...prices), max: Math.max(...prices) };
+}
+
+/** Rounds a slider value to the nearest step, but lets the real lowest and highest prices stay reachable. */
+export function snapPrice(paise: number, bounds: PriceRange) {
+  if (paise - bounds.min < PRICE_STEP_PAISE / 2) return bounds.min;
+  if (bounds.max - paise < PRICE_STEP_PAISE / 2) return bounds.max;
+  return Math.round(paise / PRICE_STEP_PAISE) * PRICE_STEP_PAISE;
+}
+
+const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
+
+export function sizeOptions(products: CatalogProduct[]) {
+  const rank = (size: string) => {
+    const index = SIZE_ORDER.indexOf(size);
+    if (index !== -1) return index;
+    const waist = Number(size);
+    return Number.isFinite(waist) ? 100 + waist : 1000;
+  };
+  return Array.from(new Set(products.flatMap((product) => product.sizes))).sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+}
+
+export function colorOptions(products: CatalogProduct[]) {
+  const counts = new Map<string, number>();
+  for (const product of products) counts.set(product.color, (counts.get(product.color) ?? 0) + 1);
+  return Array.from(counts, ([name, count]) => ({ name, count })).sort((a, b) => a.name.localeCompare(b.name));
+}
 
 export const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: "recommended", label: "Recommended" },
@@ -35,11 +69,7 @@ export function filterAndSortProducts(products: CatalogProduct[], filters: Catal
     if (filters.colors.length && !filters.colors.includes(product.color)) return false;
     if (filters.minDiscount && discountFor(product) < filters.minDiscount) return false;
     if (filters.minRating && product.rating < filters.minRating) return false;
-    if (filters.price.length) {
-      const rupees = product.pricePaise / 100;
-      const matches = filters.price.some((band) => band === "under-1500" ? rupees < 1500 : band === "1500-2499" ? rupees >= 1500 && rupees < 2500 : rupees >= 2500);
-      if (!matches) return false;
-    }
+    if (filters.price && (product.pricePaise < filters.price.min || product.pricePaise > filters.price.max)) return false;
     return true;
   });
   return [...filtered].sort((a, b) => {
@@ -54,5 +84,5 @@ export function filterAndSortProducts(products: CatalogProduct[], filters: Catal
 }
 
 export function activeFilterCount(filters: CatalogFilters) {
-  return filters.sizes.length + filters.colors.length + filters.price.length + Number(Boolean(filters.minDiscount)) + Number(Boolean(filters.minRating));
+  return filters.sizes.length + filters.colors.length + Number(Boolean(filters.price)) + Number(Boolean(filters.minDiscount)) + Number(Boolean(filters.minRating));
 }
