@@ -7,6 +7,20 @@ export type CatalogCategory = {
   available: boolean;
 };
 
+/**
+ * Transparent front-facing garment cut-out used by both try-on modes.
+ * Anchor coordinates are fractions of the image size, measured on the image as
+ * seen by the viewer (so `leftShoulder` is the wearer's right shoulder seam).
+ */
+export type TryOnGarment = {
+  image: string;
+  category: "tops" | "bottoms" | "one-pieces";
+  leftShoulder: [number, number];
+  rightShoulder: [number, number];
+  /** Vertical position of the body hem, which lines up with the hips. */
+  hemY: number;
+};
+
 export type CatalogProduct = {
   id: string;
   name: string;
@@ -32,6 +46,7 @@ export type CatalogProduct = {
   details: string[];
   popularity: number;
   isNew: boolean;
+  tryOn?: TryOnGarment;
 };
 
 export type ServiceItem = {

@@ -1,51 +1,95 @@
-# Virtual try-on architecture
+# Virtual try-on
 
-## Selected open-source model
+The fitting room has two parts:
 
-Use [FASHN VTON 1.5](https://github.com/fashn-AI/fashn-vton-1.5) as the preferred self-hosted virtual try-on engine. The repository is licensed under Apache 2.0 and accepts a person image plus a garment image to generate a photorealistic image of that person wearing the selected garment.
+1. **Live preview.** The garment follows the customer in real time on the camera feed or an uploaded photo. It runs fully in the browser with [MediaPipe Pose Landmarker](https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker) (Apache-2.0). It is a style preview: the garment is a flat cut-out placed on the shoulders, so it does not wrap around arms or show folds.
+2. **Realistic photo.** One frame (or the uploaded photo) is sent, after consent, to [FASHN VTON 1.5](https://github.com/fashn-AI/fashn-vton-1.5) (Apache-2.0). The model returns a photo of the person wearing the garment with the face, pose and background kept.
 
-Supported garment categories include tops, bottoms, and one-pieces. Garment inputs may be flat-lay images or model-worn photos, although clean product photography should give the most dependable storefront results.
+Both use the same garment cut-out per product (`CatalogProduct.tryOn`).
 
 ## Customer flow
 
-1. The customer selects **Try now** from a product card or product-detail page.
-2. They capture a still photo or upload an existing full-body/upper-body photo.
-3. The interface explains photo use and requires explicit consent before upload.
-4. The Next.js server sends the person image and selected catalog garment image to the private VTON service.
-5. The interface shows generation progress, then displays the result with retry, garment-switching, and download options.
-
-The feature must be described as an **AI photo try-on**, not a sizing guarantee or live augmented-reality mirror. Generation is image-to-image and normally takes seconds; it does not continuously replace clothing in a live camera feed.
+1. **Try on** appears on product cards and product pages for products with `tryOn` data.
+2. The customer picks **Live camera** or **Upload photo**. The garment is drawn on them straight away and can be switched in place.
+3. **Make realistic photo** takes the current frame (camera) or the original upload (photo).
+4. The customer confirms photo consent and selects **Generate realistic photo**.
+5. The result shows with an "AI generated photo" label, **Save photo** and **Try another garment**.
 
 ## Architecture
 
 ```text
-Browser camera/upload
+Browser
+  live-overlay.ts      MediaPipe pose (GPU, CPU fallback) + garment drawn on a canvas
+  virtual-try-on.tsx   fitting room UI, consent, result
         |
+        | POST /api/try-on/generate  { personImage, productSlug, consent }
         v
-Next.js server route
-  - validates consent, files, and product eligibility
-  - keeps model endpoints and credentials server-side
+Next.js route (Node runtime)
+  - checks consent, image type and size, product eligibility
+  - rate limit: 5 requests per 10 minutes per IP (in memory)
+  - resizes the person photo and flattens the garment on white (sharp)
         |
-        v
-Python VTON service
-  - FASHN VTON 1.5 inference
-  - CUDA GPU recommended
-        |
-        v
-Generated image returned to the fitting-room UI
+        v   VTON_MODE
+  gradio  Hugging Face Space (official fashn-ai/fashn-vton-1.5, or services/vton on ZeroGPU)
+  http    services/vton/server.py on any NVIDIA GPU (Colab, Kaggle, rented)
+  fashn   FASHN hosted API (paid), polled through /api/try-on/status/[id]
 ```
 
-The model must run as a separate Python inference service; it cannot run directly in the Next.js browser bundle. The model weights are approximately 2 GB, with additional human-parsing assets downloaded during setup. GPU execution is the practical production path. CPU inference may be useful for development checks but will be too slow for a premium customer experience.
+Key files:
 
-## Deployment approach
+| File | Role |
+|---|---|
+| `src/features/try-on/live-overlay.ts` | Pose tracking, smoothing and garment placement |
+| `src/features/try-on/virtual-try-on.tsx` | Fitting room UI |
+| `src/app/api/try-on/generate/route.ts` | Validation, rate limit, backend call |
+| `src/features/try-on/server/generate.ts` | Backend adapters (`gradio`, `http`, `fashn`) |
+| `services/vton/` | Python service: Gradio Space app, FastAPI server, Colab notebook |
+| `scripts/try-on/cutout.mjs` | Turns a garment photo on a plain background into a transparent cut-out |
 
-- **Demo:** a Hugging Face Space/ZeroGPU deployment can provide a low-cost proof of concept, subject to availability, queues, quotas, and platform restrictions.
-- **Production:** deploy the Python service on a dedicated GPU host, add authentication and rate limiting, and monitor latency, failures, and GPU usage.
-- **Fallback:** when the service is unavailable, keep the normal product gallery usable and explain that AI try-on is temporarily unavailable.
+## Setup
 
-Do not expose an unrestricted inference endpoint from the browser. Validate image type and size, rate-limit requests, remove temporary uploads/results according to a documented retention policy, and never use customer images for training without separate explicit consent.
+Add to `.env.local` (see `.env.example`):
 
-## Integration status
+```
+VTON_MODE=gradio
+VTON_SPACE_ID=fashn-ai/fashn-vton-1.5
+HF_TOKEN=hf_...
+```
 
-The current application contains the fitting-room UI and an earlier hosted-provider integration. Migrating the server route to the self-hosted FASHN VTON 1.5 service is the next implementation step; documenting this model does not mean the local GPU service is already deployed or production-tested.
+`HF_TOKEN` is a free Hugging Face **Read** token. Without it the route still works on the smaller anonymous quota. Without any backend configured, the route answers 503 and the fitting room says the live preview is ready to use.
 
+Other backends (your own ZeroGPU Space, Colab/Kaggle, a rented GPU) are described in [`services/vton/README.md`](../services/vton/README.md). The Colab notebook clones this repository, so `services/vton` must be pushed first.
+
+## Free-tier limits
+
+| Backend | Free allowance | Notes |
+|---|---|---|
+| Official Space, no token | About 2 GPU-minutes per day per IP | Fine for a first check |
+| Official Space with free token | 5 GPU-minutes per day | A handful of photos per day |
+| Own ZeroGPU Space | Same account quota | Account must be verified and older than 30 days |
+| Colab / Kaggle | Several GPU-hours | Temporary URL; restart per session |
+
+Measured on the official Space: about 32 seconds per photo, including queueing.
+
+## Adding a garment
+
+1. Photograph the garment flat or on a hanger, front facing, on a plain light background.
+2. Run `node scripts/try-on/cutout.mjs <photo> public/images/try-on/<name>.png`. The script prints the silhouette so the anchors can be read off.
+3. Add an entry to `TRY_ON` in `src/features/catalog/data.ts`: `leftShoulder` and `rightShoulder` are the shoulder seam points and `hemY` is the hem line, all as fractions of the image (0–1). Set `tryOn` on the product.
+
+## Privacy
+
+- The live preview never uploads camera frames. MediaPipe sends anonymous usage metrics to Google; the fitting room says so.
+- A photo is sent only after the consent checkbox, and only to the configured try-on backend.
+- The storefront keeps no copies of photos or results. Hugging Face and FASHN have their own retention terms; review them before launch.
+
+## Licence limit before commercial launch
+
+FASHN VTON 1.5 code and weights are Apache-2.0, but it downloads `fashn-human-parser`, which inherits NVIDIA SegFormer's research/evaluation-only licence. Testing is fine. Before real customers use it commercially, replace the parser or get written confirmation from FASHN AI. The paid `fashn` mode is not affected.
+
+## Production checklist
+
+- Move the rate limit to a shared store (the in-memory one resets per server instance).
+- Run the Python service on a dedicated GPU with the shared secret, or use the paid API.
+- Resolve the human-parser licence.
+- Replace the three generated cut-outs with photos of the real products.

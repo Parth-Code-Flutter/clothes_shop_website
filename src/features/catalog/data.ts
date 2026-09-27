@@ -1,7 +1,13 @@
-import type { CatalogCategory, CatalogProduct } from "./types";
+import type { CatalogCategory, CatalogProduct, TryOnGarment } from "./types";
 
 const TOPS = ["S", "M", "L", "XL"];
 const BOTTOMS = ["30", "32", "34", "36"];
+
+const TRY_ON = {
+  whiteTee: { image: "/images/try-on/white-tee.png", category: "tops", leftShoulder: [0.19, 0.12], rightShoulder: [0.81, 0.12], hemY: 0.95 },
+  denimShirt: { image: "/images/try-on/denim-shirt.png", category: "tops", leftShoulder: [0.2, 0.18], rightShoulder: [0.8, 0.18], hemY: 0.94 },
+  blackJacket: { image: "/images/try-on/black-jacket.png", category: "tops", leftShoulder: [0.22, 0.17], rightShoulder: [0.78, 0.17], hemY: 0.86 },
+} satisfies Record<string, TryOnGarment>;
 
 function piece(
   product: Omit<CatalogProduct, "gallery" | "sourceUrl" | "rating" | "reviewCount" | "color" | "fit" | "fabric" | "pattern" | "occasion" | "care" | "details" | "popularity" | "isNew"> & { gallery?: string[]; color?: string; fit?: string; fabric?: string; pattern?: string },
@@ -108,6 +114,7 @@ export const catalogProducts: CatalogProduct[] = [
     mrpPaise: 279900,
     sizes: TOPS,
     summary: "A light-wash denim layer presented with temporary editorial imagery for the storefront concept.",
+    tryOn: TRY_ON.denimShirt,
   }),
   piece({
     id: "sand-linen-shirt",
@@ -144,6 +151,7 @@ export const catalogProducts: CatalogProduct[] = [
     mrpPaise: 99900,
     sizes: TOPS,
     summary: "Heavy cotton tee in optic white. The base layer of the house.",
+    tryOn: TRY_ON.whiteTee,
   }),
   piece({
     id: "ink-black-tee",
@@ -156,6 +164,7 @@ export const catalogProducts: CatalogProduct[] = [
     mrpPaise: 99900,
     sizes: TOPS,
     summary: "A light cotton tee. Soft neck, easy through the body.",
+    tryOn: TRY_ON.whiteTee,
   }),
   piece({
     id: "stone-heavy-tee",
@@ -288,6 +297,7 @@ export const catalogProducts: CatalogProduct[] = [
     mrpPaise: 749900,
     sizes: TOPS,
     summary: "Black leather with a zip front. The evening layer.",
+    tryOn: TRY_ON.blackJacket,
   }),
   piece({
     id: "black-bomber",

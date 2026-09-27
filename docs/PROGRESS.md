@@ -70,3 +70,13 @@
 - Jeans and trousers remain deliberately gated until their production try-on pipeline is ready.
 - Selected open-source FASHN VTON 1.5 as the preferred replacement for the paid hosted provider and documented the service architecture, customer flow, deployment options, limitations, and privacy requirements in [`VIRTUAL_TRY_ON.md`](./VIRTUAL_TRY_ON.md).
 - The open-source inference service is documented but not yet deployed or connected; the existing hosted-provider route remains the current implementation until migration is completed and tested.
+# Hybrid fitting room — 27 Sep 2026
+
+- Added a real-time live preview: MediaPipe Pose tracks shoulders and hips on the camera feed or an uploaded photo and draws the garment on them, with in-place garment switching and guidance when the body is out of frame.
+- Added **Make realistic photo**, which sends the current frame or upload to FASHN VTON 1.5 after consent.
+- Added `/api/try-on/generate` with `gradio`, `http` and `fashn` backends, validation, and a per-IP rate limit.
+- Added `services/vton`: Gradio Space app, FastAPI GPU server with shared secret, Colab notebook with a Cloudflare tunnel, and setup README.
+- Added `scripts/try-on/cutout.mjs` for new garment cut-outs.
+- Connected to the official free Space: a realistic photo generated end to end in about 32 seconds.
+- Checks: TypeScript and ESLint passed; desktop and 390px mobile checked in the browser (upload, live tracking, garment switch, consent gate, generation, result, save).
+- Known limits: the live preview is a flat cut-out (no arm wrapping or folds); free GPU quota allows a handful of photos per day; the human parser needs a commercial licence decision before launch.

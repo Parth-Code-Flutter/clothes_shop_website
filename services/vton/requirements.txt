@@ -1,0 +1,5 @@
+torch==2.9.1
+fashn-vton @ git+https://github.com/fashn-AI/fashn-vton-1.5.git
+huggingface_hub
+gradio
+spaces

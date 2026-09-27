@@ -45,3 +45,13 @@
 - Try-on is limited to shirts, tees, hoodies, and jackets until the catalog has production-ready bottom garment imagery.
 - A GPU is recommended for usable latency. Hugging Face ZeroGPU is acceptable for a constrained demo, while production requires a reliable GPU deployment, access control, rate limiting, and monitoring.
 - Full architecture, customer flow, deployment guidance, and privacy requirements are recorded in [`VIRTUAL_TRY_ON.md`](./VIRTUAL_TRY_ON.md).
+# Hybrid fitting room — 27 Sep 2026
+
+- The fitting room is now hybrid: a real-time live preview on the camera or an uploaded photo (MediaPipe Pose, in the browser) plus an on-demand realistic photo (FASHN VTON 1.5). Realistic live-video try-on has no free option, so the live part is a style preview and the photo is the realistic result.
+- The backend is chosen with `VTON_MODE` (`gradio`, `http`, `fashn`). The free default is the official `fashn-ai/fashn-vton-1.5` Hugging Face Space; `services/vton` lets us run the same model on our own ZeroGPU Space, Colab/Kaggle or a rented GPU.
+- The AI route sends the product's transparent try-on cut-out (flattened on white) as a flat-lay garment, not the lifestyle catalog photo, because the catalog photos show models and scenes.
+- Try-on is offered only on products with `tryOn` data: Indigo Oxford Shirt, Studio White Tee, Air Tee and Black Leather Jacket. Air Tee reuses the white tee cut-out because its catalog image is a white tee.
+- Garment cut-outs are made with a local sharp script (`scripts/try-on/cutout.mjs`) instead of a Python background-removal model, so no extra runtime is needed.
+- FASHN hosted API moderation is set to `conservative`.
+- The separate `/api/try-on/start` route was folded into `/api/try-on/generate`; `/api/try-on/status/[id]` stays for the paid FASHN polling.
+- `fashn-human-parser` is research/evaluation-only; it must be replaced or cleared with FASHN AI before commercial launch.

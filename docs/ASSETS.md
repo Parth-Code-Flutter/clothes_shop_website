@@ -68,4 +68,4 @@ Downloaded from Unsplash on 26 September 2026 for the `Indigo Denim Overshirt` g
 - `public/images/try-on/denim-shirt.png` — generated transparent light-wash denim overshirt overlay.
 - `public/images/try-on/white-tee.png` — generated transparent white crew-neck T-shirt overlay.
 - `public/images/try-on/black-jacket.png` — generated transparent black biker-jacket overlay.
-- Generated with the built-in image-generation workflow as photorealistic, front-facing ecommerce garment cutouts on genuine transparent backgrounds; no people, mannequins, logos, text, or props. These are retained as flat-lay fallback/reference assets; the production AI route uses each selected product's actual catalog image.
+- Generated with the built-in image-generation workflow as photorealistic, front-facing ecommerce garment cutouts on genuine transparent backgrounds; no people, mannequins, logos, text, or props. They are now used for both the live overlay and the garment input to the realistic-photo route (flattened on white). The white tee is shared by Studio White Tee and Air Tee. Replace them with cut-outs of the real products (`scripts/try-on/cutout.mjs`) before launch.
