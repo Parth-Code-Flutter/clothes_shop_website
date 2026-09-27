@@ -1,6 +1,7 @@
 import { HomeArrivals } from "@/features/home/components/home-arrivals";
 import { HomeCategories } from "@/features/home/components/home-categories";
 import { HomeChapterNav } from "@/features/home/components/home-chapter-nav";
+import { HomeIntermission } from "@/features/home/components/home-intermission";
 import { HomePremiere } from "@/features/home/components/home-premiere";
 // The previous jacket scroll story is kept intact in home-hero.tsx. To bring it back,
 // uncomment this import and swap <HomePremiere /> for <HomeHero /> below.
@@ -16,6 +17,7 @@ export default function Home() {
       <HomeChapterNav />
       <HomePremiere />
       {/* <HomeHero /> */}
+      <HomeIntermission />
       <HomeCategories />
       <HomeArrivals />
     </main>

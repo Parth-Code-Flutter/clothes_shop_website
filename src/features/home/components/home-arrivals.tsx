@@ -4,6 +4,7 @@ import { ProductCard, productGridClass } from "@/components/shared/product-card"
 import { ProductMedia } from "@/components/shared/product-media";
 import { getAllProducts, getCategoryById } from "@/features/catalog/data";
 import { formatInrFromPaise } from "@/lib/money";
+import styles from "./home-cinema.module.css";
 
 /** Product chapter with one memorable lead piece and a low-friction browse grid. */
 export function HomeArrivals() {
@@ -13,11 +14,11 @@ export function HomeArrivals() {
   const category = getCategoryById(lead.categoryId);
 
   return (
-    <section id="arrivals" className="overflow-hidden bg-[#15110f] text-[#f7f2ea]">
+    <section id="arrivals" className="overflow-clip bg-[#15110f] text-[#f7f2ea]">
       <div className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 sm:py-24 lg:px-10 lg:py-32 xl:px-14">
         <div className="flex flex-col gap-8 border-b border-white/15 pb-10 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-[10px] font-bold tracking-[0.32em] text-[#fa5d50] uppercase">The new edit</p>
+            <p className="text-[10px] font-bold tracking-[0.32em] text-[#fa5d50] uppercase">Scene 03 · The new edit</p>
             <h2 className="mt-4 font-display text-[clamp(3.8rem,8vw,8rem)] leading-[0.82] tracking-[-0.025em]">Fresh on set.</h2>
           </div>
           <p className="max-w-sm text-sm leading-7 text-white/55 sm:text-right">
@@ -37,7 +38,8 @@ export function HomeArrivals() {
               imageClassName="transition-transform duration-1000 ease-out group-hover:scale-[1.035] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             >
               <Link href={`/product/${lead.slug}`} className="absolute inset-0 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#fa5d50]" aria-label={`View ${lead.name}`} />
-              <span className="pointer-events-none absolute top-5 left-5 border border-black/15 bg-white/90 px-3 py-2 text-[9px] font-bold tracking-[0.22em] text-black uppercase backdrop-blur sm:top-7 sm:left-7">Opening look</span>
+              <span className={styles.sprockets} aria-hidden="true" />
+              <span className={`${styles.premiereBadge} pointer-events-none absolute top-5 left-9 border border-black/15 bg-white/90 px-3 py-2 text-[9px] font-bold tracking-[0.22em] text-black uppercase backdrop-blur sm:top-7 sm:left-11`}>World premiere</span>
             </ProductMedia>
           </div>
 
@@ -49,7 +51,13 @@ export function HomeArrivals() {
             </div>
             <div className="mt-14 border-t border-black/15 pt-6">
               <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-end">
-                <p className="font-display text-4xl tracking-wide">{formatInrFromPaise(lead.pricePaise)}</p>
+                <p className={styles.priceTicket}>
+                  <span className={styles.priceStub}>Admit<br />one</span>
+                  <span className={styles.priceBody}>
+                    <small>Tonight&apos;s price</small>
+                    <span className="font-display text-3xl leading-none tracking-wide">{formatInrFromPaise(lead.pricePaise)}</span>
+                  </span>
+                </p>
                 <Link href={`/product/${lead.slug}`} className="inline-flex min-h-12 items-center gap-3 bg-[#171310] px-5 text-xs font-bold tracking-[0.14em] text-white uppercase transition-colors hover:bg-[#ea1916] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ea1916]">
                   View the piece <ArrowUpRight size={16} aria-hidden="true" />
                 </Link>
@@ -68,7 +76,7 @@ export function HomeArrivals() {
           </Link>
         </div>
 
-        <div className="mt-8 bg-background p-3 text-foreground sm:p-5 lg:p-7">
+        <div className={`${styles.cast} mt-8 bg-background p-3 text-foreground sm:p-5 lg:p-7`}>
           <div className={productGridClass}>
             {supporting.map((product) => <ProductCard key={product.id} product={product} />)}
           </div>

@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const CHAPTERS = [
-  { id: "opener", label: "Opener" },
-  { id: "categories", label: "Categories" },
-  { id: "arrivals", label: "New in" },
-  { id: "shop", label: "House" },
+  { id: "opener", label: "The premiere" },
+  { id: "categories", label: "Now showing" },
+  { id: "arrivals", label: "Fresh on set" },
+  { id: "shop", label: "Credits" },
 ] as const;
 
 /** Side chapter rail — theme-aware (not locked to white-on-black). */
