@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronDown, SlidersHorizontal, X } from "lucide-react";
+import { ArrowUp, Check, ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -11,6 +11,7 @@ import { activeFilterCount, colorOptions, emptyFilters, filterAndSortProducts, p
 import type { CatalogProduct } from "@/features/catalog/types";
 import { formatInrFromPaise } from "@/lib/money";
 import { cn } from "@/lib/utils";
+import styles from "./shop-listing.module.css";
 
 export function ShopListing() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export function ShopListing() {
   const requested = searchParams.get("category");
   const category = requested && categories.some((item) => item.id === requested) ? requested : "all";
   const selectedCategory = categories.find((item) => item.id === category);
+  const feature = selectedCategory ? categories.indexOf(selectedCategory) + 1 : 0;
   const [sort, setSort] = useState<SortKey>("recommended");
   const [filters, setFilters] = useState<CatalogFilters>(emptyFilters);
   const [mobileFilters, setMobileFilters] = useState(false);
@@ -26,6 +28,13 @@ export function ShopListing() {
   const products = useMemo(() => filterAndSortProducts(base, filters, sort), [base, filters, sort]);
   const filterCount = activeFilterCount(filters);
   const { stop, start } = useSmoothScroll();
+  const reels = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const row = reels.current;
+    const active = row?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (row && active) row.scrollTo({ left: active.offsetLeft - row.offsetLeft - 16 });
+  }, [category]);
 
   useEffect(() => {
     if (!mobileFilters) return;
@@ -46,12 +55,32 @@ export function ShopListing() {
     router.replace(params.size ? `/shop?${params}` : "/shop", { scroll: false });
   }
 
+  function backToTop() {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  }
+
   const panel = <FilterPanel categories={categories} category={category} onCategory={selectCategory} products={base} filters={filters} onFilters={setFilters}/>;
 
   return <div className="bg-background"><div className="mx-auto max-w-[1380px] px-4 pt-5 pb-14 sm:px-6 lg:px-8">
     <nav className="text-[11px] text-muted" aria-label="Breadcrumb"><Link href="/">Home</Link> <span className="px-1">/</span> <Link href="/shop">Clothing</Link>{selectedCategory ? <><span className="px-1">/</span><span className="font-semibold text-foreground">{selectedCategory.name}</span></> : null}</nav>
-    <div className="mt-4 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5"><div><p className="text-[10px] font-bold tracking-[.24em] text-accent uppercase">The wardrobe</p><h1 className="mt-1 font-display text-4xl tracking-wide sm:text-5xl">{selectedCategory?.name ?? "All clothing"}</h1><p className="mt-1 text-xs text-muted">{products.length} of {base.length} pieces</p></div><div className="flex gap-2"><button type="button" onClick={() => setMobileFilters(true)} className="inline-flex h-11 items-center gap-2 border border-border px-4 text-xs font-bold uppercase lg:hidden"><SlidersHorizontal size={15}/>Filters{filterCount ? <span className="rounded-full bg-foreground px-1.5 py-0.5 text-[9px] text-background">{filterCount}</span> : null}</button><SortSelect value={sort} onChange={setSort}/></div></div>
-    <div className="mt-5 grid gap-8 lg:grid-cols-[230px_minmax(0,1fr)]"><aside className="hidden lg:block">{panel}</aside><main>{filterCount ? <div className="mb-4 flex flex-wrap items-center gap-2"><span className="text-[10px] font-bold tracking-[.16em] uppercase">Active filters</span><button type="button" onClick={() => setFilters(emptyFilters)} className="text-[11px] font-semibold text-accent underline underline-offset-4">Clear all ({filterCount})</button></div> : null}{products.length ? <div className={productGridClass}>{products.map((product) => <ProductCard key={product.id} product={product}/>)}</div> : <EmptyResults clear={() => setFilters(emptyFilters)}/>}</main></div>
+    <section aria-labelledby="shop-title" className={cn(styles.marquee, "mt-4")}>
+      <span className={cn(styles.bulbs, styles.bulbsTop)} aria-hidden="true"/>
+      <span className={cn(styles.bulbs, styles.bulbsBottom)} aria-hidden="true"/>
+      <div className="flex items-center justify-between gap-6">
+        <div className="min-w-0">
+          <p className={styles.eyebrow}><b>●</b> Now showing · {feature ? `Feature ${String(feature).padStart(2, "0")}` : "Tonight’s full line-up"}</p>
+          <h1 id="shop-title" className={styles.title}>{selectedCategory?.name ?? "All clothing"}</h1>
+          <p className={styles.summary}>{selectedCategory?.description ?? "Graphic tees, shirts, denim, and trousers. The full cast, on screen now."}</p>
+        </div>
+        <p className={cn(styles.stub, "hidden sm:flex")}><small>Admit all</small><strong>{products.length}</strong><span>{products.length === 1 ? "title" : "titles"} on screen</span></p>
+      </div>
+      <div ref={reels} className={styles.reels} role="group" aria-label="Categories">
+        {[{ id: "all", name: "All clothing" }, ...categories].map((item, index) => <button key={item.id} type="button" aria-pressed={category === item.id} onClick={() => selectCategory(item.id)} className={styles.reel}>{index ? <span>{String(index).padStart(2, "0")}</span> : null}{item.name}</button>)}
+      </div>
+    </section>
+    <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4"><p className="text-xs text-muted"><span className="font-semibold text-foreground">{products.length}</span> of {base.length} pieces</p><div className="flex gap-2"><button type="button" onClick={() => setMobileFilters(true)} className="inline-flex h-11 items-center gap-2 border border-border px-4 text-xs font-bold uppercase lg:hidden"><SlidersHorizontal size={15}/>Filters{filterCount ? <span className="rounded-full bg-foreground px-1.5 py-0.5 text-[9px] text-background">{filterCount}</span> : null}</button><SortSelect value={sort} onChange={setSort}/></div></div>
+    <div className="mt-5 grid gap-8 lg:grid-cols-[230px_minmax(0,1fr)]"><aside className="hidden lg:block">{panel}</aside><main>{filterCount ? <div className="mb-4 flex flex-wrap items-center gap-2"><span className="text-[10px] font-bold tracking-[.16em] uppercase">Active filters</span><button type="button" onClick={() => setFilters(emptyFilters)} className="text-[11px] font-semibold text-accent underline underline-offset-4">Clear all ({filterCount})</button></div> : null}{products.length ? <><div className={cn(productGridClass, styles.cast)}>{products.map((product) => <ProductCard key={product.id} product={product}/>)}</div><div className={styles.wrap}><div><p>That&apos;s a <span>wrap.</span></p><small>You&apos;ve seen all {products.length} {products.length === 1 ? "title" : "titles"} in this showing</small></div><button type="button" onClick={backToTop}>Back to the opening <ArrowUp size={14} aria-hidden="true"/></button></div></> : <EmptyResults clear={() => setFilters(emptyFilters)}/>}</main></div>
   </div>{mobileFilters ? <div className="fixed inset-0 z-[80] bg-black/45 lg:hidden" onClick={() => setMobileFilters(false)}><div role="dialog" aria-modal="true" aria-label="Filters" className="absolute inset-y-0 right-0 flex w-[min(90vw,380px)] flex-col bg-background" onClick={(event) => event.stopPropagation()}><div className="flex items-center justify-between border-b border-border px-5 py-4"><p className="font-display text-3xl">Filters</p><div className="flex items-center gap-4">{filterCount ? <button type="button" onClick={() => setFilters(emptyFilters)} className="text-[11px] font-semibold text-accent underline underline-offset-4">Clear all</button> : null}<button type="button" onClick={() => setMobileFilters(false)} aria-label="Close filters"><X/></button></div></div><div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-4" data-lenis-prevent>{panel}</div><div className="border-t border-border p-4"><button type="button" onClick={() => setMobileFilters(false)} className="h-12 w-full bg-accent text-xs font-bold tracking-wider text-white uppercase">Show {products.length} pieces</button></div></div></div> : null}</div>;
 }
 
@@ -124,7 +153,7 @@ function PriceFilter({ products, value, onChange }: { products: CatalogProduct[]
   </div>;
 }
 
-function FilterGroup({ title, children }: { title: string; children: ReactNode }) { return <section className="py-4"><h2 className="mb-3 text-[11px] font-bold tracking-[.14em] uppercase">{title}</h2><div className="space-y-1">{children}</div></section>; }
+function FilterGroup({ title, children }: { title: string; children: ReactNode }) { return <section className="py-4"><h2 className={cn(styles.groupTitle, "mb-3 text-[11px] font-bold tracking-[.14em] uppercase")}>{title}</h2><div className="space-y-1">{children}</div></section>; }
 function RadioRow({ label, count, active, onClick }: { label: string; count?: number; active: boolean; onClick: () => void }) { return <button type="button" onClick={onClick} className="flex w-full items-center gap-2 py-1.5 text-left text-xs"><span className={cn("flex size-3.5 items-center justify-center rounded-full border", active ? "border-foreground" : "border-border")}>{active ? <span className="size-1.5 rounded-full bg-foreground"/> : null}</span><span className={cn("flex-1", active ? "font-semibold" : "text-muted")}>{label}</span>{count !== undefined ? <span className="text-[10px] text-muted">{count}</span> : null}</button>; }
 function CheckRow({ label, count, active, onClick }: { label: string; count?: number; active: boolean; onClick: () => void }) { return <button type="button" role="checkbox" aria-checked={active} onClick={onClick} className="flex w-full items-center gap-2 py-1.5 text-left text-xs"><span className={cn("flex size-3.5 shrink-0 items-center justify-center border", active ? "border-foreground bg-foreground text-background" : "border-border")}>{active ? <Check size={10}/> : null}</span><span className={cn("flex-1", active ? "font-semibold" : "text-muted")}>{label}</span>{count !== undefined ? <span className="text-[10px] text-muted">{count}</span> : null}</button>; }
-function EmptyResults({ clear }: { clear: () => void }) { return <div className="flex min-h-96 flex-col items-center justify-center border border-dashed border-border px-6 text-center"><p className="font-display text-4xl">No exact match.</p><p className="mt-2 max-w-sm text-sm text-muted">Try removing a filter. Your next favourite piece may be just outside this edit.</p><button type="button" onClick={clear} className="mt-5 text-xs font-bold text-accent underline underline-offset-4 uppercase">Clear filters</button></div>; }
+function EmptyResults({ clear }: { clear: () => void }) { return <div className="flex min-h-96 flex-col items-center justify-center border border-dashed border-border px-6 text-center"><p className="text-[10px] font-bold tracking-[.3em] text-accent uppercase">Scene still in the edit</p><p className="mt-2 font-display text-4xl">This showing is waiting for you.</p><p className="mt-2 max-w-sm text-sm text-muted">Loosen a filter to bring more of the cast on screen. Your next favourite piece is close by.</p><button type="button" onClick={clear} className="mt-5 text-xs font-bold text-accent underline underline-offset-4 uppercase">Clear filters</button></div>; }
