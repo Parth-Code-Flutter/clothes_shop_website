@@ -12,9 +12,9 @@ import { clothingGroups, featuredNavigation } from "@/config/navigation";
 import { useCart } from "@/features/cart/cart-provider";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
 import { useAccount } from "@/features/account/account-provider";
+import styles from "./site-header.module.css";
 
-const iconBtn =
-  "relative inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-foreground/5 focus-visible:outline-2 focus-visible:outline-offset-2";
+const iconBtn = `${styles.icon} relative inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-foreground/5 focus-visible:outline-2 focus-visible:outline-offset-2`;
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -45,7 +45,7 @@ function HeaderContent() {
 
   return (
     <header
-      className="sticky top-0 z-50 border-b border-border bg-background/95 text-foreground backdrop-blur-md"
+      className={`${styles.header} sticky top-0 z-50 text-foreground`}
       onKeyDown={(event) => {
         if (event.key === "Escape") {
           close();
@@ -53,6 +53,7 @@ function HeaderContent() {
         }
       }}
     >
+      <span className={styles.bulbs} aria-hidden="true" />
       <div className="flex h-[68px] items-center gap-3 px-3 lg:h-[76px]">
         <button
           ref={menuButton}
@@ -69,7 +70,7 @@ function HeaderContent() {
           href="/"
           onClick={close}
           aria-label="House of Bollywood home"
-          className="shrink-0 rounded bg-white px-2 py-1 focus-visible:outline-2 focus-visible:outline-offset-4"
+          className={`${styles.plaque} shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4`}
         >
           <Image
             src="/brand/house-of-bollywood-logo.png"
@@ -86,7 +87,7 @@ function HeaderContent() {
             <Link
               key={item.label}
               href={item.href}
-              className={`relative flex h-full items-center text-[11px] font-bold tracking-[0.16em] uppercase hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${"accent" in item && item.accent ? "text-accent" : "text-foreground"}`}
+              className={`${styles.navLink} relative flex h-full items-center text-[11px] font-bold tracking-[0.16em] uppercase hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${"accent" in item && item.accent ? `${styles.offers} text-accent` : "text-foreground"}`}
             >
               {item.label}
             </Link>
@@ -100,7 +101,7 @@ function HeaderContent() {
             <Link href="/wishlist" aria-label={`Wishlist, ${count} saved`} className={iconBtn}>
               <Heart size={20} aria-hidden="true" />
               {count > 0 ? (
-                <span className="absolute top-1 right-1 min-w-4 rounded-full bg-foreground px-1 text-center text-[10px] text-background">
+                <span className="absolute top-1 right-1 min-w-4 rounded-full bg-accent px-1 text-center text-[10px] text-accent-foreground">
                   {count > 99 ? "99+" : count}
                 </span>
               ) : null}
@@ -115,10 +116,10 @@ function HeaderContent() {
             href="/cart"
             onClick={close}
             aria-label={`Bag, ${itemCount} items`}
-            className={`${iconBtn} gap-1 lg:w-auto lg:px-3`}
+            className={`${iconBtn} gap-1.5 lg:w-auto lg:px-3`}
           >
             <ShoppingBag size={20} aria-hidden="true" />
-            <span className="text-[11px] tabular-nums">{itemCount > 99 ? "99+" : itemCount}</span>
+            <span className={styles.ticket}>{itemCount > 99 ? "99+" : itemCount}</span>
           </Link>
           <div className="ml-1 hidden lg:block">
             <ThemeToggle />

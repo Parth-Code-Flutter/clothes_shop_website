@@ -5,6 +5,15 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useId, useRef } from "react";
 import { clothingGroups } from "@/config/navigation";
+import { getAllCategories, getProductsByCategory } from "@/features/catalog/data";
+import styles from "./header-mega-menu.module.css";
+
+const piecesBySlug = new Map(getAllCategories().map((category) => [category.slug, getProductsByCategory(category.id).length]));
+
+function piecesFor(href: string) {
+  const slug = new URLSearchParams(href.split("?")[1]).get("category");
+  return slug ? piecesBySlug.get(slug) : undefined;
+}
 
 type HeaderMegaMenuProps = {
   open: boolean;
@@ -72,7 +81,7 @@ export function HeaderMegaMenu({ open, onOpenChange }: HeaderMegaMenuProps) {
       >
         Men
         <ChevronDown size={13} aria-hidden="true" className={`transition-transform ${open ? "rotate-180" : ""}`} />
-        <span className={`absolute bottom-0 h-0.5 bg-accent transition-all ${open ? "w-10" : "w-0 group-hover:w-10"}`} aria-hidden="true" />
+        <span className={`absolute bottom-0 h-0.5 bg-linear-to-r from-accent to-[var(--rail)] transition-all ${open ? "w-10" : "w-0 group-hover:w-10"}`} aria-hidden="true" />
       </button>
 
       {open ? (
@@ -80,52 +89,63 @@ export function HeaderMegaMenu({ open, onOpenChange }: HeaderMegaMenuProps) {
           id={id}
           onMouseEnter={cancelClose}
           onMouseLeave={scheduleClose}
-          className="fixed inset-x-0 top-[75px] border-y border-border bg-background text-foreground shadow-[0_24px_50px_rgb(0_0_0/0.14)]"
+          className={`${styles.stage} fixed inset-x-0 top-[75px]`}
         >
-          <div className="mx-auto grid max-w-[1440px] grid-cols-12 gap-8 px-8 py-8 xl:px-12">
-            <Link href="/shop" onClick={() => onOpenChange(false)} className="group relative col-span-4 min-h-[330px] overflow-hidden bg-footer text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">
-              <Image src="/images/products/t-shirts/black-panther-ivory-tee/back.jpg" alt="Ivory oversized tee with Black Panther back artwork" fill sizes="33vw" className="object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none" />
-              <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/5" aria-hidden="true" />
-              <span className="absolute inset-x-0 bottom-0 p-7">
-                <span className="text-[9px] font-bold tracking-[0.25em] text-white/65 uppercase">The men&apos;s edit</span>
-                <span className="mt-3 block font-display text-5xl leading-[0.88] tracking-wide">Dress for<br />the entrance.</span>
-                <span className="mt-5 inline-flex items-center gap-2 text-xs font-bold tracking-[0.12em] uppercase">Shop all men <ArrowUpRight size={15} aria-hidden="true" /></span>
+          <div className="mx-auto grid max-w-[1440px] grid-cols-12 gap-8 px-8 py-9 xl:px-12">
+            <Link href="/shop" onClick={() => onOpenChange(false)} className={`${styles.poster} group col-span-4 min-h-[340px] text-white focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-accent`}>
+              <Image src="/images/products/t-shirts/black-panther-ivory-tee/back.jpg" alt="Ivory oversized tee with Black Panther back artwork" fill sizes="33vw" className="-z-10 object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none" />
+              <span className="absolute inset-0 -z-10 bg-linear-to-t from-[#0b0503]/95 via-[#0b0503]/30 to-[#0b0503]/10" aria-hidden="true" />
+              <span className={styles.posterBulbs} aria-hidden="true" />
+              <span className={`${styles.posterBulbs} ${styles.bottom}`} aria-hidden="true" />
+              <span className={styles.ribbon}>Now showing</span>
+              <span className="absolute inset-x-0 bottom-0 px-7 pt-7 pb-9">
+                <span className={styles.presents}>Feature presentation · The men&apos;s edit</span>
+                <span className={`${styles.headline} mt-3 block font-display text-5xl leading-[0.88] tracking-wide uppercase`}>Dress for<br /><em>the entrance.</em></span>
+                <span className={`${styles.admitCta} mt-5`}>Shop all men <ArrowUpRight size={14} aria-hidden="true" /></span>
               </span>
             </Link>
 
-            <div className="col-span-4 border-r border-border pr-8">
-              <div className="flex items-end justify-between border-b border-border pb-4">
+            <div className={`${styles.programme} col-span-4 pr-8`}>
+              <div className="flex items-end justify-between pb-4">
                 <div>
-                  <p className="text-[9px] font-bold tracking-[0.25em] text-accent uppercase">Wardrobe</p>
-                  <p className="mt-1 font-display text-3xl tracking-wide">Shop clothing</p>
+                  <p className={styles.eyebrow}>Tonight&apos;s programme</p>
+                  <p className="mt-1 font-display text-3xl tracking-wide uppercase">Shop clothing</p>
                 </div>
-                <span className="font-mono text-[10px] text-muted">01—{String(clothingGroups.length).padStart(2, "0")}</span>
+                <span className="font-mono text-[10px] text-muted">Reels 01—{String(clothingGroups.length).padStart(2, "0")}</span>
               </div>
-              <ul className="mt-2">
-                {clothingGroups.map((group, index) => (
-                  <li key={group.label} className="border-b border-border/70">
-                    <Link href={group.href} onClick={() => onOpenChange(false)} className="group/link flex min-h-12 items-center justify-between text-sm font-semibold hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
-                      <span><span className="mr-4 font-mono text-[9px] text-muted">0{index + 1}</span>{group.label}</span>
-                      <ArrowRight size={14} aria-hidden="true" className="transition-transform group-hover/link:translate-x-1 motion-reduce:transition-none" />
-                    </Link>
-                  </li>
-                ))}
+              <ul className="border-t border-[color:var(--hairline)]">
+                {clothingGroups.map((group, index) => {
+                  const pieces = piecesFor(group.href);
+                  return (
+                    <li key={group.label}>
+                      <Link href={group.href} onClick={() => onOpenChange(false)} className={`${styles.reel} focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent`}>
+                        <span className={`${styles.reelNo} font-mono`} aria-hidden="true">0{index + 1}</span>
+                        <span className={styles.reelName}>{group.label}</span>
+                        {pieces ? <span className={`${styles.reelCount} font-mono`}>{pieces} pieces</span> : <span />}
+                        <ArrowRight size={14} aria-hidden="true" className={styles.reelArrow} />
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 
             <div className="col-span-4">
               <div className="flex items-end justify-between">
                 <div>
-                  <p className="text-[9px] font-bold tracking-[0.25em] text-accent uppercase">Quick direction</p>
-                  <p className="mt-1 font-display text-3xl tracking-wide">Start here</p>
+                  <p className={styles.eyebrow}>Coming attractions</p>
+                  <p className="mt-1 font-display text-3xl tracking-wide uppercase">Start here</p>
                 </div>
-                <Link href="/shop" onClick={() => onOpenChange(false)} className="text-xs font-semibold underline decoration-accent underline-offset-4">View all</Link>
+                <Link href="/shop" onClick={() => onOpenChange(false)} className={styles.viewAll}>View all</Link>
               </div>
               <div className="mt-5 grid grid-cols-2 gap-3">
-                <MenuEdit image="/images/products/t-shirts/messi-10-ivory-tee/back.jpg" label="Graphic tees" href="/shop?category=t-shirts" onClick={() => onOpenChange(false)} />
-                <MenuEdit image="/images/products/jeans/belted-light-wash-jeans/front.jpg" label="Denim rotation" href="/shop?category=jeans" onClick={() => onOpenChange(false)} />
+                <MenuEdit reel="Trailer 01" image="/images/products/t-shirts/messi-10-ivory-tee/back.jpg" label="Graphic tees" href="/shop?category=t-shirts" onClick={() => onOpenChange(false)} />
+                <MenuEdit reel="Trailer 02" image="/images/products/jeans/belted-light-wash-jeans/front.jpg" label="Denim rotation" href="/shop?category=jeans" onClick={() => onOpenChange(false)} />
               </div>
-              <p className="mt-5 border-t border-border pt-4 text-xs leading-5 text-muted">Explore the full wardrobe or jump directly into the category you came for.</p>
+              <p className={styles.admit}>
+                <span className={styles.admitStub}>Admit<br />one</span>
+                <span className="px-4 py-3 text-xs leading-5 text-muted">Explore the full wardrobe or jump directly into the category you came for.</span>
+              </p>
             </div>
           </div>
         </div>
@@ -134,13 +154,16 @@ export function HeaderMegaMenu({ open, onOpenChange }: HeaderMegaMenuProps) {
   );
 }
 
-function MenuEdit({ image, label, href, onClick }: { image: string; label: string; href: string; onClick: () => void }) {
+function MenuEdit({ reel, image, label, href, onClick }: { reel: string; image: string; label: string; href: string; onClick: () => void }) {
   return (
-    <Link href={href} onClick={onClick} className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">
-      <span className="relative block aspect-[4/5] overflow-hidden bg-surface">
-        <Image src={image} alt="" fill sizes="15vw" className="object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none" />
+    <Link href={href} onClick={onClick} className={`${styles.trailer} group focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent`}>
+      <span className={styles.film}>
+        <span className="relative block aspect-[4/5] overflow-hidden">
+          <Image src={image} alt="" fill sizes="15vw" className="object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none" />
+        </span>
       </span>
-      <span className="mt-2 flex items-center justify-between text-xs font-semibold">{label}<ArrowUpRight size={13} aria-hidden="true" /></span>
+      <span className={`${styles.trailerTag} mt-2.5 block`}>{reel}</span>
+      <span className="mt-0.5 flex items-center justify-between text-xs font-semibold group-hover:text-accent">{label}<ArrowUpRight size={13} aria-hidden="true" /></span>
     </Link>
   );
 }

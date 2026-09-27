@@ -1,0 +1,82 @@
+/* Theatre canopy: ivory by day, night-show black after dark, with a gold rail of marquee bulbs along the bottom. */
+.header {
+  --canopy: rgb(248 241 228 / 94%);
+  --rail: #9a6a22;
+  --bulb: rgb(154 106 34 / 45%);
+  --bulb-lit: #f5b945;
+  background: var(--canopy);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 rgb(154 106 34 / 35%);
+}
+:global(.dark) .header {
+  --canopy: rgb(14 8 6 / 92%);
+  --rail: #e7bd62;
+  --bulb: rgb(231 189 98 / 35%);
+  --bulb-lit: #ffe3a1;
+  box-shadow: 0 1px 0 rgb(231 189 98 / 28%);
+}
+
+/* A slow travelling light runs along the bulb rail, like a sign warming up. */
+.bulbs {
+  position: absolute; left: 0; right: 0; bottom: 3px; height: 4px; pointer-events: none;
+  background: radial-gradient(circle, var(--bulb) 0 1.1px, transparent 1.7px) 0 50% / 14px 4px repeat-x;
+}
+.bulbs::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(circle, var(--bulb-lit) 0 1.5px, transparent 2.2px) 0 50% / 14px 4px repeat-x;
+  filter: drop-shadow(0 0 3px var(--bulb-lit));
+  -webkit-mask: linear-gradient(90deg, transparent, #000 50%, transparent) -40% 0 / 28% 100% no-repeat;
+  mask: linear-gradient(90deg, transparent, #000 50%, transparent) -40% 0 / 28% 100% no-repeat;
+  animation: sweep 8s ease-in-out infinite;
+}
+
+/* The wordmark hangs on a small marquee plaque with corner bulbs. */
+.plaque {
+  display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 6px;
+  background:
+    radial-gradient(circle at 6px 6px, #ffe3a1 0 1.4px, transparent 2.4px),
+    radial-gradient(circle at calc(100% - 6px) 6px, #ffe3a1 0 1.4px, transparent 2.4px),
+    radial-gradient(circle at 6px calc(100% - 6px), #ffe3a1 0 1.4px, transparent 2.4px),
+    radial-gradient(circle at calc(100% - 6px) calc(100% - 6px), #ffe3a1 0 1.4px, transparent 2.4px),
+    radial-gradient(ellipse at 50% 0%, #3a1410, #140806 72%);
+  box-shadow: 0 0 0 1px #9a6a22, 0 0 0 3px #1b0805, 0 0 0 4px rgb(231 189 98 / 55%), 0 8px 18px -10px rgb(0 0 0 / 70%);
+  transition: box-shadow .35s;
+}
+.plaque:hover { box-shadow: 0 0 0 1px #9a6a22, 0 0 0 3px #1b0805, 0 0 0 4px rgb(231 189 98 / 80%), 0 0 26px rgb(240 38 30 / 35%); }
+
+.navLink { position: relative; }
+.navLink::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 22px; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--rail));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .35s cubic-bezier(.2, .8, .2, 1);
+}
+.navLink:hover::after,
+.navLink:focus-visible::after { transform: scaleX(1); }
+.offers { text-shadow: 0 0 14px rgb(240 38 30 / 45%); }
+.offers::before { content: ""; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; animation: onAir 1.6s ease-in-out infinite; }
+
+.icon { transition: color .25s, box-shadow .25s; }
+.icon:hover { color: var(--rail); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rail) 45%, transparent); }
+
+.ticket {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 17px; padding: 0 7px;
+  background: linear-gradient(180deg, #b3151b, #8e0f14); color: #fff3dc;
+  font-size: 10px; font-weight: 800; font-variant-numeric: tabular-nums;
+  -webkit-mask: radial-gradient(circle 3px at 0 50%, transparent 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 3px at 100% 50%, transparent 97%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle 3px at 0 50%, transparent 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 3px at 100% 50%, transparent 97%, #000) right / 51% 100% no-repeat;
+}
+:global(.dark) .ticket { background: linear-gradient(180deg, #f8ecd0, #ecd9b0); color: #1d0b06; }
+
+@keyframes sweep {
+  0%, 15% { -webkit-mask-position: -40% 0; mask-position: -40% 0; }
+  85%, 100% { -webkit-mask-position: 140% 0; mask-position: 140% 0; }
+}
+@keyframes onAir { 50% { opacity: .35; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .bulbs::after, .offers::before { animation: none; }
+  .bulbs::after { display: none; }
+  .navLink::after, .plaque, .icon { transition: none; }
+}
