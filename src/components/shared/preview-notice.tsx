@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import styles from "./preview-notice.module.css";
 
 const MESSAGE = "Payment preview — the live Razorpay checkout connects in the next phase. No charge has been made.";
 
@@ -33,17 +34,19 @@ export function PreviewNotice({
         role="dialog"
         aria-modal="true"
         aria-labelledby="preview-notice-title"
-        className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 text-foreground shadow-lg"
+        aria-describedby="preview-notice-message"
+        className={styles.card}
       >
-        <p id="preview-notice-title" className="text-lg font-semibold">
+        <p className={styles.eyebrow}>Preview</p>
+        <p id="preview-notice-title" className={styles.title}>
           {action}
         </p>
-        <p className="mt-2 text-sm leading-6 text-muted">{MESSAGE}</p>
+        <p id="preview-notice-message" className={styles.message}>{MESSAGE}</p>
         <button
           ref={closeRef}
           type="button"
           onClick={onClose}
-          className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className={`${styles.close} focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent`}
         >
           Close
         </button>

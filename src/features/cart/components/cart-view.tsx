@@ -7,7 +7,8 @@ import { useMemo } from "react";
 import { ProductCard } from "@/components/shared/product-card";
 import { productGridClass } from "@/components/shared/product-grid";
 import { useCart } from "@/features/cart/cart-provider";
-import { FREE_SHIPPING_PAISE } from "@/features/cart/utils";
+import { CheckoutSteps } from "@/features/cart/components/checkout-steps";
+import { cartSavingsPaise, FREE_SHIPPING_PAISE } from "@/features/cart/utils";
 import { getAllProducts, getCategoryById, getProductBySlug } from "@/features/catalog/data";
 import shopStyles from "@/features/shop/components/shop-listing.module.css";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
@@ -17,18 +18,6 @@ import styles from "./cart-view.module.css";
 
 const admitWords = ["one", "two", "three", "four", "five"];
 
-function CheckoutSteps() {
-  return (
-    <ol className={styles.steps} aria-label="Checkout steps">
-      <li><span className={styles.step} aria-current="step"><b>01</b> Bag</span></li>
-      <li className={styles.stepLine} aria-hidden="true" />
-      <li><span className={styles.step}><b>02</b> Details</span></li>
-      <li className={styles.stepLine} aria-hidden="true" />
-      <li><span className={styles.step}><b>03</b> Pay</span></li>
-    </ol>
-  );
-}
-
 export function CartView() {
   const { lines, itemCount, subtotalPaise, setQuantity, removeLine, clearCart } = useCart();
   const { count: savedCount } = useWishlist();
@@ -36,10 +25,7 @@ export function CartView() {
 
   const shippingGap = Math.max(0, FREE_SHIPPING_PAISE - subtotalPaise);
   const shippingProgress = Math.min(100, (subtotalPaise / FREE_SHIPPING_PAISE) * 100);
-  const savingsPaise = lines.reduce((sum, line) => {
-    const mrp = getProductBySlug(line.slug)?.mrpPaise;
-    return mrp && mrp > line.pricePaise ? sum + (mrp - line.pricePaise) * line.quantity : sum;
-  }, 0);
+  const savingsPaise = cartSavingsPaise(lines);
 
   if (lines.length === 0) {
     return (
@@ -49,7 +35,7 @@ export function CartView() {
             <p className={styles.eyebrow}>Your booking</p>
             <h1 className="mt-2 font-display text-5xl leading-none tracking-wide uppercase sm:text-6xl">Your bag</h1>
           </div>
-          <CheckoutSteps />
+          <CheckoutSteps current="bag" />
         </div>
 
         <div className={cn(styles.emptyWrap, "mt-10 max-w-3xl")}>
@@ -95,7 +81,7 @@ export function CartView() {
           <h1 className="mt-2 font-display text-5xl leading-none tracking-wide uppercase sm:text-6xl">Your bag</h1>
           <p className="mt-2 text-xs text-muted"><span className="font-semibold text-foreground">{itemCount}</span> {itemCount === 1 ? "piece" : "pieces"} · saved on this device</p>
         </div>
-        <CheckoutSteps />
+        <CheckoutSteps current="bag" />
       </div>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_400px]">

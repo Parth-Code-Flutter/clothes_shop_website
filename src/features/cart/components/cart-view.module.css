@@ -19,6 +19,9 @@
 .step b { font-family: var(--font-geist-mono), monospace; font-weight: 500; letter-spacing: 0; }
 .step[aria-current="step"] { background: radial-gradient(ellipse at 50% 0%, #d8232a, #8e0f14 80%); color: #fff3dc; }
 .step[aria-current="step"] b { color: #e7bd62; }
+.stepDone { color: var(--foreground); transition: color .2s; }
+.stepDone b { color: var(--gold); }
+.stepDone:hover { color: var(--accent); }
 .stepLine { width: 22px; height: 1px; background: repeating-linear-gradient(90deg, var(--hairline) 0 4px, transparent 4px 8px); }
 
 /* ---------- line tickets ---------- */

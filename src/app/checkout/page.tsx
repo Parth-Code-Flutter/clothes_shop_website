@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CheckoutView } from "@/features/checkout/components/checkout-view";
+import styles from "@/features/shop/components/shop-listing.module.css";
 
 export const metadata: Metadata = {
   title: "Checkout | House of Bollywood",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function CheckoutPage() {
   return (
-    <main className="flex flex-1 flex-col bg-background">
+    <main className={`${styles.hall} flex flex-1 flex-col`}>
       <CheckoutView />
     </main>
   );

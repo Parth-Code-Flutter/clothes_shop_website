@@ -19,6 +19,13 @@ export function cartSubtotalPaise(lines: CartLine[]) {
   );
 }
 
+export function cartSavingsPaise(lines: CartLine[]) {
+  return lines.reduce((total, line) => {
+    const mrp = catalogProducts.find((item) => item.id === line.productId)?.mrpPaise;
+    return mrp && mrp > line.pricePaise ? total + (mrp - line.pricePaise) * line.quantity : total;
+  }, 0);
+}
+
 export function parseCart(raw: string | null): CartState {
   if (!raw) return emptyCart();
   try {
