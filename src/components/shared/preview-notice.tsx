@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-const MESSAGE = "Homepage preview — this action will be connected in a later phase.";
+const MESSAGE = "Payment preview — the live Razorpay checkout connects in the next phase. No charge has been made.";
 
 export function PreviewNotice({
   open,

@@ -2,6 +2,7 @@ import { catalogProducts } from "@/features/catalog/data";
 import type { CartLine, CartState } from "./types";
 
 export const CART_STORAGE_KEY = "hob-cart-v1";
+export const FREE_SHIPPING_PAISE = 199900;
 
 export function emptyCart(): CartState {
   return { lines: [] };

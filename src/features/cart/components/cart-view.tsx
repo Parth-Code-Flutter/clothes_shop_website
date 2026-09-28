@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { ProductCard } from "@/components/shared/product-card";
 import { productGridClass } from "@/components/shared/product-grid";
 import { useCart } from "@/features/cart/cart-provider";
+import { FREE_SHIPPING_PAISE } from "@/features/cart/utils";
 import { getAllProducts, getCategoryById, getProductBySlug } from "@/features/catalog/data";
 import shopStyles from "@/features/shop/components/shop-listing.module.css";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
@@ -14,7 +15,6 @@ import { formatInrFromPaise } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import styles from "./cart-view.module.css";
 
-const FREE_SHIPPING_PAISE = 199900;
 const admitWords = ["one", "two", "three", "four", "five"];
 
 function CheckoutSteps() {

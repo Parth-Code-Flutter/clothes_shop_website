@@ -6,6 +6,7 @@ import { type FormEvent, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PreviewNotice } from "@/components/shared/preview-notice";
 import { useCart } from "@/features/cart/cart-provider";
+import { FREE_SHIPPING_PAISE } from "@/features/cart/utils";
 import { formatInrFromPaise } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
@@ -269,7 +270,7 @@ export function CheckoutView() {
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-muted">Shipping</dt>
-              <dd className="text-muted">Confirmed later</dd>
+              <dd className="text-muted">{subtotalPaise >= FREE_SHIPPING_PAISE ? "Free" : "Confirmed later"}</dd>
             </div>
             <div className="flex justify-between gap-4 text-base">
               <dt className="font-medium text-foreground">Total due</dt>
