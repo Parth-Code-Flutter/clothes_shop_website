@@ -4,23 +4,34 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  AlertCircle,
   ArrowLeft,
   ArrowRight,
   Check,
+  Crown,
   Eye,
   EyeOff,
   LockKeyhole,
-  Sparkles,
+  Ticket,
 } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { useAccount } from "@/features/account/account-provider";
+import fieldStyles from "@/features/checkout/components/checkout-view.module.css";
 import { cn } from "@/lib/utils";
+import styles from "./account-view.module.css";
 
 type AuthMode = "signin" | "signup";
 type AuthFieldName = "name" | "email" | "password" | "confirmPassword" | "terms";
 type AuthErrors = Partial<Record<AuthFieldName, string>>;
 
+const FIELD_ORDER: AuthFieldName[] = ["name", "email", "password", "confirmPassword", "terms"];
+
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const DEMO_PASSES = [
+  { user: "admin", name: "Admin pass", icon: Crown },
+  { user: "house", name: "Customer pass", icon: Ticket },
+] as const;
 
 export function AccountView() {
   const router = useRouter();
@@ -39,6 +50,17 @@ export function AccountView() {
     if (signedIn) router.replace("/dashboard");
   }, [router, signedIn]);
 
+  const cleanEmail = email.trim();
+  const passName =
+    mode === "signup"
+      ? name.trim()
+      : cleanEmail === "admin"
+        ? "Admin"
+        : cleanEmail === "house"
+          ? "House Customer"
+          : "";
+  const passType = mode === "signin" && cleanEmail === "admin" ? "Admin pass" : "Member pass";
+
   function switchMode(nextMode: AuthMode) {
     setMode(nextMode);
     setPassword("");
@@ -56,9 +78,15 @@ export function AccountView() {
     });
   }
 
+  function fillDemoPass(user: string) {
+    setEmail(user);
+    setPassword(user);
+    setErrors({});
+    setNotice(null);
+  }
+
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const cleanEmail = email.trim();
     const cleanName = name.trim();
     const previewRole = cleanEmail === "admin" && password === "admin" ? "admin" : cleanEmail === "house" && password === "house" ? "customer" : null;
 
@@ -81,6 +109,8 @@ export function AccountView() {
     }
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
+      const firstInvalid = FIELD_ORDER.find((field) => nextErrors[field]);
+      if (firstInvalid) document.getElementById(`account-${firstInvalid === "confirmPassword" ? "confirm" : firstInvalid}`)?.focus();
       return;
     }
 
@@ -96,56 +126,129 @@ export function AccountView() {
     router.push("/dashboard");
   }
 
-  if (signedIn) return <div className="min-h-screen bg-[#f4efe8]" aria-label="Opening your dashboard" />;
+  if (signedIn) return <div className="min-h-screen bg-background" aria-label="Opening your dashboard" />;
 
   return (
-    <div className="relative grid min-h-screen bg-[#f4efe8] text-foreground dark:bg-background lg:grid-cols-[0.9fr_1.1fr]">
-      <Link href="/" aria-label="Back to House of Bollywood" className="absolute top-5 left-5 z-20 rounded bg-white px-2 py-1 shadow-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:top-7 sm:left-8"><Image src="/brand/house-of-bollywood-logo.png" alt="House of Bollywood" width={1024} height={341} priority className="h-auto w-[112px]" /></Link>
-      <Link href="/shop" className="absolute top-6 right-5 z-20 inline-flex min-h-10 items-center gap-2 text-[10px] font-bold tracking-[0.15em] uppercase hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:top-8 sm:right-8"><ArrowLeft size={14} aria-hidden="true" /> Back to store</Link>
-      <section className="relative isolate hidden overflow-hidden bg-[#180805] px-12 pt-28 pb-12 text-white lg:flex lg:flex-col lg:justify-between xl:px-16 xl:pb-16">
-        <div className="absolute -right-28 -bottom-28 -z-10 size-[520px] rounded-full border border-white/10" aria-hidden="true"><div className="absolute inset-16 rounded-full border border-white/10" /><div className="absolute inset-32 rounded-full border border-accent/35" /></div>
-        <span className="absolute top-8 right-8 rotate-6 border border-[#ff5c53]/60 px-4 py-3 text-center font-mono text-[9px] leading-4 tracking-[0.2em] text-[#ff5c53] uppercase" aria-hidden="true">House pass<br />No. 001</span>
-        <span className="pointer-events-none absolute top-1/2 -left-8 -z-10 -translate-y-1/2 rotate-90 font-display text-[10rem] leading-none text-white/[0.025]" aria-hidden="true">MEMBER</span>
-        <div><p className="flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-[#ff5c53] uppercase"><Sparkles size={13} aria-hidden="true" /> Members of the house</p><h1 className="mt-5 max-w-xl font-display text-7xl leading-[0.88] tracking-wide xl:text-8xl">Your wardrobe,<br /><span className="text-[#ff3b30]">remembered.</span></h1><p className="mt-6 max-w-md text-sm leading-7 text-white/55">Save the pieces you love, keep your bag close, and find every order in one private space.</p></div>
-        <ul className="grid gap-3 text-xs text-white/70"><li className="flex items-center gap-3"><Check className="text-[#ff5c53]" size={15} aria-hidden="true" /> Keep your saved edit together</li><li className="flex items-center gap-3"><Check className="text-[#ff5c53]" size={15} aria-hidden="true" /> Move through checkout faster</li><li className="flex items-center gap-3"><Check className="text-[#ff5c53]" size={15} aria-hidden="true" /> Track future orders in one place</li></ul>
+    <div className="grid min-h-screen text-foreground lg:grid-cols-[0.95fr_1.05fr]">
+      <section className={cn(styles.stage, "flex flex-col px-5 pt-6 pb-8 sm:px-8 lg:min-h-screen lg:justify-between lg:px-12 lg:pt-8 lg:pb-12 xl:px-16")}>
+        <span className={styles.bulbs} aria-hidden="true" />
+        <div className="flex items-center justify-between gap-4">
+          <Link href="/" aria-label="Back to House of Bollywood" className="rounded bg-white px-2 py-1 shadow-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e7bd62]">
+            <Image src="/brand/house-of-bollywood-logo.png" alt="House of Bollywood" width={1024} height={341} priority className="h-auto w-[104px] sm:w-[112px]" />
+          </Link>
+          <Link href="/shop" className={cn(styles.back, "inline-flex text-[#fbf1de] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e7bd62] lg:hidden")}>
+            <ArrowLeft size={14} aria-hidden="true" /> Store
+          </Link>
+        </div>
+
+        <div className="mt-8 lg:mt-0">
+          <p className={styles.onAir}>Members of the house</p>
+          <p className={cn(styles.headline, "mt-4 text-5xl sm:text-6xl lg:text-7xl xl:text-8xl")}>
+            Your wardrobe,<br /><em>remembered.</em>
+          </p>
+          <p className="mt-5 hidden max-w-md text-sm leading-7 text-[#fbf1de]/60 lg:block">Save the pieces you love, keep your bag close, and find every order in one private space.</p>
+        </div>
+
+        <div className="mt-10 hidden lg:block" aria-hidden="true">
+          <div className={styles.passWrap}>
+            <div className={styles.passPaper}>
+              <p className={styles.passTop}><span>House of Bollywood</span><span>{passType}</span></p>
+              <p className={styles.passAdmit}>Admit one</p>
+              <p className={styles.passLabel}>Presented to</p>
+              <p className={styles.passName} data-empty={!passName}>{passName || "Your name here"}</p>
+              <p className={styles.passMeta}><span>Row M</span><span>Seat 01</span><span>Valid every show</span></p>
+            </div>
+            <div className={styles.passStub}>
+              <span className={styles.stubText}>Member</span>
+              <span className={styles.stubNo}>No. 001</span>
+              <span className={styles.barcode} />
+            </div>
+          </div>
+        </div>
+
+        <ul className={cn(styles.perks, "mt-10 hidden lg:grid")}>
+          <li><Check size={15} aria-hidden="true" /> Keep your saved edit together</li>
+          <li><Check size={15} aria-hidden="true" /> Move through checkout faster</li>
+          <li><Check size={15} aria-hidden="true" /> Track future orders in one place</li>
+        </ul>
       </section>
 
-      <section className="relative flex items-center justify-center overflow-hidden px-5 pt-24 pb-10 sm:px-8 lg:px-12 lg:pt-20">
-        <div className="w-full max-w-lg border border-black/10 bg-background p-6 shadow-[0_28px_80px_rgba(22,6,4,0.08)] dark:border-white/10 sm:p-9">
-          <div className="flex items-center gap-3"><span className="h-px w-8 bg-accent" /><p className="text-[10px] font-bold tracking-[0.28em] text-accent uppercase">House of Bollywood</p></div>
-          <h1 className="mt-3 font-display text-5xl leading-none tracking-wide sm:text-6xl">{mode === "signin" ? "Welcome back." : "Join the house."}</h1>
-          <p className="mt-3 text-sm leading-6 text-muted">{mode === "signin" ? "Sign in to continue your edit." : "Create your private wardrobe in a minute."}</p>
+      <section className="relative flex flex-col items-center justify-center px-4 pt-8 pb-12 sm:px-8 lg:px-12 lg:py-16">
+        <Link href="/shop" className={cn(styles.back, "absolute top-6 right-8 hidden focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent lg:inline-flex")}>
+          <ArrowLeft size={14} aria-hidden="true" /> Back to store
+        </Link>
 
-          <div className="mt-7 grid grid-cols-2 gap-1 bg-surface p-1" role="tablist" aria-label="Account access">
-            <button type="button" role="tab" aria-selected={mode === "signin"} onClick={() => switchMode("signin")} className={cn("min-h-11 text-xs font-bold tracking-[0.12em] uppercase transition-colors", mode === "signin" ? "bg-[#180805] text-white" : "text-muted hover:text-foreground")}>Sign in</button>
-            <button type="button" role="tab" aria-selected={mode === "signup"} onClick={() => switchMode("signup")} className={cn("min-h-11 text-xs font-bold tracking-[0.12em] uppercase transition-colors", mode === "signup" ? "bg-[#180805] text-white" : "text-muted hover:text-foreground")}>Create account</button>
+        <div className={styles.desk}>
+          <p className={styles.eyebrow}>Box office</p>
+          <h1 className="mt-3 font-display text-5xl leading-none tracking-wide uppercase sm:text-6xl">{mode === "signin" ? "Welcome back." : "Join the house."}</h1>
+          <p className="mt-3 text-sm leading-6 text-muted">{mode === "signin" ? "Sign in to continue your edit." : "Create your member pass in a minute."}</p>
+
+          <div className={cn(styles.tabs, "mt-7")} role="tablist" aria-label="Account access">
+            <button type="button" role="tab" aria-selected={mode === "signin"} onClick={() => switchMode("signin")} className={cn(styles.tab, "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent")}><b>01</b> Sign in</button>
+            <button type="button" role="tab" aria-selected={mode === "signup"} onClick={() => switchMode("signup")} className={cn(styles.tab, "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent")}><b>02</b> Create account</button>
           </div>
 
-          {mode === "signin" ? <div className="mt-5 border border-dashed border-accent/40 bg-accent/[0.04] px-4 py-3"><div className="flex items-center justify-between gap-3"><div><p className="font-mono text-[8px] tracking-[0.18em] text-accent uppercase">Temporary house passes</p><p className="mt-1 text-xs text-muted">Choose a persona to test the flow.</p></div><div className="grid shrink-0 gap-1 text-right"><code className="bg-[#180805] px-2 py-1 text-[10px] text-white">admin / admin</code><code className="bg-accent px-2 py-1 text-[10px] text-white">house / house</code></div></div></div> : null}
-
-          <form onSubmit={onSubmit} className="mt-7 space-y-5" noValidate>
-            {mode === "signup" ? <AuthField label="Full name" type="text" value={name} onChange={(value) => { setName(value); clearError("name"); }} autoComplete="name" placeholder="How should we address you?" error={errors.name} /> : null}
-            <AuthField label={mode === "signin" ? "Username" : "Email address"} type={mode === "signin" ? "text" : "email"} value={email} onChange={(value) => { setEmail(value); clearError("email"); }} autoComplete={mode === "signin" ? "username" : "email"} placeholder={mode === "signin" ? "Enter admin" : "you@email.com"} error={errors.email} />
-            <div>
-              <div className="mb-2 flex items-center justify-between gap-4"><label htmlFor="account-password" className="text-xs font-bold tracking-[0.08em] uppercase">Password</label>{mode === "signin" ? <button type="button" onClick={() => setNotice("Password recovery will be connected with live authentication.")} className="text-xs text-muted underline decoration-border underline-offset-4 hover:text-foreground">Forgot password?</button> : null}</div>
-              <div className="relative"><input id="account-password" type={showPassword ? "text" : "password"} value={password} onChange={(event) => { setPassword(event.target.value); clearError("password"); }} autoComplete={mode === "signin" ? "current-password" : "new-password"} placeholder={mode === "signin" ? "Enter admin" : "8 characters minimum"} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? "account-password-error" : undefined} className={cn("h-13 w-full border bg-background px-4 pr-12 text-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent", errors.password ? "border-accent" : "border-border focus:border-foreground")} /><button type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? "Hide password" : "Show password"} className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-accent">{showPassword ? <EyeOff size={17} aria-hidden="true" /> : <Eye size={17} aria-hidden="true" />}</button></div>
-              {errors.password ? <p id="account-password-error" className="mt-1.5 flex items-center gap-1.5 text-[11px] text-accent" role="alert"><span className="size-1 rounded-full bg-accent" />{errors.password}</p> : null}
+          {mode === "signin" ? (
+            <div className="mt-6">
+              <p className="mb-2 font-mono text-[9px] tracking-[0.16em] text-muted uppercase">Preview passes · tap to fill</p>
+              <div className={styles.passes}>
+                {DEMO_PASSES.map(({ user, name: label, icon: Icon }) => (
+                  <button key={user} type="button" onClick={() => fillDemoPass(user)} data-active={cleanEmail === user && password === user} className={cn(styles.demo, "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent")}>
+                    <span className={styles.demoIcon} aria-hidden="true"><Icon size={14} /></span>
+                    <span className="min-w-0">
+                      <span className={styles.demoName}>{label}</span>
+                      <span className={styles.demoCode}>{user} / {user}</span>
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
-            {mode === "signup" ? <AuthField label="Confirm password" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(value) => { setConfirmPassword(value); clearError("confirmPassword"); }} autoComplete="new-password" placeholder="Repeat your password" error={errors.confirmPassword} /> : null}
-            {mode === "signup" ? <div><label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-muted"><input type="checkbox" checked={accepted} onChange={(event) => { setAccepted(event.target.checked); clearError("terms"); }} className="mt-0.5 size-4 accent-[var(--accent)]" /><span>I agree to the terms and privacy policy for this storefront preview.</span></label>{errors.terms ? <p className="mt-1.5 pl-7 text-[11px] text-accent" role="alert">{errors.terms}</p> : null}</div> : null}
+          ) : null}
+
+          <form onSubmit={onSubmit} className="mt-6 grid gap-5" noValidate>
+            {mode === "signup" ? <AuthField id="account-name" label="Full name" type="text" value={name} onChange={(value) => { setName(value); clearError("name"); }} autoComplete="name" placeholder="How should we address you?" error={errors.name} /> : null}
+            <AuthField id="account-email" label={mode === "signin" ? "Username" : "Email address"} type={mode === "signin" ? "text" : "email"} value={email} onChange={(value) => { setEmail(value); clearError("email"); }} autoComplete={mode === "signin" ? "username" : "email"} placeholder={mode === "signin" ? "admin or house" : "you@email.com"} error={errors.email} />
+            <div className={fieldStyles.field}>
+              <div className="flex items-center justify-between gap-4">
+                <label htmlFor="account-password" className={fieldStyles.label}>Password</label>
+                {mode === "signin" ? <button type="button" onClick={() => setNotice("Password recovery connects with live sign-in.")} className="text-[11px] text-muted underline decoration-border underline-offset-4 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">Forgot password?</button> : null}
+              </div>
+              <div className="relative">
+                <input id="account-password" type={showPassword ? "text" : "password"} value={password} onChange={(event) => { setPassword(event.target.value); clearError("password"); }} autoComplete={mode === "signin" ? "current-password" : "new-password"} placeholder={mode === "signin" ? "Same as username" : "8 characters minimum"} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? "account-password-error" : undefined} className={cn(fieldStyles.input, "pr-12")} />
+                <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? "Hide password" : "Show password"} className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-accent">{showPassword ? <EyeOff size={17} aria-hidden="true" /> : <Eye size={17} aria-hidden="true" />}</button>
+              </div>
+              {errors.password ? <span id="account-password-error" className={fieldStyles.error} role="alert"><AlertCircle size={12} aria-hidden="true" />{errors.password}</span> : null}
+            </div>
+            {mode === "signup" ? <AuthField id="account-confirm" label="Confirm password" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(value) => { setConfirmPassword(value); clearError("confirmPassword"); }} autoComplete="new-password" placeholder="Repeat your password" error={errors.confirmPassword} /> : null}
+            {mode === "signup" ? (
+              <div>
+                <label className={styles.check}>
+                  <input id="account-terms" type="checkbox" checked={accepted} onChange={(event) => { setAccepted(event.target.checked); clearError("terms"); }} aria-invalid={Boolean(errors.terms)} aria-describedby={errors.terms ? "account-terms-error" : undefined} />
+                  <span>I agree to the terms and privacy policy for this storefront preview.</span>
+                </label>
+                {errors.terms ? <p id="account-terms-error" className={cn(fieldStyles.error, "mt-1.5 pl-[26px]")} role="alert"><AlertCircle size={12} aria-hidden="true" />{errors.terms}</p> : null}
+              </div>
+            ) : null}
             {notice ? <p className="text-xs leading-5 text-muted" role="status">{notice}</p> : null}
-            <button type="submit" className="flex min-h-14 w-full items-center justify-between bg-accent px-5 text-xs font-bold tracking-[0.14em] text-white uppercase hover:bg-[#c41010] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"><span>{mode === "signin" ? "Sign in" : "Create my account"}</span><ArrowRight size={17} aria-hidden="true" /></button>
+            <button type="submit" className={cn(styles.cta, "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent")}>
+              {mode === "signin" ? "Sign in" : "Create my pass"} <ArrowRight size={16} aria-hidden="true" />
+            </button>
           </form>
 
-          <p className="mt-5 flex items-start gap-2 text-[11px] leading-5 text-muted"><LockKeyhole className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" /> Preview mode: details stay on this device. Passwords are validated but never stored or sent.</p>
+          <p className={cn(styles.fine, "mt-6")}><LockKeyhole className="size-3.5" aria-hidden="true" /> Preview mode: details stay on this device. Passwords are checked here and never stored or sent.</p>
         </div>
       </section>
     </div>
   );
 }
 
-function AuthField({ label, type, value, onChange, autoComplete, placeholder, error }: { label: string; type: string; value: string; onChange: (value: string) => void; autoComplete: string; placeholder: string; error?: string }) {
-  const id = `account-${label.toLowerCase().replaceAll(" ", "-")}`;
+function AuthField({ id, label, type, value, onChange, autoComplete, placeholder, error }: { id: string; label: string; type: string; value: string; onChange: (value: string) => void; autoComplete: string; placeholder: string; error?: string }) {
   const errorId = `${id}-error`;
-  return <label htmlFor={id} className="block"><span className="mb-2 block text-xs font-bold tracking-[0.08em] uppercase">{label}</span><input id={id} type={type} value={value} onChange={(event) => onChange(event.target.value)} autoComplete={autoComplete} placeholder={placeholder} aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} className={cn("h-13 w-full border bg-background px-4 text-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent", error ? "border-accent" : "border-border focus:border-foreground")} />{error ? <span id={errorId} className="mt-1.5 flex items-center gap-1.5 text-[11px] text-accent" role="alert"><span className="size-1 rounded-full bg-accent" />{error}</span> : null}</label>;
+  return (
+    <label htmlFor={id} className={fieldStyles.field}>
+      <span className={fieldStyles.label}>{label}</span>
+      <input id={id} type={type} value={value} onChange={(event) => onChange(event.target.value)} autoComplete={autoComplete} placeholder={placeholder} aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} className={fieldStyles.input} />
+      {error ? <span id={errorId} className={fieldStyles.error} role="alert"><AlertCircle size={12} aria-hidden="true" />{error}</span> : null}
+    </label>
+  );
 }

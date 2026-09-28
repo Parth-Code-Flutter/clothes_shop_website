@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AccountView } from "@/features/account/components/account-view";
+import styles from "@/features/shop/components/shop-listing.module.css";
 
 export const metadata: Metadata = {
   title: "Account | House of Bollywood",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function AccountPage() {
   return (
-    <main className="flex flex-1 flex-col bg-background">
+    <main className={`${styles.hall} flex flex-1 flex-col`}>
       <AccountView />
     </main>
   );
