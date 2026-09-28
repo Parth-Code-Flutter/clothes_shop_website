@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SearchView } from "@/features/search/components/search-view";
+import styles from "@/features/shop/components/shop-listing.module.css";
 
 export const metadata: Metadata = {
   title: "Search | House of Bollywood",
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function SearchPage() {
   return (
-    <main className="flex flex-1 flex-col bg-background">
+    <main className={`${styles.hall} flex flex-1 flex-col`}>
       <Suspense
         fallback={
           <div className="mx-auto max-w-7xl px-4 py-16 text-sm text-muted">

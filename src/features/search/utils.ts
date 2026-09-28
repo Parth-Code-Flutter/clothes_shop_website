@@ -6,6 +6,9 @@ export function searchCatalog(query: string): CatalogProduct[] {
   if (!q) return getAllProducts();
 
   const categories = getAllCategories();
+  const exactCategory = categories.find((item) => item.name.toLowerCase() === q || item.slug.toLowerCase() === q);
+  // "shirts" is a substring of "t-shirts", so an exact category name must not spill into other categories.
+  if (exactCategory) return getAllProducts().filter((product) => product.categoryId === exactCategory.id);
 
   return getAllProducts().filter((product) => {
     const category = categories.find((item) => item.id === product.categoryId);
