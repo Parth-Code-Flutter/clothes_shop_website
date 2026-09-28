@@ -73,9 +73,9 @@
 .wrap p { font-family: var(--font-display), sans-serif; font-size: 26px; letter-spacing: .06em; text-transform: uppercase; }
 .wrap p span { color: #e7bd62; }
 .wrap small { display: block; margin-top: 2px; font-family: var(--font-body), sans-serif; font-size: 10px; letter-spacing: .2em; color: rgb(255 243 220 / 55%); }
-.wrap button { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border: 1px solid rgb(231 189 98 / 50%); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; transition: background-color .25s, color .25s; }
-.wrap button:hover { background: #e7bd62; color: #1d0b06; }
-.wrap button:focus-visible { outline: 2px solid #e7bd62; outline-offset: 3px; }
+.wrap :is(button, a) { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border: 1px solid rgb(231 189 98 / 50%); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; transition: background-color .25s, color .25s; }
+.wrap :is(button, a):hover { background: #e7bd62; color: #1d0b06; }
+.wrap :is(button, a):focus-visible { outline: 2px solid #e7bd62; outline-offset: 3px; }
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {

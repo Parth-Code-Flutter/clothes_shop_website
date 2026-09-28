@@ -1,73 +1,138 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { ProductMedia } from "@/components/shared/product-media";
-import { ArrowRight, Heart, Sparkles, Trash2 } from "lucide-react";
-import { getProductBySlug } from "@/features/catalog/data";
+import { ArrowRight, Heart, X } from "lucide-react";
+import { useMemo } from "react";
+import { ProductCard } from "@/components/shared/product-card";
+import { productGridClass } from "@/components/shared/product-grid";
+import { getAllProducts, getCategoryById, getProductBySlug } from "@/features/catalog/data";
+import shopStyles from "@/features/shop/components/shop-listing.module.css";
 import { useWishlist } from "@/features/wishlist/wishlist-provider";
 import { formatInrFromPaise } from "@/lib/money";
+import { cn } from "@/lib/utils";
+import styles from "./wishlist-view.module.css";
 
 export function WishlistView() {
   const { items, count, removeProduct, clearWishlist } = useWishlist();
+  const popular = useMemo(() => [...getAllProducts()].sort((a, b) => b.popularity - a.popularity).slice(0, 5), []);
+
+  const saved = items.map((item) => ({ item, product: getProductBySlug(item.slug) }));
+  const totalPaise = saved.reduce((sum, { item, product }) => sum + (product?.pricePaise ?? item.pricePaise), 0);
+  const savingsPaise = saved.reduce((sum, { product }) => (product?.mrpPaise && product.mrpPaise > product.pricePaise ? sum + product.mrpPaise - product.pricePaise : sum), 0);
+
+  const heading = (
+    <div>
+      <p className={styles.eyebrow}>Reserved for you</p>
+      <h1 className="mt-2 font-display text-5xl leading-none tracking-wide uppercase sm:text-6xl">Your wishlist</h1>
+      <p className="mt-2 text-xs text-muted">Saved on this device. Pick a size whenever you&apos;re ready.</p>
+    </div>
+  );
 
   if (items.length === 0) {
     return (
-      <div className="relative isolate min-h-[72vh] overflow-hidden bg-[#f3eee7] px-5 py-20 text-center text-[#160604] dark:bg-footer dark:text-footer-foreground sm:py-28">
-        <Heart className="pointer-events-none absolute -right-16 -bottom-24 -z-10 size-[420px] stroke-[0.35] opacity-[0.07]" aria-hidden="true" />
-        <div className="mx-auto flex max-w-xl flex-col items-center">
-          <span className="flex size-16 items-center justify-center rounded-full border border-current/20"><Heart size={24} aria-hidden="true" /></span>
-          <p className="mt-7 text-[10px] font-bold tracking-[0.3em] text-accent uppercase">Your private edit</p>
-          <h1 className="mt-3 font-display text-6xl leading-[0.9] tracking-wide sm:text-8xl">Save now.<br />Decide later.</h1>
-          <p className="mt-6 max-w-md text-sm leading-7 opacity-65">Heart the pieces that catch your eye. We’ll keep your shortlist together on this device.</p>
-          <Link href="/shop" className="mt-8 inline-flex min-h-13 items-center gap-4 bg-accent px-7 text-xs font-bold tracking-[0.14em] text-white uppercase focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">Find your next look <ArrowRight size={16} aria-hidden="true" /></Link>
+      <div className="mx-auto w-full max-w-[1380px] px-4 pt-8 pb-16 sm:px-6 lg:px-8">
+        <div className="border-b border-border pb-5">{heading}</div>
+
+        <div className={cn(styles.emptyWrap, "mt-10 max-w-3xl")}>
+          <div className={styles.empty}>
+            <p className={styles.emptyStub}>
+              <Heart className="size-9" strokeWidth={1.5} aria-hidden="true" />
+              <small>No seats held</small>
+            </p>
+            <div className={styles.emptyBody}>
+              <p className="font-display text-3xl leading-none tracking-wide uppercase sm:text-4xl">Nothing saved yet</p>
+              <p className="mt-3 max-w-md text-sm leading-6 text-muted">Tap the heart on any piece to hold it here. Your list stays together on this device.</p>
+              <div className="mt-6">
+                <Link href="/shop" className={cn(styles.cta, "min-h-12 px-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent")}>
+                  Browse tonight&apos;s programme <ArrowRight size={15} aria-hidden="true" />
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <section className="mt-16" aria-labelledby="wishlist-popular">
+          <h2 id="wishlist-popular" className="flex items-center gap-2 text-[11px] font-bold tracking-[.16em] uppercase before:size-1.5 before:rotate-45 before:bg-accent">Popular tonight</h2>
+          <div className={cn(productGridClass, shopStyles.cast, "mt-6 gap-y-14 sm:gap-y-16")}>
+            {popular.map((product, index) => (
+              <ProductCard key={product.id} product={product} index={index} variant="cinema" />
+            ))}
+          </div>
+        </section>
       </div>
     );
   }
 
   return (
-    <div className="bg-background text-foreground">
-      <header className="overflow-hidden border-b border-border bg-[#f1ebe2] text-[#160604] dark:bg-footer dark:text-footer-foreground">
-        <div className="mx-auto grid max-w-[1440px] gap-8 px-5 py-12 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-end lg:px-12 lg:py-16">
-          <div>
-            <p className="flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-accent uppercase"><Sparkles size={13} aria-hidden="true" /> Curated by you</p>
-            <h1 className="mt-3 font-display text-7xl leading-[0.84] tracking-wide sm:text-9xl">The saved<br />edit.</h1>
-          </div>
-          <div className="max-w-xs lg:text-right"><p className="text-sm leading-7 opacity-65">Your personal rail of maybes, must-haves, and outfits waiting to happen.</p><p className="mt-4 font-mono text-[10px] tracking-[0.18em] uppercase">{String(count).padStart(2, "0")} {count === 1 ? "piece" : "pieces"} on your rail</p></div>
+    <div className="mx-auto w-full max-w-[1380px] px-4 pt-8 pb-16 sm:px-6 lg:px-8">
+      <div className="flex flex-wrap items-end justify-between gap-5 border-b border-border pb-5">
+        {heading}
+        <div className="flex items-end gap-6">
+          <p className="sm:text-right">
+            <span className={cn(styles.seatCount, "block")}>{String(count).padStart(2, "0")}</span>
+            <span className={styles.seatLabel}>{count === 1 ? "Piece saved" : "Pieces saved"}</span>
+          </p>
+          <button type="button" onClick={clearWishlist} className="min-h-10 text-xs text-muted underline decoration-border underline-offset-4 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">Clear all</button>
         </div>
-      </header>
+      </div>
 
-      <div className="mx-auto max-w-[1440px] px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
-        <div className="mb-7 flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5"><p className="text-xs font-bold tracking-[0.18em] uppercase">Your shortlist</p><button type="button" onClick={clearWishlist} className="min-h-10 text-xs text-muted underline decoration-border underline-offset-4 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">Clear all saves</button></div>
-        <ul className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 lg:grid-cols-3 xl:grid-cols-4">
-          {items.map((item, index) => {
-            const product = getProductBySlug(item.slug);
-            return (
-              <li key={item.productId} className="group flex min-w-0 flex-col">
-                <ProductMedia
-                  images={product?.gallery ?? [item.image]}
-                  alt={item.alt}
-                  sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                  showViewLabel={false}
-                  navClassName="right-3 bottom-[4.25rem]"
-                  className="aspect-[3/4] bg-[#eee8de]"
-                  imageClassName="transition-transform duration-700 group-hover:scale-[1.04] motion-reduce:transition-none"
-                >
-                  <Link href={`/product/${item.slug}`} aria-label={`View ${item.name}`} className="absolute inset-0 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-accent" />
-                  <span className="pointer-events-none absolute top-3 left-3 bg-white/90 px-2 py-1 font-mono text-[9px] text-black">SAVE {String(index + 1).padStart(2, "0")}</span>
-                  <button type="button" onClick={() => removeProduct(item.productId)} aria-label={`Remove ${item.name} from saved pieces`} className="absolute top-3 right-3 flex size-10 items-center justify-center rounded-full bg-white/90 text-black opacity-100 transition-opacity hover:bg-accent hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"><Trash2 size={15} aria-hidden="true" /></button>
-                  <Link href={`/product/${item.slug}`} className="absolute inset-x-3 bottom-3 flex min-h-12 translate-y-2 items-center justify-between bg-[#160604] px-4 text-[10px] font-bold tracking-[0.13em] text-white uppercase opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100 focus-visible:translate-y-0 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">Choose size <ArrowRight size={15} aria-hidden="true" /></Link>
-                </ProductMedia>
-                <div className="flex items-start justify-between gap-3 pt-3">
-                  <div className="min-w-0"><p className="text-[9px] font-bold tracking-[0.18em] text-accent uppercase">House of Bollywood</p><h2 className="mt-1 truncate text-sm font-bold"><Link href={`/product/${item.slug}`} className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">{item.name}</Link></h2>{product ? <p className="mt-1 text-[11px] text-muted">{product.sizes.length} sizes available</p> : null}</div>
-                  <p className="shrink-0 text-sm font-bold tabular-nums">{formatInrFromPaise(item.pricePaise)}</p>
+      <ul className={cn(shopStyles.cast, "mt-8 grid gap-6 lg:grid-cols-2")}>
+        {saved.map(({ item, product }, index) => {
+          const seat = String(index + 1).padStart(2, "0");
+          const href = `/product/${item.slug}`;
+          const category = product ? getCategoryById(product.categoryId) : undefined;
+          const pricePaise = product?.pricePaise ?? item.pricePaise;
+          const hasOffer = Boolean(product?.mrpPaise && product.mrpPaise > pricePaise);
+          const off = hasOffer ? Math.round(((product!.mrpPaise! - pricePaise) / product!.mrpPaise!) * 100) : 0;
+          return (
+            <li key={item.productId} className={styles.booking}>
+              <div className={styles.paper}>
+                <Link href={href} aria-label={`View ${item.name}`} className={cn(styles.poster, "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent")}>
+                  <Image src={item.image} alt={item.alt} fill sizes="(max-width: 640px) 112px, 148px" className="object-cover" />
+                </Link>
+                <div className={styles.details}>
+                  <p className={styles.admit}><span>Admit one</span><span>Seat {seat}</span></p>
+                  <p className={styles.row}>{category?.name ?? "House"} · Row {(category?.name ?? "H").charAt(0)}</p>
+                  <h2 className={cn(styles.name, "line-clamp-2")}>
+                    <Link href={href} className="hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">{item.name}</Link>
+                  </h2>
+                  {product ? <p className={cn(styles.meta, "truncate")}>{product.color} · {product.fit}</p> : null}
+                  {product?.sizes.length ? (
+                    <p className={styles.sizes}>
+                      <small>Sizes</small>
+                      {product.sizes.map((size) => <span key={size}>{size}</span>)}
+                    </p>
+                  ) : null}
                 </div>
-                <Link href={`/product/${item.slug}`} className="mt-3 flex min-h-11 items-center justify-center border border-border text-[10px] font-bold tracking-[0.13em] uppercase hover:border-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:hidden">Choose size</Link>
-              </li>
-            );
-          })}
-        </ul>
-        <div className="mt-14 flex flex-col items-start justify-between gap-5 border-t border-border pt-7 sm:flex-row sm:items-center"><p className="flex max-w-lg items-start gap-3 text-xs leading-6 text-muted"><Heart className="mt-1 size-4 shrink-0 text-accent" aria-hidden="true" /> Your edit lives on this device. Account sync will keep it with you everywhere in a later release.</p><Link href="/shop" className="inline-flex min-h-11 items-center gap-3 text-xs font-bold tracking-[0.12em] uppercase hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">Keep discovering <ArrowRight size={15} aria-hidden="true" /></Link></div>
+              </div>
+              <div className={styles.stub}>
+                <p className={styles.stubLabel}>Tonight&apos;s price</p>
+                <p className={styles.price}>{formatInrFromPaise(pricePaise)}</p>
+                <p className={styles.was}>
+                  {hasOffer ? <><span className="sr-only">Original price </span><s>{formatInrFromPaise(product!.mrpPaise!)}</s> <b>{off}% off</b></> : null}
+                </p>
+                <Link href={href} className={cn(styles.cta, "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent")}>
+                  Choose size <ArrowRight size={14} aria-hidden="true" />
+                </Link>
+                <button type="button" onClick={() => removeProduct(item.productId)} aria-label={`Remove ${item.name} from wishlist`} className={cn(styles.release, "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent")}>
+                  <X size={12} aria-hidden="true" /> Remove
+                </button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div className={shopStyles.wrap}>
+        <div>
+          <p>That&apos;s a <span>wrap.</span></p>
+          <small>
+            {count} {count === 1 ? "piece" : "pieces"} saved · together {formatInrFromPaise(totalPaise)}
+            {savingsPaise > 0 ? ` · you save ${formatInrFromPaise(savingsPaise)}` : ""}
+          </small>
+        </div>
+        <Link href="/shop">Keep discovering <ArrowRight size={14} aria-hidden="true" /></Link>
       </div>
     </div>
   );
