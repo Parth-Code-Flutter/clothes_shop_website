@@ -7,6 +7,7 @@ import {
 } from "@/features/catalog/data";
 import { ProductDetail } from "@/features/product/components/product-detail";
 import { RelatedProducts } from "@/features/product/components/related-products";
+import styles from "@/features/product/components/product-detail.module.css";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -43,7 +44,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   ].slice(0, 4);
 
   return (
-    <main className="flex flex-1 flex-col bg-background">
+    <main className={`${styles.hall} flex flex-1 flex-col`}>
       <ProductDetail key={product.id} product={product} />
       <RelatedProducts products={related} />
     </main>
