@@ -1,0 +1,138 @@
+/*
+ * Signed-in dashboard as the member's programme for the night. The hero reuses the members' stage and pass
+ * from account-view; everything below sits in the hall palette so it follows light and dark themes.
+ */
+
+.primary, .ghost {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 22px;
+  font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase;
+  transition: filter .25s, color .25s, border-color .25s;
+}
+.primary {
+  background: linear-gradient(180deg, #d0171d, #9e0f14); color: #fff6ec;
+  -webkit-mask: radial-gradient(circle 7px at 0 50%, #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 7px at 100% 50%, #0000 97%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle 7px at 0 50%, #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 7px at 100% 50%, #0000 97%, #000) right / 51% 100% no-repeat;
+}
+.primary:hover { filter: brightness(1.08); }
+.ghost { border: 1px solid rgb(231 189 98 / 45%); border-radius: 2px; color: #fbf1de; }
+.ghost:hover { border-color: #e7bd62; color: #e7bd62; }
+
+.heroNote { max-width: 30rem; font-size: 14px; line-height: 1.75; color: rgb(251 241 222 / 65%); }
+
+.sprockets { position: relative; }
+.sprockets::before {
+  content: ""; position: absolute; top: 10px; left: 16px; right: 16px; height: 4px;
+  background: repeating-linear-gradient(90deg, var(--sprocket) 0 6px, transparent 6px 13px);
+}
+
+/* ---------- bag / saved tiles ---------- */
+.tile {
+  display: flex; flex-direction: column; gap: 16px; padding: 28px 20px 20px; border-radius: 6px;
+  background: var(--surface); box-shadow: inset 0 0 0 1px var(--hairline);
+  transition: translate .35s cubic-bezier(.2, .8, .2, 1), box-shadow .35s;
+}
+@media (hover: hover) {
+  .tile:hover { translate: 0 -3px; box-shadow: inset 0 0 0 1px var(--gold), 0 22px 40px -26px rgb(29 11 6 / 40%); }
+  :global(.dark) .tile:hover { box-shadow: inset 0 0 0 1px var(--gold), 0 22px 40px -22px rgb(0 0 0 / 85%); }
+  .tile:hover .tileArrow { translate: 4px 0; color: var(--accent); }
+}
+.tileHead { display: flex; align-items: center; gap: 12px; }
+.tileIcon { display: grid; flex: none; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(ellipse at 50% 0%, #d8232a, #8e0f14 80%); color: #fff3dc; }
+.tileLabel { font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+.tileArrow { margin-left: auto; transition: translate .35s, color .35s; }
+.tileValue { font-family: var(--font-display), sans-serif; font-size: 42px; line-height: .95; letter-spacing: .04em; text-transform: uppercase; }
+.tileNote { margin-top: 4px; font-size: 12px; color: var(--muted); }
+
+/* A short length of film: up to four frames of what's inside. */
+.strip {
+  position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px;
+  padding: 11px 8px; border-radius: 3px; background: #1d0b06;
+}
+:global(.dark) .strip { background: #050302; }
+.strip::before, .strip::after {
+  content: ""; position: absolute; left: 6px; right: 6px; height: 3px;
+  background: repeating-linear-gradient(90deg, rgb(255 243 220 / 40%) 0 5px, transparent 5px 11px);
+}
+.strip::before { top: 4px; }
+.strip::after { bottom: 4px; }
+.frame { position: relative; aspect-ratio: 3 / 4; overflow: hidden; border-radius: 2px; background: #efe6d6; }
+:global(.dark) .frame { background: #120906; }
+.frame[data-empty="true"] { background: transparent; border: 1px dashed rgb(255 243 220 / 20%); }
+.frameMore {
+  position: absolute; inset: 0; display: grid; place-items: center; background: rgb(14 8 6 / 62%);
+  font-family: var(--font-display), sans-serif; font-size: 24px; letter-spacing: .04em; color: #fff3dc;
+}
+
+/* ---------- orders ticket ---------- */
+.orders {
+  --notch: 12px;
+  display: grid; grid-template-columns: minmax(0, 1fr) 124px;
+  filter: drop-shadow(0 1px 0 var(--hairline)) drop-shadow(0 18px 28px rgb(29 11 6 / 10%));
+}
+:global(.dark) .orders { filter: drop-shadow(0 0 1px var(--hairline)) drop-shadow(0 18px 28px rgb(0 0 0 / 55%)); }
+.ordersMain {
+  padding: 28px 26px; border-radius: 6px 0 0 6px; background: var(--surface);
+  -webkit-mask: radial-gradient(circle var(--notch) at 100% 0, #0000 97%, #000) top / 100% 51% no-repeat, radial-gradient(circle var(--notch) at 100% 100%, #0000 97%, #000) bottom / 100% 51% no-repeat;
+  mask: radial-gradient(circle var(--notch) at 100% 0, #0000 97%, #000) top / 100% 51% no-repeat, radial-gradient(circle var(--notch) at 100% 100%, #0000 97%, #000) bottom / 100% 51% no-repeat;
+}
+.ordersTitle { font-family: var(--font-display), sans-serif; font-size: 34px; line-height: 1; letter-spacing: .04em; text-transform: uppercase; }
+.ordersLink { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; margin-top: 14px; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.ordersLink svg { transition: translate .3s; }
+.ordersLink:hover svg { translate: 4px 0; }
+.ordersStub {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  border-radius: 0 6px 6px 0; background: radial-gradient(ellipse at 50% 0%, #d8232a, #8e0f14 60%, #4f080b); color: #fff3dc; text-align: center;
+  -webkit-mask: radial-gradient(circle var(--notch) at 0 0, #0000 97%, #000) top / 100% 51% no-repeat, radial-gradient(circle var(--notch) at 0 100%, #0000 97%, #000) bottom / 100% 51% no-repeat;
+  mask: radial-gradient(circle var(--notch) at 0 0, #0000 97%, #000) top / 100% 51% no-repeat, radial-gradient(circle var(--notch) at 0 100%, #0000 97%, #000) bottom / 100% 51% no-repeat;
+}
+.ordersStub::before {
+  content: ""; position: absolute; left: 0; top: calc(var(--notch) + 6px); bottom: calc(var(--notch) + 6px); width: 1px;
+  background: repeating-linear-gradient(180deg, rgb(255 227 161 / 60%) 0 5px, transparent 5px 10px);
+}
+.stubCount { font-family: var(--font-display), sans-serif; font-size: 58px; line-height: .85; color: #e7bd62; }
+.stubLabel { font-size: 8px; font-weight: 800; letter-spacing: .3em; text-transform: uppercase; color: rgb(255 243 220 / 75%); }
+
+/* ---------- side cards ---------- */
+.card { padding: 30px 22px 22px; border-radius: 6px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--hairline); }
+.cardTitle { margin-top: 6px; font-family: var(--font-display), sans-serif; font-size: 32px; line-height: 1; letter-spacing: .04em; text-transform: uppercase; }
+
+.reel { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-top: 16px; }
+.reel span { height: 6px; border-radius: 1px; background: color-mix(in srgb, var(--gold) 18%, transparent); transition: background-color .4s; }
+.reel span[data-done="true"] { background: linear-gradient(90deg, #d0171d, #f0261e); }
+.reelLabel { margin-top: 8px; font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+.step { display: flex; align-items: center; gap: 12px; min-height: 52px; border-top: 1px dashed var(--hairline); font-size: 13px; }
+.step:first-child { margin-top: 14px; }
+.stepMark {
+  display: grid; flex: none; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  border: 1px dashed var(--gold); font-family: var(--font-geist-mono), monospace; font-size: 10px; color: var(--gold);
+}
+.step[data-done="true"] .stepMark { border: 0; background: radial-gradient(ellipse at 50% 0%, #d8232a, #8e0f14 80%); color: #fff3dc; }
+.step[data-done="true"] .stepText { color: var(--muted); }
+.stepLink { display: inline-flex; flex: none; align-items: center; gap: 6px; min-height: 40px; margin-left: auto; font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.stepLink:hover { text-decoration: underline; text-underline-offset: 4px; }
+.stepDone { margin-left: auto; font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+
+/* Credits roll: role on the left, dotted leader, name on the right. */
+.credits { margin-top: 14px; }
+.credit { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; }
+.credit dt {
+  display: flex; flex: 1; align-items: baseline; gap: 10px; min-width: 88px; white-space: nowrap;
+  font-size: 9px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--gold);
+}
+.credit dt::after { content: ""; flex: 1; min-width: 16px; border-bottom: 1px dotted color-mix(in srgb, var(--gold) 50%, transparent); }
+.credit dd { max-width: 62%; text-align: right; overflow-wrap: anywhere; font-size: 13px; font-weight: 600; }
+
+@media (max-width: 639px) {
+  .orders { grid-template-columns: minmax(0, 1fr) 92px; }
+  .ordersMain { padding: 24px 20px; }
+  .ordersTitle { font-size: 28px; }
+  .stubCount { font-size: 46px; }
+  .tileValue { font-size: 36px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary, .ghost, .tile, .tileArrow, .ordersLink svg, .reel span { transition: none; }
+  .tile:hover { translate: none; }
+  .tile:hover .tileArrow, .ordersLink:hover svg { translate: none; }
+}
