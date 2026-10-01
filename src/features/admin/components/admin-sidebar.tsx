@@ -16,13 +16,15 @@ type AdminSidebarProps = {
   collapsed?: boolean;
   /** Desktop only; the mobile drawer has its own close button. */
   onToggleCollapse?: () => void;
+  /** Live counts keyed by nav href, e.g. orders waiting to be packed. */
+  badges?: Record<string, string>;
 };
 
 const allItems = adminNav.flatMap((group) => group.items);
 const readyCount = allItems.filter((item) => item.ready).length;
 const nextUp = allItems.find((item) => !item.ready);
 
-export function AdminSidebar({ onNavigate, collapsed = false, onToggleCollapse }: AdminSidebarProps) {
+export function AdminSidebar({ onNavigate, collapsed = false, onToggleCollapse, badges = {} }: AdminSidebarProps) {
   const pathname = usePathname();
   const [tip, setTip] = useState<Tip | null>(null);
 
@@ -94,7 +96,8 @@ export function AdminSidebar({ onNavigate, collapsed = false, onToggleCollapse }
               {group.items.map((item) => {
                 const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
                 const Icon = item.icon;
-                const tipLabel = item.ready ? item.label : `${item.label} · Coming soon`;
+                const badge = item.ready ? badges[item.href] : undefined;
+                const tipLabel = item.ready ? (badge ? `${item.label} · ${badge}` : item.label) : `${item.label} · Coming soon`;
                 const inner = (
                   <>
                     <span
@@ -108,12 +111,12 @@ export function AdminSidebar({ onNavigate, collapsed = false, onToggleCollapse }
                       <Icon className="size-4" strokeWidth={active ? 2 : 1.7} aria-hidden="true" />
                     </span>
                     <span className={cn("flex-1 truncate", collapsed && "sr-only")}>{item.label}</span>
-                    {item.ready && item.badge && !collapsed ? (
+                    {badge && !collapsed ? (
                       <span className="rounded-md bg-adm-sidebar-accent/15 px-1.5 py-px text-[11px] font-semibold text-adm-sidebar-accent tabular-nums">
-                        {item.badge}
+                        {badge}
                       </span>
                     ) : null}
-                    {item.ready && item.badge && collapsed ? (
+                    {badge && collapsed ? (
                       <span aria-hidden="true" className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-adm-sidebar-accent ring-2 ring-adm-sidebar" />
                     ) : null}
                     {!item.ready && !collapsed ? (

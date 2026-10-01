@@ -68,6 +68,22 @@ export function PageHeader({
   );
 }
 
+export function PageLink({ href, label, children }: { href: string | null; label: string; children: ReactNode }) {
+  const className = "inline-flex size-8 items-center justify-center rounded-lg border border-adm-line bg-adm-surface";
+  if (!href) {
+    return (
+      <span aria-disabled="true" aria-label={label} className={cn(className, "opacity-40")}>
+        {children}
+      </span>
+    );
+  }
+  return (
+    <Link href={href} scroll={false} aria-label={label} className={cn(className, "text-adm-ink transition-colors hover:bg-adm-surface-muted")}>
+      {children}
+    </Link>
+  );
+}
+
 export function Card({ title, description, action, children, className }: { title?: string; description?: string; action?: ReactNode; children: ReactNode; className?: string }) {
   return (
     <section className={cn(TILE_CLASS, className)}>

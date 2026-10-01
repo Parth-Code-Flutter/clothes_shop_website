@@ -175,9 +175,9 @@ export function BriefTile({ items, delay }: { items: DashboardData["brief"]; del
 }
 
 const ATTENTION_META: Record<AttentionKind, { label: string; icon: LucideIcon; chip: string; href: string }> = {
-  pack: { label: "Orders to pack", icon: PackageOpen, chip: "bg-adm-accent-soft text-adm-accent", href: "/admin/orders" },
-  payment: { label: "Awaiting payment", icon: Clock3, chip: "bg-adm-warning-soft text-adm-warning", href: "/admin/orders" },
-  returns: { label: "Return requests", icon: Undo2, chip: "bg-adm-danger-soft text-adm-danger", href: "/admin/orders" },
+  pack: { label: "Orders to pack", icon: PackageOpen, chip: "bg-adm-accent-soft text-adm-accent", href: "/admin/orders?view=to_pack" },
+  payment: { label: "Awaiting payment", icon: Clock3, chip: "bg-adm-warning-soft text-adm-warning", href: "/admin/orders?view=unpaid" },
+  returns: { label: "Return requests", icon: Undo2, chip: "bg-adm-danger-soft text-adm-danger", href: "/admin/orders?view=returns" },
   stock: { label: "Sizes running low", icon: AlertTriangle, chip: "bg-adm-warning-soft text-adm-warning", href: "/admin/products?view=low" },
   reviews: { label: "Reviews to approve", icon: MessageSquareQuote, chip: "bg-adm-info-soft text-adm-info", href: "/admin/reviews" },
 };

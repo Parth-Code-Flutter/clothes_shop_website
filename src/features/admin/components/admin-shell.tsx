@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 type AdminShellProps = {
   user: { name: string; email: string };
   defaultCollapsed?: boolean;
+  badges?: Record<string, string>;
   children: ReactNode;
 };
 
@@ -23,7 +24,7 @@ function initials(name: string) {
     .join("");
 }
 
-export function AdminShell({ user, defaultCollapsed = false, children }: AdminShellProps) {
+export function AdminShell({ user, defaultCollapsed = false, badges, children }: AdminShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
 
@@ -66,7 +67,7 @@ export function AdminShell({ user, defaultCollapsed = false, children }: AdminSh
           collapsed ? "w-[76px]" : "w-[256px]",
         )}
       >
-        <AdminSidebar collapsed={collapsed} onToggleCollapse={toggleCollapsed} />
+        <AdminSidebar collapsed={collapsed} onToggleCollapse={toggleCollapsed} badges={badges} />
       </aside>
 
       <div
@@ -89,7 +90,7 @@ export function AdminShell({ user, defaultCollapsed = false, children }: AdminSh
             drawerOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
-          {drawerOpen ? <AdminSidebar onNavigate={() => setDrawerOpen(false)} /> : null}
+          {drawerOpen ? <AdminSidebar onNavigate={() => setDrawerOpen(false)} badges={badges} /> : null}
           <button
             type="button"
             onClick={() => setDrawerOpen(false)}

@@ -1,11 +1,14 @@
 import { adminBrand } from "@/features/admin/config/admin-brand";
+import { getOrderStats, getOrders } from "@/features/admin/data/orders";
 import { getLowStockSizes } from "@/features/admin/data/products";
+import { formatRelative } from "@/features/admin/lib/format";
+import type { OrderStatus, PaymentMethod } from "@/features/admin/lib/order-status";
 import { getAllCategories, getAllProducts } from "@/features/catalog/data";
 
 /**
  * SAMPLE dashboard data.
- * Products and categories are the real catalogue and stock comes from the admin
- * product data; orders, revenue and traffic are generated deterministically per calendar day so the numbers
+ * Products and categories are the real catalogue; stock, recent orders and the
+ * order tasks come from the admin data modules. Revenue and traffic are generated deterministically per calendar day so the numbers
  * are stable between reloads. Replace getDashboardData() with real queries once
  * an orders backend exists — the returned shape is what the UI expects.
  */
@@ -19,16 +22,15 @@ export type DayPoint = {
   sessions: number;
 };
 
-export type OrderStatus = "Awaiting payment" | "Paid" | "Processing" | "Shipped" | "Delivered" | "Refunded";
-
 export type RecentOrder = {
   id: string;
+  number: string;
   customer: string;
   city: string;
   items: number;
   totalPaise: number;
   status: OrderStatus;
-  payment: "UPI" | "Card" | "COD";
+  payment: PaymentMethod;
   placed: string;
 };
 
@@ -77,20 +79,6 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEKDAY_FACTOR = [1.2, 0.85, 0.82, 0.9, 0.96, 1.14, 1.32];
 const SERIES_DAYS = 180;
 
-const CUSTOMERS = [
-  ["Aarav Mehta", "Ahmedabad"],
-  ["Diya Shah", "Surat"],
-  ["Kabir Desai", "Rajkot"],
-  ["Ishita Patel", "Vadodara"],
-  ["Rohan Joshi", "Mumbai"],
-  ["Meera Iyer", "Pune"],
-  ["Vihaan Trivedi", "Junagadh"],
-] as const;
-
-const ORDER_STATUSES: OrderStatus[] = ["Paid", "Processing", "Awaiting payment", "Shipped", "Delivered", "Processing", "Refunded"];
-const PAYMENTS: RecentOrder["payment"][] = ["UPI", "Card", "UPI", "COD", "UPI", "Card", "UPI"];
-const PLACED = ["12 min ago", "38 min ago", "1 h ago", "2 h ago", "4 h ago", "Yesterday", "Yesterday"];
-
 function localDayStart(now: Date) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: adminBrand.timeZone,
@@ -137,23 +125,22 @@ export function getDashboardData(now = new Date()): DashboardData {
   const orders30 = last30.reduce((total, day) => total + day.orders, 0);
   const sessions30 = last30.reduce((total, day) => total + day.sessions, 0);
 
-  const recentOrders = CUSTOMERS.map(([customer, city], index): RecentOrder => {
-    const items = 1 + Math.floor(random() * 3);
-    let totalPaise = 0;
-    for (let item = 0; item < items; item += 1) {
-      totalPaise += products[Math.floor(random() * products.length)].pricePaise;
-    }
-    return {
-      id: `#HB-${(10482 - index * 7).toString()}`,
-      customer,
-      city,
-      items,
-      totalPaise,
-      status: ORDER_STATUSES[index],
-      payment: PAYMENTS[index],
-      placed: PLACED[index],
-    };
-  });
+  const recentOrders = getOrders(now)
+    .slice(0, 5)
+    .map(
+      (order): RecentOrder => ({
+        id: order.id,
+        number: order.number,
+        customer: order.customer.name,
+        city: order.shipping.city,
+        items: order.items.reduce((total, item) => total + item.quantity, 0),
+        totalPaise: order.totalPaise,
+        status: order.status,
+        payment: order.payment.method,
+        placed: formatRelative(order.placedAt, now),
+      }),
+    );
+  const orderStats = getOrderStats(now);
 
   const topProducts = [...products]
     .sort((a, b) => b.popularity - a.popularity)
@@ -288,9 +275,9 @@ export function getDashboardData(now = new Date()): DashboardData {
       daysInMonth,
     },
     attention: [
-      { kind: "pack", count: 7, hint: "Oldest has waited 3 h" },
-      { kind: "payment", count: 3, hint: "UPI and COD confirmations" },
-      { kind: "returns", count: 2, hint: "Reply within 48 h" },
+      { kind: "pack", count: orderStats.toPack, hint: orderStats.toPack ? `Oldest has waited ${orderStats.oldestToPackHours} h` : "All caught up" },
+      { kind: "payment", count: orderStats.awaitingPayment, hint: "Unconfirmed UPI and card payments" },
+      { kind: "returns", count: orderStats.returnsOpen, hint: "Reply within 48 h" },
       {
         kind: "stock",
         count: lowStock.length,
@@ -298,7 +285,7 @@ export function getDashboardData(now = new Date()): DashboardData {
       },
       { kind: "reviews", count: 5, hint: "Waiting for approval" },
     ],
-    recentOrders: recentOrders.slice(0, 5),
+    recentOrders,
     topProducts,
     categoryMix,
     funnel: [

@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
-import type { DashboardData, OrderStatus } from "@/features/admin/data/dashboard";
+import type { DashboardData } from "@/features/admin/data/dashboard";
+import { OrderStatusBadge } from "@/features/admin/components/orders/order-badges";
 import { adminNav } from "@/features/admin/config/admin-nav";
 import { formatMoney, formatNumber, formatPercent } from "@/features/admin/lib/format";
 import { cn } from "@/lib/utils";
@@ -67,24 +68,6 @@ export function ModuleLink({ href, children, className }: { href: string; childr
   );
 }
 
-const STATUS_STYLE: Record<OrderStatus, string> = {
-  "Awaiting payment": "bg-adm-warning-soft text-adm-warning",
-  Paid: "bg-adm-accent-soft text-adm-accent",
-  Processing: "bg-adm-info-soft text-adm-info",
-  Shipped: "bg-adm-info-soft text-adm-info",
-  Delivered: "bg-adm-success-soft text-adm-success",
-  Refunded: "bg-adm-danger-soft text-adm-danger",
-};
-
-function StatusBadge({ status }: { status: OrderStatus }) {
-  return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-medium whitespace-nowrap", STATUS_STYLE[status])}>
-      <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
-      {status}
-    </span>
-  );
-}
-
 export function RecentOrdersPanel({ orders, delay }: { orders: DashboardData["recentOrders"]; delay?: number }) {
   return (
     <Panel title="Recent orders" description={`Latest ${orders.length} orders`} action={<ModuleLink href="/admin/orders" className="pt-1">View all</ModuleLink>} delay={delay}>
@@ -100,9 +83,11 @@ export function RecentOrdersPanel({ orders, delay }: { orders: DashboardData["re
           </thead>
           <tbody className="divide-y divide-adm-line border-t border-adm-line">
             {orders.map((order) => (
-              <tr key={order.id} className="transition-colors hover:bg-adm-surface-muted/60">
+              <tr key={order.id} className="group relative transition-colors hover:bg-adm-surface-muted/60">
                 <td className="px-6 py-3.5">
-                  <p className="font-medium text-adm-ink tabular-nums">{order.id}</p>
+                  <Link href={`/admin/orders/${order.id}`} className="font-medium text-adm-ink tabular-nums group-hover:text-adm-accent focus-visible:outline-none after:absolute after:inset-0">
+                    {order.number}
+                  </Link>
                   <p className="text-[12px] text-adm-ink-faint">{order.placed}</p>
                 </td>
                 <td className="px-3 py-3.5">
@@ -112,7 +97,7 @@ export function RecentOrdersPanel({ orders, delay }: { orders: DashboardData["re
                   </p>
                 </td>
                 <td className="px-3 py-3.5">
-                  <StatusBadge status={order.status} />
+                  <OrderStatusBadge status={order.status} className="px-2.5 py-1" />
                 </td>
                 <td className="px-6 py-3.5 text-right font-medium text-adm-ink tabular-nums">{formatMoney(order.totalPaise)}</td>
               </tr>
@@ -123,17 +108,19 @@ export function RecentOrdersPanel({ orders, delay }: { orders: DashboardData["re
 
       <ul className="divide-y divide-adm-line md:hidden">
         {orders.map((order) => (
-          <li key={order.id} className="flex flex-col gap-2 px-5 py-4">
-            <div className="flex items-center justify-between gap-3">
-              <p className="font-medium tabular-nums">{order.id}</p>
-              <p className="font-medium tabular-nums">{formatMoney(order.totalPaise)}</p>
-            </div>
-            <div className="flex items-center justify-between gap-3">
-              <p className="min-w-0 truncate text-[13px] text-adm-ink-soft">
-                {order.customer} · {order.placed}
-              </p>
-              <StatusBadge status={order.status} />
-            </div>
+          <li key={order.id}>
+            <Link href={`/admin/orders/${order.id}`} className="flex flex-col gap-2 px-5 py-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-medium tabular-nums">{order.number}</p>
+                <p className="font-medium tabular-nums">{formatMoney(order.totalPaise)}</p>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <p className="min-w-0 truncate text-[13px] text-adm-ink-soft">
+                  {order.customer} · {order.placed}
+                </p>
+                <OrderStatusBadge status={order.status} />
+              </div>
+            </Link>
           </li>
         ))}
       </ul>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { requireAdmin } from "@/features/admin/auth/dal";
 import {
@@ -15,7 +15,7 @@ import {
 } from "@/features/admin/data/products";
 import { ProductsFilters } from "@/features/admin/components/products/products-filters";
 import { ProductsTable, type ProductRow } from "@/features/admin/components/products/products-table";
-import { PageHeader, TILE_CLASS, buttonClass } from "@/features/admin/components/ui";
+import { PageHeader, PageLink, TILE_CLASS, buttonClass } from "@/features/admin/components/ui";
 import { formatMoney, formatNumber } from "@/features/admin/lib/format";
 import { productsHref } from "@/features/admin/lib/products-url";
 import { cn } from "@/lib/utils";
@@ -165,21 +165,5 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
         ) : null}
       </section>
     </div>
-  );
-}
-
-function PageLink({ href, label, children }: { href: string | null; label: string; children: ReactNode }) {
-  const className = "inline-flex size-8 items-center justify-center rounded-lg border border-adm-line bg-adm-surface";
-  if (!href) {
-    return (
-      <span aria-disabled="true" aria-label={label} className={cn(className, "opacity-40")}>
-        {children}
-      </span>
-    );
-  }
-  return (
-    <Link href={href} scroll={false} aria-label={label} className={cn(className, "text-adm-ink transition-colors hover:bg-adm-surface-muted")}>
-      {children}
-    </Link>
   );
 }

@@ -19,7 +19,6 @@ export type AdminNavItem = {
   icon: LucideIcon;
   /** False until the screen is built; shown as "Soon" and not clickable. */
   ready: boolean;
-  badge?: string;
 };
 
 export type AdminNavGroup = { label: string; items: AdminNavItem[] };
@@ -38,11 +37,11 @@ export const adminNav: AdminNavGroup[] = [
   {
     label: "Commerce",
     items: [
-      { label: "Orders", href: "/admin/orders", icon: ShoppingBag, ready: false, badge: "12" },
+      { label: "Orders", href: "/admin/orders", icon: ShoppingBag, ready: true },
       { label: "Products", href: "/admin/products", icon: Shirt, ready: true },
       { label: "Collections", href: "/admin/collections", icon: Layers, ready: false },
       { label: "Inventory", href: "/admin/inventory", icon: Boxes, ready: false },
-      { label: "Customers", href: "/admin/customers", icon: Users, ready: false },
+      { label: "Customers", href: "/admin/customers", icon: Users, ready: true },
       { label: "Discounts", href: "/admin/discounts", icon: TicketPercent, ready: false },
     ],
   },
