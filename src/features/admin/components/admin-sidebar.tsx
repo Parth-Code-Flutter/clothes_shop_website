@@ -165,7 +165,7 @@ export function AdminSidebar({ onNavigate, collapsed = false, onToggleCollapse, 
       </nav>
 
       <div className={cn("relative shrink-0 border-t border-adm-sidebar-line", collapsed ? "flex justify-center py-3" : "flex flex-col gap-2 p-3")}>
-        {collapsed ? null : (
+        {collapsed || !nextUp ? null : (
           <div className="rounded-xl border border-adm-sidebar-line bg-adm-surface p-3 shadow-[0_1px_2px_rgb(0_0_0/0.04)]">
             <div className="flex items-center justify-between text-[12px]">
               <span className="font-medium text-adm-sidebar-ink">Console setup</span>
@@ -179,11 +179,9 @@ export function AdminSidebar({ onNavigate, collapsed = false, onToggleCollapse, 
                 style={{ width: `${Math.max(6, (readyCount / allItems.length) * 100)}%` }}
               />
             </div>
-            {nextUp ? (
-              <p className="mt-2 truncate text-[11.5px] text-adm-sidebar-ink-soft">
-                Next up: <span className="font-medium text-adm-sidebar-ink">{nextUp.label}</span>
-              </p>
-            ) : null}
+            <p className="mt-2 truncate text-[11.5px] text-adm-sidebar-ink-soft">
+              Next up: <span className="font-medium text-adm-sidebar-ink">{nextUp.label}</span>
+            </p>
           </div>
         )}
         <Link

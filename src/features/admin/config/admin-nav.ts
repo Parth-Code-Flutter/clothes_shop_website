@@ -54,6 +54,6 @@ export const adminNav: AdminNavGroup[] = [
   },
   {
     label: "System",
-    items: [{ label: "Settings", href: "/admin/settings", icon: Settings, ready: false }],
+    items: [{ label: "Settings", href: "/admin/settings", icon: Settings, ready: true }],
   },
 ];
