@@ -40,7 +40,7 @@ export const adminNav: AdminNavGroup[] = [
       { label: "Orders", href: "/admin/orders", icon: ShoppingBag, ready: true },
       { label: "Products", href: "/admin/products", icon: Shirt, ready: true },
       { label: "Collections", href: "/admin/collections", icon: Layers, ready: false },
-      { label: "Inventory", href: "/admin/inventory", icon: Boxes, ready: false },
+      { label: "Inventory", href: "/admin/inventory", icon: Boxes, ready: true },
       { label: "Customers", href: "/admin/customers", icon: Users, ready: true },
       { label: "Discounts", href: "/admin/discounts", icon: TicketPercent, ready: false },
     ],
