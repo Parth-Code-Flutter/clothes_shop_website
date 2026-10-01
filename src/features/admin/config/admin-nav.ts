@@ -49,7 +49,7 @@ export const adminNav: AdminNavGroup[] = [
     label: "Storefront",
     items: [
       { label: "Content", href: "/admin/content", icon: FileText, ready: false },
-      { label: "Reviews", href: "/admin/reviews", icon: MessageSquareQuote, ready: false },
+      { label: "Reviews", href: "/admin/reviews", icon: MessageSquareQuote, ready: true },
     ],
   },
   {

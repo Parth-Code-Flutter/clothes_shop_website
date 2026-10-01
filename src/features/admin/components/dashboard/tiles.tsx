@@ -179,7 +179,7 @@ const ATTENTION_META: Record<AttentionKind, { label: string; icon: LucideIcon; c
   payment: { label: "Awaiting payment", icon: Clock3, chip: "bg-adm-warning-soft text-adm-warning", href: "/admin/orders?view=unpaid" },
   returns: { label: "Return requests", icon: Undo2, chip: "bg-adm-danger-soft text-adm-danger", href: "/admin/orders?view=returns" },
   stock: { label: "Sizes running low", icon: AlertTriangle, chip: "bg-adm-warning-soft text-adm-warning", href: "/admin/inventory?view=restock" },
-  reviews: { label: "Reviews to approve", icon: MessageSquareQuote, chip: "bg-adm-info-soft text-adm-info", href: "/admin/reviews" },
+  reviews: { label: "Reviews to approve", icon: MessageSquareQuote, chip: "bg-adm-info-soft text-adm-info", href: "/admin/reviews?view=pending" },
 };
 
 export function AttentionTile({ items, delay }: { items: DashboardData["attention"]; delay?: number }) {

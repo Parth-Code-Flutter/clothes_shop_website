@@ -1,6 +1,7 @@
 import { adminBrand } from "@/features/admin/config/admin-brand";
 import { getOrderStats, getOrders } from "@/features/admin/data/orders";
 import { getLowStockSizes } from "@/features/admin/data/products";
+import { getReviewStats } from "@/features/admin/data/reviews";
 import { formatRelative } from "@/features/admin/lib/format";
 import type { OrderStatus, PaymentMethod } from "@/features/admin/lib/order-status";
 import { getAllCategories, getAllProducts } from "@/features/catalog/data";
@@ -141,6 +142,7 @@ export function getDashboardData(now = new Date()): DashboardData {
       }),
     );
   const orderStats = getOrderStats(now);
+  const reviewStats = getReviewStats(now);
 
   const topProducts = [...products]
     .sort((a, b) => b.popularity - a.popularity)
@@ -283,7 +285,7 @@ export function getDashboardData(now = new Date()): DashboardData {
         count: lowStock.length,
         hint: scarce ? `${scarce.name}, size ${scarce.size}` : "All sizes in stock",
       },
-      { kind: "reviews", count: 5, hint: "Waiting for approval" },
+      { kind: "reviews", count: reviewStats.pending, hint: reviewStats.pending ? "Not visible to shoppers yet" : "All caught up" },
     ],
     recentOrders,
     topProducts,
