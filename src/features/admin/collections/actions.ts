@@ -8,7 +8,6 @@ import {
   COLLECTION_SORTS,
   CONDITION_FIELDS,
   FIELD_META,
-  SLUG_PATTERN,
   TAGS,
   type CollectionKind,
   type CollectionRules,
@@ -16,6 +15,7 @@ import {
   type Condition,
   type Tag,
 } from "@/features/admin/lib/collection-rules";
+import { SLUG_PATTERN } from "@/features/admin/lib/slug";
 
 export type CollectionFormState = {
   status: "idle" | "saved" | "preview" | "error";

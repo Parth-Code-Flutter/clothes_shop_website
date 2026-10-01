@@ -18,13 +18,13 @@ import {
   TAGS,
   TAG_LABELS,
   resolveProducts,
-  slugify,
   type CollectionKind,
   type Condition,
   type ConditionField,
   type RuleProduct,
 } from "@/features/admin/lib/collection-rules";
 import { formatMoney } from "@/features/admin/lib/format";
+import { slugify } from "@/features/admin/lib/slug";
 import { cn } from "@/lib/utils";
 
 type Category = { id: string; name: string };
