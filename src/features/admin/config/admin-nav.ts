@@ -42,7 +42,7 @@ export const adminNav: AdminNavGroup[] = [
       { label: "Collections", href: "/admin/collections", icon: Layers, ready: false },
       { label: "Inventory", href: "/admin/inventory", icon: Boxes, ready: true },
       { label: "Customers", href: "/admin/customers", icon: Users, ready: true },
-      { label: "Discounts", href: "/admin/discounts", icon: TicketPercent, ready: false },
+      { label: "Discounts", href: "/admin/discounts", icon: TicketPercent, ready: true },
     ],
   },
   {

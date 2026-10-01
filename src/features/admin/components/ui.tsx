@@ -68,6 +68,24 @@ export function PageHeader({
   );
 }
 
+export function Field({ label, htmlFor, hint, error, children, className }: { label: string; htmlFor: string; hint?: string; error?: string; children: ReactNode; className?: string }) {
+  return (
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <label htmlFor={htmlFor} className="text-[12.5px] font-medium text-adm-ink">
+        {label}
+      </label>
+      {children}
+      {error ? (
+        <p id={`${htmlFor}-error`} className="text-[12px] text-adm-danger">
+          {error}
+        </p>
+      ) : hint ? (
+        <p className="text-[12px] text-adm-ink-faint">{hint}</p>
+      ) : null}
+    </div>
+  );
+}
+
 export function PageLink({ href, label, children }: { href: string | null; label: string; children: ReactNode }) {
   const className = "inline-flex size-8 items-center justify-center rounded-lg border border-adm-line bg-adm-surface";
   if (!href) {

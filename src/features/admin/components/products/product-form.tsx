@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { startTransition, useActionState, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { startTransition, useActionState, useEffect, useId, useRef, useState } from "react";
 import { CheckCircle2, ExternalLink, ImagePlus, Info, Loader2, Star, TriangleAlert } from "lucide-react";
 import type { ProductStatus } from "@/features/admin/data/products";
 import { saveProductAction, type ProductFormState } from "@/features/admin/products/actions";
-import { Card, buttonClass, inputClass } from "@/features/admin/components/ui";
+import { Card, Field, buttonClass, inputClass } from "@/features/admin/components/ui";
 import { formatMoney } from "@/features/admin/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -53,24 +53,6 @@ function slugify(value: string) {
 function toPaise(value: string) {
   const amount = Number(value.replace(/[₹,\s]/g, ""));
   return value.trim() && Number.isFinite(amount) ? Math.round(amount * 100) : null;
-}
-
-function Field({ label, htmlFor, hint, error, children, className }: { label: string; htmlFor: string; hint?: string; error?: string; children: ReactNode; className?: string }) {
-  return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      <label htmlFor={htmlFor} className="text-[12.5px] font-medium text-adm-ink">
-        {label}
-      </label>
-      {children}
-      {error ? (
-        <p id={`${htmlFor}-error`} className="text-[12px] text-adm-danger">
-          {error}
-        </p>
-      ) : hint ? (
-        <p className="text-[12px] text-adm-ink-faint">{hint}</p>
-      ) : null}
-    </div>
-  );
 }
 
 export function ProductForm({ initial, categories, threshold }: { initial: ProductFormValues; categories: Category[]; threshold: number }) {
