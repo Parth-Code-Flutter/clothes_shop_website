@@ -1,9 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { Bell, ChevronDown, LogOut, Menu, Search, Settings, X } from "lucide-react";
+import { ChevronDown, LogOut, Menu, Search, UserRound, X } from "lucide-react";
 import { logoutAction } from "@/features/admin/auth/actions";
 import { ADMIN_SIDEBAR_COOKIE } from "@/features/admin/config/admin-nav";
+import type { AdminNotifications } from "@/features/admin/data/notifications";
+import { AdminNotificationsMenu } from "@/features/admin/components/admin-notifications";
 import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
 import { AdminThemeToggle } from "@/features/admin/components/admin-theme-toggle";
 import { cn } from "@/lib/utils";
@@ -12,6 +15,7 @@ type AdminShellProps = {
   user: { name: string; email: string };
   defaultCollapsed?: boolean;
   badges?: Record<string, string>;
+  notifications: AdminNotifications;
   children: ReactNode;
 };
 
@@ -24,7 +28,7 @@ function initials(name: string) {
     .join("");
 }
 
-export function AdminShell({ user, defaultCollapsed = false, badges, children }: AdminShellProps) {
+export function AdminShell({ user, defaultCollapsed = false, badges, notifications, children }: AdminShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
 
@@ -116,14 +120,7 @@ export function AdminShell({ user, defaultCollapsed = false, badges, children }:
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <AdminThemeToggle />
-            <button
-              type="button"
-              aria-label="Notifications, 3 unread"
-              className="relative inline-flex size-9 items-center justify-center rounded-lg border border-adm-line bg-adm-surface text-adm-ink-soft transition-colors hover:text-adm-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-adm-accent"
-            >
-              <Bell className="size-[18px]" strokeWidth={1.6} />
-              <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-adm-accent ring-2 ring-adm-surface" />
-            </button>
+            <AdminNotificationsMenu notifications={notifications} />
             <ProfileMenu user={user} />
           </div>
         </header>
@@ -209,11 +206,15 @@ function ProfileMenu({ user }: { user: AdminShellProps["user"] }) {
             <p className="truncate text-[12px] text-adm-ink-faint">{user.email}</p>
           </div>
           <div className="p-1.5">
-            <span role="menuitem" aria-disabled="true" className="flex h-10 items-center gap-3 rounded-lg px-3 text-[14px] text-adm-ink-faint">
-              <Settings className="size-4" strokeWidth={1.6} />
-              Store settings
-              <span className="ml-auto text-[10px] font-semibold tracking-[0.06em] uppercase">Soon</span>
-            </span>
+            <Link
+              href="/admin/profile"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className="flex h-10 items-center gap-3 rounded-lg px-3 text-[14px] text-adm-ink transition-colors hover:bg-adm-surface-muted focus-visible:outline-2 focus-visible:outline-adm-accent"
+            >
+              <UserRound className="size-4" strokeWidth={1.6} />
+              Profile settings
+            </Link>
             <form action={logoutAction}>
               <button
                 type="submit"

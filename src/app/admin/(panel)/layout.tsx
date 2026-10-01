@@ -4,6 +4,7 @@ import { requireAdmin } from "@/features/admin/auth/dal";
 import { AdminShell } from "@/features/admin/components/admin-shell";
 import { ADMIN_SIDEBAR_COOKIE } from "@/features/admin/config/admin-nav";
 import { getInventoryStats } from "@/features/admin/data/inventory";
+import { getAdminNotifications } from "@/features/admin/data/notifications";
 import { getOrderStats } from "@/features/admin/data/orders";
 import { getReviewStats } from "@/features/admin/data/reviews";
 
@@ -18,7 +19,7 @@ export default async function AdminPanelLayout({ children }: { children: ReactNo
   const { pending } = getReviewStats();
   if (pending > 0) badges["/admin/reviews"] = String(pending);
   return (
-    <AdminShell user={{ name: session.name, email: session.email }} defaultCollapsed={collapsed} badges={badges}>
+    <AdminShell user={{ name: session.name, email: session.email }} defaultCollapsed={collapsed} badges={badges} notifications={getAdminNotifications()}>
       {children}
     </AdminShell>
   );
