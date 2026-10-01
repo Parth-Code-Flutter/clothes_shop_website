@@ -3,46 +3,79 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useTransition, type ReactNode } from "react";
-import { Ban, CreditCard, PackageCheck, ReceiptText, X } from "lucide-react";
-import { bulkOrderAction, type BulkOrderAction } from "@/features/admin/orders/actions";
+import { Ban, Check, CreditCard, MessageSquare, PackageCheck, ReceiptText, Truck, X } from "lucide-react";
+import { bulkOrderAction, updateOrderAction, type BulkOrderAction } from "@/features/admin/orders/actions";
 import { useToast } from "@/features/admin/components/admin-toast";
-import { OrderStatusBadge, PaymentLabel } from "@/features/admin/components/orders/order-badges";
+import { OrderStatusBadge } from "@/features/admin/components/orders/order-badges";
 import { buttonClass } from "@/features/admin/components/ui";
 import { formatMoney } from "@/features/admin/lib/format";
-import type { OrderStatus, PaymentMethod, PaymentStatus } from "@/features/admin/lib/order-status";
+import { PRIMARY_ACTION, canRun, type OrderAction, type OrderStatus, type PaymentMethod, type PaymentStatus } from "@/features/admin/lib/order-status";
 import { cn } from "@/lib/utils";
+
+export type OrderLine = { name: string; image: string; size: string; quantity: number };
 
 export type OrderRow = {
   id: string;
   number: string;
   placedLabel: string;
   placedFull: string;
+  /** Hours since the order was placed; the row flags it once an order has waited 6 hours and still needs a person. */
+  waitHours: number;
   customer: string;
   city: string;
   status: OrderStatus;
   method: PaymentMethod;
   paymentStatus: PaymentStatus;
   totalPaise: number;
-  itemCount: number;
-  firstItem: string;
-  images: string[];
+  hasNote: boolean;
+  lines: OrderLine[];
 };
 
-function Thumbs({ images, count }: { images: string[]; count: number }) {
-  return (
-    <span className="flex shrink-0 -space-x-3">
-      {images.slice(0, 2).map((src, index) => (
-        <span key={`${src}-${index}`} className="relative size-9 overflow-hidden rounded-lg border-2 border-adm-surface bg-adm-surface-muted">
-          <Image src={src} alt="" fill sizes="36px" className="object-cover" />
-        </span>
-      ))}
-      {count > 2 ? (
-        <span className="relative inline-flex size-9 items-center justify-center rounded-lg border-2 border-adm-surface bg-adm-surface-muted text-[11px] font-semibold text-adm-ink-soft">
-          +{count - 2}
-        </span>
-      ) : null}
-    </span>
-  );
+const URGENT_HOURS = 6;
+const CHECKBOX = "size-4 cursor-pointer rounded border-adm-line-strong accent-[var(--adm-accent)]";
+
+/** One-click steps. Shipping needs a tracking number and a return needs a decision, so those open the order. */
+const INLINE: Partial<Record<OrderAction, { label: string; icon: typeof Check }>> = {
+  mark_paid: { label: "Confirm payment", icon: CreditCard },
+  mark_packed: { label: "Mark packed", icon: PackageCheck },
+  mark_delivered: { label: "Mark delivered", icon: Check },
+};
+
+const NEEDS_YOU = new Set<OrderStatus>(["awaiting_payment", "to_pack", "ready_to_ship", "return_requested"]);
+
+function pieces(lines: OrderLine[]) {
+  return lines.reduce((total, line) => total + line.quantity, 0);
+}
+
+function NextStep({ order, sent, busy, onRun }: { order: OrderRow; sent: boolean; busy: boolean; onRun: (action: OrderAction) => void }) {
+  if (sent) return <span className="text-[12px] font-medium text-adm-success">Sent</span>;
+  const action = PRIMARY_ACTION[order.status];
+  const inline = action ? INLINE[action] : undefined;
+  if (inline && action) {
+    const Icon = inline.icon;
+    return (
+      <button type="button" disabled={busy} onClick={() => onRun(action)} className={cn(buttonClass.primary, "relative z-10 h-8 px-2.5")}>
+        <Icon className="size-3.5" strokeWidth={2} aria-hidden="true" />
+        {inline.label}
+      </button>
+    );
+  }
+  if (order.status === "ready_to_ship") {
+    return (
+      <Link href={`/admin/orders/${order.id}#ship`} className={cn(buttonClass.primary, "relative z-10 h-8 px-2.5")}>
+        <Truck className="size-3.5" strokeWidth={2} aria-hidden="true" />
+        Add tracking
+      </Link>
+    );
+  }
+  if (order.status === "return_requested") {
+    return (
+      <Link href={`/admin/orders/${order.id}`} className={cn(buttonClass.secondary, "relative z-10 h-8 px-2.5")}>
+        Review return
+      </Link>
+    );
+  }
+  return null;
 }
 
 const BULK: { action: BulkOrderAction; label: string; icon: typeof Ban; danger?: boolean }[] = [
@@ -53,6 +86,7 @@ const BULK: { action: BulkOrderAction; label: string; icon: typeof Ban; danger?:
 
 export function OrdersTable({ orders, emptyAction }: { orders: OrderRow[]; emptyAction: ReactNode }) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [sent, setSent] = useState<Set<string>>(new Set());
   const [pending, startTransition] = useTransition();
   const [toast, showToast] = useToast();
 
@@ -69,6 +103,17 @@ export function OrdersTable({ orders, emptyAction }: { orders: OrderRow[]; empty
       return next;
     });
   const toggleAll = () => setSelected(allSelected ? new Set() : new Set(ids));
+
+  const runOne = (order: OrderRow, action: OrderAction) => {
+    startTransition(async () => {
+      const result = await updateOrderAction(order.id, order.status, action);
+      showToast(result.message, !result.ok ? "error" : result.persisted ? "success" : "info");
+      if (result.ok) setSent((current) => new Set(current).add(order.id));
+    });
+  };
+
+  const chosen = orders.filter((order) => selected.has(order.id));
+  const bulk = BULK.filter(({ action }) => chosen.some((order) => canRun(action, order.status)));
 
   const run = (action: BulkOrderAction) => {
     if (action === "cancel" && !window.confirm(`Cancel ${visibleSelected.length === 1 ? "this order" : `${visibleSelected.length} orders`}? Customers will be notified.`)) return;
@@ -93,13 +138,26 @@ export function OrdersTable({ orders, emptyAction }: { orders: OrderRow[]; empty
   }
 
   const checkbox = "size-4 cursor-pointer rounded border-adm-line-strong accent-[var(--adm-accent)]";
+  const bench = orders.filter((order) => NEEDS_YOU.has(order.status));
+  const moving = orders.filter((order) => !NEEDS_YOU.has(order.status));
+  const slip = (order: OrderRow) => (
+    <OrderSlip
+      key={order.id}
+      order={order}
+      selected={selected.has(order.id)}
+      sent={sent.has(order.id)}
+      busy={pending}
+      onToggle={() => toggle(order.id)}
+      onRun={(action) => runOne(order, action)}
+    />
+  );
 
   return (
     <>
       {visibleSelected.length > 0 ? (
         <div className="flex flex-wrap items-center gap-1 border-b border-adm-line bg-adm-accent-soft/60 px-3 py-2 sm:px-5">
           <span className="mr-2 text-[13px] font-medium text-adm-ink tabular-nums">{visibleSelected.length} selected</span>
-          {BULK.map(({ action, label, icon: Icon, danger }) => (
+          {bulk.map(({ action, label, icon: Icon, danger }) => (
             <button key={action} type="button" disabled={pending} onClick={() => run(action)} className={cn(danger ? buttonClass.danger : buttonClass.ghost, "h-8")}>
               <Icon className="size-4" strokeWidth={1.8} aria-hidden="true" /> {label}
             </button>
@@ -108,100 +166,130 @@ export function OrdersTable({ orders, emptyAction }: { orders: OrderRow[]; empty
             <X className="size-4" strokeWidth={2} aria-hidden="true" />
           </button>
         </div>
+      ) : (
+        <div className="flex items-center justify-between gap-3 border-b border-adm-line px-4 py-2 sm:px-5">
+          <p className="text-[12px] text-adm-ink-faint">{bench.length ? "Tick a slip to act on several at once." : "Nothing on this page is waiting on you."}</p>
+          <label className="inline-flex cursor-pointer items-center gap-2 text-[12px] text-adm-ink-soft">
+            <input
+              type="checkbox"
+              aria-label="Select all orders on this page"
+              checked={allSelected}
+              ref={(node) => {
+                if (node) node.indeterminate = someSelected;
+              }}
+              onChange={toggleAll}
+              className={checkbox}
+            />
+            Select page
+          </label>
+        </div>
+      )}
+
+      {bench.length ? (
+        <section aria-label="Orders that need you" className="p-3 sm:p-4">
+          {moving.length ? <h2 className="mb-3 text-[12px] font-semibold tracking-[0.06em] text-adm-ink-faint uppercase">Needs you</h2> : null}
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{bench.map(slip)}</div>
+        </section>
       ) : null}
 
-      <div className="hidden md:block">
-        <table className="w-full text-left text-[13.5px]">
-          <thead>
-            <tr className="border-b border-adm-line text-[12px] text-adm-ink-faint">
-              <th scope="col" className="w-10 py-2.5 pr-2 pl-5">
-                <input
-                  type="checkbox"
-                  aria-label="Select all orders on this page"
-                  checked={allSelected}
-                  ref={(node) => {
-                    if (node) node.indeterminate = someSelected;
-                  }}
-                  onChange={toggleAll}
-                  className={checkbox}
-                />
-              </th>
-              <th scope="col" className="py-2.5 pr-3 font-medium">Order</th>
-              <th scope="col" className="px-3 py-2.5 font-medium">Customer</th>
-              <th scope="col" className="hidden px-3 py-2.5 font-medium lg:table-cell">Items</th>
-              <th scope="col" className="px-3 py-2.5 font-medium">Status</th>
-              <th scope="col" className="hidden px-3 py-2.5 font-medium xl:table-cell">Payment</th>
-              <th scope="col" className="py-2.5 pr-5 pl-3 text-right font-medium">Total</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-adm-line">
-            {orders.map((order) => {
-              const isSelected = selected.has(order.id);
-              return (
-                <tr key={order.id} className={cn("group relative transition-colors", isSelected ? "bg-adm-accent-soft/40" : "hover:bg-adm-surface-muted/50")}>
-                  <td className="relative z-10 py-3 pr-2 pl-5">
-                    <input type="checkbox" aria-label={`Select order ${order.number}`} checked={isSelected} onChange={() => toggle(order.id)} className={checkbox} />
-                  </td>
-                  <td className="py-3 pr-3">
-                    <Link href={`/admin/orders/${order.id}`} className="font-medium text-adm-ink tabular-nums group-hover:text-adm-accent focus-visible:outline-none after:absolute after:inset-0">
-                      {order.number}
-                    </Link>
-                    <span className="block text-[12px] text-adm-ink-faint" title={order.placedFull}>
-                      {order.placedLabel}
-                    </span>
-                  </td>
-                  <td className="px-3 py-3">
-                    <span className="block font-medium text-adm-ink">{order.customer}</span>
-                    <span className="block text-[12px] text-adm-ink-faint">{order.city}</span>
-                  </td>
-                  <td className="hidden px-3 py-3 lg:table-cell">
-                    <span className="flex items-center gap-3">
-                      <Thumbs images={order.images} count={order.itemCount} />
-                      <span className="min-w-0">
-                        <span className="block max-w-[200px] truncate text-adm-ink-soft">{order.firstItem}</span>
-                        <span className="block text-[12px] text-adm-ink-faint">
-                          {order.itemCount} item{order.itemCount > 1 ? "s" : ""}
-                        </span>
-                      </span>
-                    </span>
-                  </td>
-                  <td className="px-3 py-3">
-                    <OrderStatusBadge status={order.status} />
-                  </td>
-                  <td className="hidden px-3 py-3 xl:table-cell">
-                    <PaymentLabel method={order.method} status={order.paymentStatus} />
-                  </td>
-                  <td className="py-3 pr-5 pl-3 text-right font-medium text-adm-ink tabular-nums">{formatMoney(order.totalPaise)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      <ul className="divide-y divide-adm-line md:hidden">
-        {orders.map((order) => (
-          <li key={order.id} className="flex gap-3 px-4 py-3.5">
-            <input type="checkbox" aria-label={`Select order ${order.number}`} checked={selected.has(order.id)} onChange={() => toggle(order.id)} className={cn(checkbox, "mt-1")} />
-            <Link href={`/admin/orders/${order.id}`} className="flex min-w-0 flex-1 flex-col gap-1.5">
-              <span className="flex items-start justify-between gap-2">
-                <span className="text-[14px] font-medium tabular-nums">{order.number}</span>
-                <span className="text-[14px] font-medium tabular-nums">{formatMoney(order.totalPaise)}</span>
-              </span>
-              <span className="text-[12.5px] text-adm-ink-soft">
-                {order.customer} · {order.city} · {order.placedLabel}
-              </span>
-              <span className="flex flex-wrap items-center gap-2">
-                <OrderStatusBadge status={order.status} />
-                <span className="text-[12px] text-adm-ink-faint">
-                  {order.itemCount} item{order.itemCount > 1 ? "s" : ""} · {order.method}
-                </span>
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {moving.length ? (
+        <section aria-label="Orders already moving" className={cn(bench.length && "border-t border-adm-line")}>
+          {bench.length ? <h2 className="px-4 pt-4 text-[12px] font-semibold tracking-[0.06em] text-adm-ink-faint uppercase sm:px-5">Already on the way</h2> : null}
+          <ul className="divide-y divide-adm-line">
+            {moving.map((order) => (
+              <QuietOrder key={order.id} order={order} selected={selected.has(order.id)} onToggle={() => toggle(order.id)} />
+            ))}
+          </ul>
+        </section>
+      ) : null}
       {toast}
     </>
+  );
+}
+
+function OrderSlip({
+  order,
+  selected,
+  sent,
+  busy,
+  onToggle,
+  onRun,
+}: {
+  order: OrderRow;
+  selected: boolean;
+  sent: boolean;
+  busy: boolean;
+  onToggle: () => void;
+  onRun: (action: OrderAction) => void;
+}) {
+  const lead = order.lines[0];
+  const count = pieces(order.lines);
+  const urgent = order.waitHours >= URGENT_HOURS;
+  const collect = order.method === "COD" && order.paymentStatus === "pending";
+  return (
+    <article className={cn("group relative flex flex-col overflow-hidden rounded-xl border bg-adm-surface transition-colors", selected ? "border-adm-accent bg-adm-accent-soft/30" : "border-adm-line hover:border-adm-line-strong", urgent && "border-l-2 border-l-adm-warning")}>
+      <div className="flex gap-3.5 p-3.5">
+        <span className="relative size-[88px] shrink-0 overflow-hidden rounded-lg bg-adm-surface-muted">
+          {lead ? <Image src={lead.image} alt="" fill sizes="88px" className="object-cover" /> : null}
+          {order.lines.length > 1 ? <span className="absolute right-1 bottom-1 rounded-md bg-adm-ink/80 px-1.5 py-px text-[10px] font-semibold text-adm-canvas">+{order.lines.length - 1}</span> : null}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <p className="font-adm-display text-[30px] leading-none font-semibold tracking-[-0.03em]">{lead?.size ?? "—"}</p>
+            <p className="pt-1 text-[14px] font-semibold tabular-nums">{formatMoney(order.totalPaise)}</p>
+          </div>
+          <p className="mt-1.5 truncate text-[13px] font-medium">{lead?.name}</p>
+          <p className="truncate text-[12px] text-adm-ink-faint">
+            {count} {count === 1 ? "piece" : "pieces"}
+            {order.lines.length > 1 ? ` · ${order.lines.length} styles` : ""}
+          </p>
+        </div>
+      </div>
+      <div className="mt-auto flex items-center justify-between gap-2 border-t border-adm-line px-3.5 py-2.5">
+        <div className="min-w-0">
+          <p className="flex items-center gap-1.5 truncate text-[12.5px] font-medium">
+            <Link href={`/admin/orders/${order.id}`} className="truncate group-hover:text-adm-accent focus-visible:outline-none after:absolute after:inset-0">
+              {order.customer}
+            </Link>
+            {order.hasNote ? <MessageSquare className="relative z-10 size-3.5 shrink-0 text-adm-info" strokeWidth={2} role="img" aria-label="Customer left a note" /> : null}
+          </p>
+          <p className={cn("truncate text-[11.5px]", urgent ? "font-medium text-adm-warning" : "text-adm-ink-faint")} title={order.placedFull}>
+            {order.city} · {order.number} · {urgent ? `waiting ${order.waitHours} h` : order.placedLabel}
+            {collect ? " · collect cash" : ""}
+          </p>
+        </div>
+        <span className="relative z-10 shrink-0">
+          <NextStep order={order} sent={sent} busy={busy} onRun={onRun} />
+        </span>
+      </div>
+      <label className="absolute top-2 left-2 z-10 inline-flex size-7 cursor-pointer items-center justify-center rounded-md bg-adm-surface/90 shadow-sm">
+        <input type="checkbox" aria-label={`Select order ${order.number}`} checked={selected} onChange={onToggle} className={CHECKBOX} />
+      </label>
+    </article>
+  );
+}
+
+function QuietOrder({ order, selected, onToggle }: { order: OrderRow; selected: boolean; onToggle: () => void }) {
+  const lead = order.lines[0];
+  const count = pieces(order.lines);
+  return (
+    <li className={cn("group relative flex items-center gap-3 px-4 py-2.5 sm:px-5", selected && "bg-adm-accent-soft/30")}>
+      <input type="checkbox" aria-label={`Select order ${order.number}`} checked={selected} onChange={onToggle} className={cn(CHECKBOX, "relative z-10")} />
+      <span className="relative size-10 shrink-0 overflow-hidden rounded-lg bg-adm-surface-muted">
+        {lead ? <Image src={lead.image} alt="" fill sizes="40px" className="object-cover" /> : null}
+      </span>
+      <span className="min-w-0 flex-1">
+        <Link href={`/admin/orders/${order.id}`} className="block truncate text-[13px] font-medium group-hover:text-adm-accent focus-visible:outline-none after:absolute after:inset-0">
+          {order.number}
+          <span className="font-normal text-adm-ink-soft"> · {order.customer}</span>
+        </Link>
+        <span className="block truncate text-[12px] text-adm-ink-faint">
+          {lead?.name} · {lead?.size}
+          {count > 1 ? ` · ${count} pieces` : ""} · {order.city}
+        </span>
+      </span>
+      <OrderStatusBadge status={order.status} className="hidden sm:inline-flex" />
+      <span className="text-[13px] font-medium tabular-nums">{formatMoney(order.totalPaise)}</span>
+    </li>
   );
 }

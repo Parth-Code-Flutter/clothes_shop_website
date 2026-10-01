@@ -46,15 +46,15 @@ export default async function OrdersPage({ searchParams }: PageProps<"/admin/ord
     number: order.number,
     placedLabel: formatRelative(order.placedAt, now),
     placedFull: formatDateTime(order.placedAt),
+    waitHours: Math.max(0, Math.round((now.getTime() - new Date(order.placedAt).getTime()) / 3_600_000)),
     customer: order.customer.name,
     city: order.shipping.city,
     status: order.status,
     method: order.payment.method,
     paymentStatus: order.payment.status,
     totalPaise: order.totalPaise,
-    itemCount: order.items.reduce((total, item) => total + item.quantity, 0),
-    firstItem: order.items[0].name,
-    images: order.items.map((item) => item.image),
+    hasNote: Boolean(order.customerNote),
+    lines: order.items.map((item) => ({ name: item.name, image: item.image, size: item.size, quantity: item.quantity })),
   }));
 
   const filtered = Boolean(query.q || query.payment || query.view !== "all");
@@ -130,6 +130,27 @@ export default async function OrdersPage({ searchParams }: PageProps<"/admin/ord
         <div className="border-b border-adm-line px-3 py-3 sm:px-5">
           <OrdersFilters query={query} />
         </div>
+
+        {ACTION_VIEWS.has(query.view) && result.total > 0 ? (
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-adm-line bg-adm-surface-muted/40 px-4 py-2.5 text-[12.5px] text-adm-ink-soft sm:px-5">
+            <span>
+              {query.view === "to_pack"
+                ? "The big letters are the size to pick. Pack it from the slip."
+                : query.view === "unpaid"
+                  ? "These cancel themselves after 12 hours if the payment never arrives."
+                  : query.view === "to_ship"
+                    ? "Add a tracking number and the customer gets it by email."
+                    : "Open the slip to approve the return or decline it."}
+            </span>
+            {query.sort === "oldest" ? (
+              <span className="font-medium text-adm-ink">Longest wait is at the top.</span>
+            ) : (
+              <Link href={ordersHref(query, { sort: "oldest" })} scroll={false} className="font-medium text-adm-accent hover:underline">
+                Show the longest wait first
+              </Link>
+            )}
+          </p>
+        ) : null}
 
         <OrdersTable
           orders={rows}

@@ -222,6 +222,7 @@ export function OrderDetail({
           </Card>
 
           {status === "ready_to_ship" ? (
+            <div id="ship" className="scroll-mt-24">
             <Card title="Ship this order" description="Add the courier's tracking number. The customer gets it by SMS and email.">
               <form
                 className="flex flex-col gap-2 sm:flex-row"
@@ -248,6 +249,7 @@ export function OrderDetail({
                 </button>
               </form>
             </Card>
+            </div>
           ) : tracking ? (
             <Card title="Shipment">
               <div className="-mt-1 flex flex-wrap items-center justify-between gap-3">
