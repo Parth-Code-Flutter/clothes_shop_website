@@ -80,8 +80,7 @@ function shares<T extends string>(entries: Map<T, number>, limit: number): { lab
     .slice(0, limit);
 }
 
-export function getAnalytics(days: AnalyticsRange, now = new Date()): AnalyticsData {
-  const dashboard = getDashboardData(now);
+export function getAnalytics(days: AnalyticsRange, now = new Date(), dashboard: DashboardData = getDashboardData(now)): AnalyticsData {
   const { series } = dashboard;
   const current = series.slice(-days);
   const previous = series.slice(-days * 2, -days);

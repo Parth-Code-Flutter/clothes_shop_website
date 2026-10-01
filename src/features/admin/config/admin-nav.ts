@@ -1,5 +1,4 @@
 import {
-  BarChart3,
   Boxes,
   FileText,
   LayoutDashboard,
@@ -29,10 +28,7 @@ export const ADMIN_SIDEBAR_COOKIE = "adm_sidebar";
 export const adminNav: AdminNavGroup[] = [
   {
     label: "Overview",
-    items: [
-      { label: "Dashboard", href: "/admin", icon: LayoutDashboard, ready: true },
-      { label: "Analytics", href: "/admin/analytics", icon: BarChart3, ready: true },
-    ],
+    items: [{ label: "Dashboard", href: "/admin", icon: LayoutDashboard, ready: true }],
   },
   {
     label: "Commerce",

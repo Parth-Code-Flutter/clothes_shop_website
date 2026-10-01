@@ -156,6 +156,77 @@ export function TopProductsPanel({ products, delay }: { products: DashboardData[
   );
 }
 
+const LOW_STOCK_ROWS = 6;
+
+type LowStockProduct = { id: string; name: string; image: string; sizes: { size: string; left: number }[] };
+
+export function LowStockPanel({ items, delay }: { items: DashboardData["lowStock"]; delay?: number }) {
+  const products = new Map<string, LowStockProduct>();
+  for (const item of items) {
+    const entry = products.get(item.id) ?? { id: item.id, name: item.name, image: item.image, sizes: [] };
+    entry.sizes.push({ size: item.size, left: item.left });
+    products.set(item.id, entry);
+  }
+  const grouped = [...products.values()];
+  const shown = grouped.slice(0, LOW_STOCK_ROWS);
+  const soldOut = items.filter((item) => item.left === 0).length;
+  return (
+    <Panel
+      title="Running low"
+      description={
+        items.length
+          ? `${items.length} ${items.length === 1 ? "size" : "sizes"} across ${grouped.length} ${grouped.length === 1 ? "product" : "products"}${soldOut ? ` · ${soldOut} sold out` : ""}`
+          : "Every size is well stocked"
+      }
+      action={<ModuleLink href="/admin/inventory" className="pt-1">Inventory</ModuleLink>}
+      delay={delay}
+    >
+      {shown.length ? (
+        <ul className="divide-y divide-adm-line border-t border-adm-line">
+          {shown.map((product) => (
+            <li key={product.id}>
+              <Link
+                href={`/admin/products/${product.id}`}
+                className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-adm-surface-muted/60 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-adm-accent"
+              >
+                <span className="relative size-10 shrink-0 overflow-hidden rounded-lg bg-adm-surface-muted">
+                  <Image src={product.image} alt="" fill sizes="40px" className="object-cover" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[13.5px] font-medium text-adm-ink">{product.name}</span>
+                  <span className="mt-1 flex flex-wrap gap-1">
+                    {product.sizes.map(({ size, left }) => (
+                      <span
+                        key={size}
+                        className={cn(
+                          "rounded-md px-1.5 py-px text-[11px] font-medium tabular-nums",
+                          left === 0 ? "bg-adm-danger-soft text-adm-danger" : "bg-adm-warning-soft text-adm-warning",
+                        )}
+                        title={left === 0 ? `Size ${size} is sold out` : `${left} left in size ${size}`}
+                      >
+                        {size}
+                        <span className="font-normal opacity-80">{left === 0 ? " sold out" : ` · ${left} left`}</span>
+                      </span>
+                    ))}
+                  </span>
+                </span>
+                <ChevronRight className="size-4 shrink-0 text-adm-ink-faint" strokeWidth={1.8} aria-hidden="true" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="px-5 pb-5 text-[13px] text-adm-ink-faint">Nothing needs restocking right now.</p>
+      )}
+      {grouped.length > shown.length ? (
+        <p className="border-t border-adm-line px-5 py-3 text-[12px] text-adm-ink-faint">
+          And {grouped.length - shown.length} more {grouped.length - shown.length === 1 ? "product" : "products"} in Inventory.
+        </p>
+      ) : null}
+    </Panel>
+  );
+}
+
 const MIX_COLORS = [
   "var(--adm-accent)",
   "var(--adm-info)",

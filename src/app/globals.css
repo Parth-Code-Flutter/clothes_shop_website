@@ -191,6 +191,33 @@ body {
   animation: adm-grow-y 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--adm-delay, 150ms);
 }
+
+/* Charts draw in left to right. */
+@keyframes adm-reveal-x {
+  from {
+    clip-path: inset(-20% 100% -20% -20%);
+  }
+  to {
+    clip-path: inset(-20% -20% -20% -20%);
+  }
+}
+
+.adm-reveal-x {
+  animation: adm-reveal-x 1200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--adm-delay, 150ms);
+}
+
+/* Arcs drawn with pathLength="100" fill from empty. */
+@keyframes adm-draw {
+  from {
+    stroke-dasharray: 0 100;
+  }
+}
+
+.adm-draw {
+  animation: adm-draw 1100ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--adm-delay, 200ms);
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -10,11 +10,13 @@ const moneyCompact = new Intl.NumberFormat(adminBrand.locale, {
   style: "currency",
   currency: adminBrand.currency,
   notation: "compact",
+  // Explicit minimum: Node's ICU otherwise pads currency to "₹50.0K" while browsers print "₹50K", breaking hydration.
+  minimumFractionDigits: 0,
   maximumFractionDigits: 1,
 });
 
 const number = new Intl.NumberFormat(adminBrand.locale);
-const numberCompact = new Intl.NumberFormat(adminBrand.locale, { notation: "compact", maximumFractionDigits: 1 });
+const numberCompact = new Intl.NumberFormat(adminBrand.locale, { notation: "compact", minimumFractionDigits: 0, maximumFractionDigits: 1 });
 
 export function formatMoney(paise: number, options: { compact?: boolean } = {}) {
   const rupees = paise / 100;
