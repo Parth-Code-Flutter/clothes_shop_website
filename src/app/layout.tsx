@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Manrope, Geist_Mono } from "next/font/google";
-import { AccountProvider } from "@/features/account/account-provider";
-import { CartProvider } from "@/features/cart/cart-provider";
-import { WishlistProvider } from "@/features/wishlist/wishlist-provider";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { siteConfig } from "@/config/site";
-import { VirtualTryOn } from "@/features/try-on/virtual-try-on";
 import "./globals.css";
 
 const display = Bebas_Neue({
@@ -44,20 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${display.variable} ${body.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <ThemeProvider>
-          <SmoothScroll>
-            <AccountProvider>
-              <WishlistProvider>
-                <CartProvider>
-                  <SiteHeader />
-                  {children}
-                  <SiteFooter />
-                  <VirtualTryOn />
-                </CartProvider>
-              </WishlistProvider>
-            </AccountProvider>
-          </SmoothScroll>
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

@@ -47,6 +47,33 @@
   --font-display: var(--font-display);
   --font-mono: var(--font-geist-mono);
   --animate-marquee: marquee 28s linear infinite;
+
+  /* Admin console tokens: values come from src/features/admin/config/admin-brand.ts */
+  --color-adm-canvas: var(--adm-canvas);
+  --color-adm-surface: var(--adm-surface);
+  --color-adm-surface-muted: var(--adm-surface-muted);
+  --color-adm-ink: var(--adm-ink);
+  --color-adm-ink-soft: var(--adm-ink-soft);
+  --color-adm-ink-faint: var(--adm-ink-faint);
+  --color-adm-line: var(--adm-line);
+  --color-adm-line-strong: var(--adm-line-strong);
+  --color-adm-accent: var(--adm-accent);
+  --color-adm-accent-ink: var(--adm-accent-ink);
+  --color-adm-accent-soft: var(--adm-accent-soft);
+  --color-adm-sidebar: var(--adm-sidebar);
+  --color-adm-sidebar-ink: var(--adm-sidebar-ink);
+  --color-adm-sidebar-ink-soft: var(--adm-sidebar-ink-soft);
+  --color-adm-sidebar-line: var(--adm-sidebar-line);
+  --color-adm-success: var(--adm-success);
+  --color-adm-success-soft: var(--adm-success-soft);
+  --color-adm-warning: var(--adm-warning);
+  --color-adm-warning-soft: var(--adm-warning-soft);
+  --color-adm-danger: var(--adm-danger);
+  --color-adm-danger-soft: var(--adm-danger-soft);
+  --color-adm-info: var(--adm-info);
+  --color-adm-info-soft: var(--adm-info-soft);
+  --font-adm-display: var(--font-adm-display);
+  --font-adm-sans: var(--font-adm-sans);
 }
 
 @keyframes marquee {
