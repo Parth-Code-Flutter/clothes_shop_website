@@ -39,8 +39,8 @@ export default async function AdminDashboardPage() {
     <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-8">
       <header className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-[11px] font-semibold tracking-[0.22em] text-adm-accent uppercase">{today}</p>
-          <h1 className="mt-2 font-adm-display text-[2.4rem] leading-[1.05] font-semibold tracking-[-0.01em] sm:text-5xl">
+          <p className="text-[13px] font-medium text-adm-ink-soft">{today}</p>
+          <h1 className="mt-1 font-adm-display text-[1.625rem] leading-tight font-semibold tracking-[-0.02em] sm:text-[1.875rem]">
             {greeting(now)}, {firstName}
           </h1>
           <p className="mt-2 text-[15px] text-adm-ink-soft">Here&apos;s how {adminBrand.name} is performing.</p>

@@ -73,7 +73,7 @@
   --color-adm-danger-soft: var(--adm-danger-soft);
   --color-adm-info: var(--adm-info);
   --color-adm-info-soft: var(--adm-info-soft);
-  --font-adm-display: var(--font-adm-display);
+  --font-adm-display: var(--font-adm-sans);
   --font-adm-sans: var(--font-adm-sans);
 }
 

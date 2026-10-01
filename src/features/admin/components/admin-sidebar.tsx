@@ -14,17 +14,17 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col bg-adm-sidebar text-adm-sidebar-ink">
       <div className="flex h-[72px] shrink-0 items-center gap-3 border-b border-adm-sidebar-line px-6">
-        <AdminMonogram onSidebar className="size-9 text-[13px]" />
+        <AdminMonogram onSidebar className="size-9 text-[12px]" />
         <div className="min-w-0 leading-tight">
-          <p className="truncate font-adm-display text-[19px] font-semibold">{adminBrand.name}</p>
-          <p className="text-[10px] font-medium tracking-[0.2em] text-adm-sidebar-ink-soft uppercase">{adminBrand.consoleLabel}</p>
+          <p className="truncate font-adm-display text-[15px] font-semibold">{adminBrand.name}</p>
+          <p className="text-[12px] text-adm-sidebar-ink-soft">{adminBrand.consoleLabel}</p>
         </div>
       </div>
 
       <nav aria-label="Admin" className="flex-1 overflow-y-auto px-4 py-6">
         {adminNav.map((group) => (
           <div key={group.label} className="mb-7 last:mb-0">
-            <p className="px-3 text-[10px] font-semibold tracking-[0.22em] text-adm-sidebar-ink-soft/80 uppercase">{group.label}</p>
+            <p className="px-3 text-[11px] font-semibold tracking-[0.08em] text-adm-sidebar-ink-soft/80 uppercase">{group.label}</p>
             <ul className="mt-2.5 flex flex-col gap-0.5">
               {group.items.map((item) => {
                 const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
@@ -46,7 +46,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
                       </span>
                     ) : null}
                     {!item.ready ? (
-                      <span className="rounded-full border border-adm-sidebar-line px-2 py-0.5 text-[9px] font-semibold tracking-[0.14em] text-adm-sidebar-ink-soft uppercase">
+                      <span className="rounded-full border border-adm-sidebar-line px-2 py-0.5 text-[10px] font-semibold tracking-[0.06em] text-adm-sidebar-ink-soft uppercase">
                         Soon
                       </span>
                     ) : null}

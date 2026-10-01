@@ -22,7 +22,7 @@ export function Panel({
     <section className={cn("flex flex-col rounded-2xl border border-adm-line bg-adm-surface", className)}>
       <header className="flex items-start justify-between gap-4 border-b border-adm-line px-5 py-4 sm:px-6">
         <div>
-          <h2 className="font-adm-display text-[1.4rem] leading-tight font-semibold">{title}</h2>
+          <h2 className="font-adm-display text-[15px] leading-tight font-semibold">{title}</h2>
           {description ? <p className="mt-0.5 text-[13px] text-adm-ink-soft">{description}</p> : null}
         </div>
         {action}
@@ -58,7 +58,7 @@ export function FulfilmentPanel({ items }: { items: DashboardData["fulfilment"] 
           <li key={item.label} className="flex items-center gap-3 px-5 py-3.5 sm:px-6">
             <span className={cn("size-2 shrink-0 rounded-full", TONE_DOT[item.tone])} aria-hidden="true" />
             <span className="flex-1 text-[14px] text-adm-ink-soft">{item.label}</span>
-            <span className="font-adm-display text-xl font-semibold tabular-nums">{item.count}</span>
+            <span className="font-adm-display text-lg font-semibold tabular-nums">{item.count}</span>
           </li>
         ))}
       </ul>
@@ -90,7 +90,7 @@ export function RecentOrdersPanel({ orders }: { orders: DashboardData["recentOrd
       <div className="hidden md:block">
         <table className="w-full text-left text-[14px]">
           <thead>
-            <tr className="text-[11px] font-semibold tracking-[0.12em] text-adm-ink-faint uppercase">
+            <tr className="text-[11px] font-semibold tracking-[0.06em] text-adm-ink-faint uppercase">
               <th scope="col" className="px-6 py-3 font-semibold">Order</th>
               <th scope="col" className="px-3 py-3 font-semibold">Customer</th>
               <th scope="col" className="px-3 py-3 font-semibold">Payment</th>
@@ -149,7 +149,7 @@ export function TopProductsPanel({ products }: { products: DashboardData["topPro
       <ol className="flex flex-col gap-1 p-3 sm:p-4">
         {products.map((product, index) => (
           <li key={product.id} className="flex items-center gap-3 rounded-xl px-2 py-2">
-            <span className="w-4 shrink-0 font-adm-display text-lg font-semibold text-adm-ink-faint tabular-nums">{index + 1}</span>
+            <span className="w-4 shrink-0 text-[13px] font-semibold text-adm-ink-faint tabular-nums">{index + 1}</span>
             <span className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-adm-surface-muted">
               <Image src={product.image} alt="" fill sizes="48px" className="object-cover" />
             </span>

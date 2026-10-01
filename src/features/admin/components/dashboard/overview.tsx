@@ -99,7 +99,7 @@ export function DashboardOverview({ series }: { series: DayPoint[] }) {
       <div className="rounded-2xl border border-adm-line bg-adm-surface">
         <div className="flex flex-wrap items-start justify-between gap-4 border-b border-adm-line px-5 py-5 sm:px-6">
           <div>
-            <h2 className="font-adm-display text-2xl font-semibold">Sales performance</h2>
+            <h2 className="font-adm-display text-[15px] font-semibold">Sales performance</h2>
             <p className="mt-1 text-[13px] text-adm-ink-soft">
               {metric === "revenue" ? "Net revenue" : "Orders placed"} per day · last {days} days
             </p>
@@ -144,7 +144,7 @@ function KpiCard({ label, value, change, spark }: { label: string; value: string
   return (
     <article className="relative overflow-hidden rounded-2xl border border-adm-line bg-adm-surface p-5">
       <p className="text-[12px] font-medium tracking-[0.04em] text-adm-ink-soft">{label}</p>
-      <p className="mt-3 font-adm-display text-[2.1rem] leading-none font-semibold tracking-[-0.01em] tabular-nums">{value}</p>
+      <p className="mt-3 font-adm-display text-[1.625rem] leading-none font-semibold tracking-[-0.02em] tabular-nums">{value}</p>
       <div className="mt-4 flex items-end justify-between gap-3">
         {change === null ? (
           <span className="text-[12px] text-adm-ink-faint">No baseline</span>
@@ -324,7 +324,7 @@ function TrendChart({ current, previous, metric }: { current: DayPoint[]; previo
                 style={{ left: `${(active.point.x / CHART_W) * 100}%` }}
               >
                 <p className="text-[11px] font-medium tracking-[0.06em] text-adm-ink-faint uppercase">{active.day.label}</p>
-                <p className="mt-1 font-adm-display text-xl font-semibold tabular-nums">{format(pick(active.day))}</p>
+                <p className="mt-1 font-adm-display text-base font-semibold tabular-nums">{format(pick(active.day))}</p>
                 <p className="mt-1 text-[12px] text-adm-ink-soft">
                   {metric === "revenue" ? `${active.day.orders} orders` : formatMoney(active.day.revenuePaise)}
                 </p>

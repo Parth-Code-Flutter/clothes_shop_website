@@ -167,7 +167,7 @@ function ProfileMenu({ user }: { user: AdminShellProps["user"] }) {
         aria-expanded={open}
         className="flex items-center gap-2.5 rounded-full border border-adm-line bg-adm-surface py-1 pr-2 pl-1 transition-colors hover:border-adm-line-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-adm-accent sm:pr-3"
       >
-        <span className="inline-flex size-8 items-center justify-center rounded-full bg-adm-ink font-adm-display text-[14px] font-semibold text-adm-canvas">
+        <span className="inline-flex size-8 items-center justify-center rounded-full bg-adm-ink text-[12px] font-semibold text-adm-canvas">
           {initials(user.name)}
         </span>
         <span className="hidden text-left leading-tight sm:block">
@@ -187,7 +187,7 @@ function ProfileMenu({ user }: { user: AdminShellProps["user"] }) {
             <span role="menuitem" aria-disabled="true" className="flex h-10 items-center gap-3 rounded-lg px-3 text-[14px] text-adm-ink-faint">
               <Settings className="size-4" strokeWidth={1.6} />
               Store settings
-              <span className="ml-auto text-[10px] font-semibold tracking-[0.14em] uppercase">Soon</span>
+              <span className="ml-auto text-[10px] font-semibold tracking-[0.06em] uppercase">Soon</span>
             </span>
             <form action={logoutAction}>
               <button

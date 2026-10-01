@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import { adminBrand, adminThemeCss } from "@/features/admin/config/admin-brand";
-
-const display = Cormorant_Garamond({
-  weight: ["500", "600", "700"],
-  variable: "--font-adm-display",
-  subsets: ["latin"],
-});
 
 const sans = Inter({
   variable: "--font-adm-sans",
@@ -26,7 +20,7 @@ export default function AdminRootLayout({ children }: { children: ReactNode }) {
   return (
     <div
       data-admin
-      className={`${display.variable} ${sans.variable} flex min-h-dvh flex-1 flex-col bg-adm-canvas font-adm-sans text-adm-ink`}
+      className={`${sans.variable} flex min-h-dvh flex-1 flex-col bg-adm-canvas font-adm-sans text-adm-ink antialiased`}
     >
       <style>{adminThemeCss()}</style>
       {children}

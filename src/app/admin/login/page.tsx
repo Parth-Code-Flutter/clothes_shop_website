@@ -38,13 +38,13 @@ export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
           <div className="mb-10 flex items-center gap-3 lg:hidden">
             <AdminMonogram />
             <div className="leading-tight">
-              <p className="font-adm-display text-xl font-semibold">{adminBrand.name}</p>
-              <p className="text-[11px] font-medium tracking-[0.18em] text-adm-ink-faint uppercase">{adminBrand.consoleLabel}</p>
+              <p className="font-adm-display text-[15px] font-semibold">{adminBrand.name}</p>
+              <p className="text-[12px] text-adm-ink-faint">{adminBrand.consoleLabel}</p>
             </div>
           </div>
 
-          <p className="text-[11px] font-semibold tracking-[0.22em] text-adm-accent uppercase">Owner access</p>
-          <h1 className="mt-3 font-adm-display text-[2.6rem] leading-[1.05] font-semibold tracking-[-0.01em] sm:text-5xl">
+          <p className="text-[12px] font-semibold tracking-[0.08em] text-adm-accent uppercase">Owner access</p>
+          <h1 className="mt-2 font-adm-display text-[1.75rem] leading-tight font-semibold tracking-[-0.02em] sm:text-[2rem]">
             Welcome back
           </h1>
           <p className="mt-3 text-[15px] leading-relaxed text-adm-ink-soft">
@@ -80,7 +80,7 @@ function BrandPanel() {
       <div aria-hidden="true" className="pointer-events-none absolute inset-6 rounded-[28px] border border-adm-sidebar-line xl:inset-8" />
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-16 -left-6 font-adm-display text-[22rem] leading-none font-semibold text-adm-sidebar-ink opacity-[0.035] select-none"
+        className="pointer-events-none absolute -bottom-16 -left-6 font-adm-display text-[18rem] leading-none font-bold tracking-[-0.04em] text-adm-sidebar-ink opacity-[0.035] select-none"
       >
         {adminBrand.monogram}
       </span>
@@ -88,17 +88,17 @@ function BrandPanel() {
       <div className="relative flex items-center gap-3">
         <AdminMonogram onSidebar />
         <div className="leading-tight">
-          <p className="font-adm-display text-xl font-semibold">{adminBrand.name}</p>
-          <p className="text-[11px] font-medium tracking-[0.2em] text-adm-sidebar-ink-soft uppercase">{adminBrand.consoleLabel}</p>
+          <p className="font-adm-display text-[15px] font-semibold">{adminBrand.name}</p>
+          <p className="text-[12px] text-adm-sidebar-ink-soft">{adminBrand.consoleLabel}</p>
         </div>
       </div>
 
       <div className="relative mt-auto max-w-lg">
         <span aria-hidden="true" className="block h-px w-14 bg-adm-sidebar-accent" />
-        <h2 className="mt-8 font-adm-display text-5xl leading-[1.04] font-medium tracking-[-0.015em] xl:text-6xl">
+        <h2 className="mt-8 font-adm-display text-4xl leading-[1.1] font-semibold tracking-[-0.025em] xl:text-[2.75rem]">
           Every collection,
           <br />
-          <em className="font-medium text-adm-sidebar-accent">curated</em> from one desk.
+          <span className="text-adm-sidebar-accent">managed</span> from one desk.
         </h2>
         <p className="mt-6 max-w-md text-[15px] leading-relaxed text-adm-sidebar-ink-soft">
           Orders, catalogue, inventory and customers in one quiet, considered workspace built for the person who runs the house.
@@ -112,7 +112,7 @@ function BrandPanel() {
           ["Customers", "Know your regulars"],
         ].map(([title, body]) => (
           <div key={title}>
-            <dt className="font-adm-display text-lg font-semibold">{title}</dt>
+            <dt className="font-adm-display text-[15px] font-semibold">{title}</dt>
             <dd className="mt-1 text-[13px] text-adm-sidebar-ink-soft">{body}</dd>
           </div>
         ))}

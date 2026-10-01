@@ -28,8 +28,9 @@ charts and focus rings at once. `sidebarAccent` is the separate highlight used o
 and login brand panel, so it must stay light enough to read on `sidebar`. The storefront theme is
 untouched.
 
-Fonts: Cormorant Garamond (display) and Inter (UI), loaded in `src/app/admin/layout.tsx`.
-Swap them there; the CSS variable names stay the same.
+Fonts: Inter for everything, loaded in `src/app/admin/layout.tsx`. Headings use the
+`font-adm-display` utility, which points at Inter in `src/app/globals.css`; to give a client a
+different heading font, load it in the layout and change `--font-adm-display` there.
 
 Navigation: `src/features/admin/config/admin-nav.ts`. Set `ready: true` when a module ships;
 unfinished modules show "Soon" and aren't clickable.

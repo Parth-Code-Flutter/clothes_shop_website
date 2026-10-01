@@ -6,7 +6,7 @@ export function AdminMonogram({ className, onSidebar = false }: { className?: st
     <span
       aria-hidden="true"
       className={cn(
-        "relative inline-flex size-10 shrink-0 items-center justify-center rounded-full border font-adm-display text-[15px] font-semibold tracking-[0.06em]",
+        "relative inline-flex size-10 shrink-0 items-center justify-center rounded-full border font-adm-display text-[13px] font-semibold tracking-[0.02em]",
         onSidebar ? "border-adm-sidebar-accent/70 text-adm-sidebar-accent" : "border-adm-accent/70 text-adm-accent",
         className,
       )}
