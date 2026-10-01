@@ -24,6 +24,9 @@ export type AdminNavItem = {
 
 export type AdminNavGroup = { label: string; items: AdminNavItem[] };
 
+/** Remembers the desktop sidebar state ("collapsed" | "expanded") so the server renders it without a flash. */
+export const ADMIN_SIDEBAR_COOKIE = "adm_sidebar";
+
 export const adminNav: AdminNavGroup[] = [
   {
     label: "Overview",

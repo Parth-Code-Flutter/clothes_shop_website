@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Bell, ChevronDown, LogOut, Menu, Search, Settings, X } from "lucide-react";
 import { logoutAction } from "@/features/admin/auth/actions";
+import { ADMIN_SIDEBAR_COOKIE } from "@/features/admin/config/admin-nav";
 import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
 import { AdminThemeToggle } from "@/features/admin/components/admin-theme-toggle";
 import { cn } from "@/lib/utils";
 
 type AdminShellProps = {
   user: { name: string; email: string };
+  defaultCollapsed?: boolean;
   children: ReactNode;
 };
 
@@ -21,8 +23,26 @@ function initials(name: string) {
     .join("");
 }
 
-export function AdminShell({ user, children }: AdminShellProps) {
+export function AdminShell({ user, defaultCollapsed = false, children }: AdminShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
+
+  const toggleCollapsed = useCallback(() => {
+    const next = !collapsed;
+    setCollapsed(next);
+    document.cookie = `${ADMIN_SIDEBAR_COOKIE}=${next ? "collapsed" : "expanded"}; path=/admin; max-age=31536000; samesite=lax`;
+  }, [collapsed]);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && !event.shiftKey && !event.altKey && event.key.toLowerCase() === "b") {
+        event.preventDefault();
+        toggleCollapsed();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [toggleCollapsed]);
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -40,8 +60,13 @@ export function AdminShell({ user, children }: AdminShellProps) {
 
   return (
     <div className="flex min-h-dvh flex-1">
-      <aside className="sticky top-0 hidden h-dvh w-[272px] shrink-0 lg:block">
-        <AdminSidebar />
+      <aside
+        className={cn(
+          "sticky top-0 z-[45] hidden h-dvh shrink-0 border-r border-adm-sidebar-line transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] lg:block",
+          collapsed ? "w-[76px]" : "w-[256px]",
+        )}
+      >
+        <AdminSidebar collapsed={collapsed} onToggleCollapse={toggleCollapsed} />
       </aside>
 
       <div
@@ -77,16 +102,15 @@ export function AdminShell({ user, children }: AdminShellProps) {
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-[72px] shrink-0 items-center gap-3 border-b border-adm-line bg-adm-canvas/85 px-4 backdrop-blur-xl sm:px-6 lg:px-10">
+        <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b border-adm-line bg-adm-canvas/80 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
             aria-label="Open navigation"
-            className="inline-flex size-10 items-center justify-center rounded-full border border-adm-line bg-adm-surface text-adm-ink lg:hidden"
+            className="inline-flex size-9 items-center justify-center rounded-lg border border-adm-line bg-adm-surface text-adm-ink lg:hidden"
           >
             <Menu className="size-[18px]" strokeWidth={1.6} />
           </button>
-
           <AdminSearch />
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
@@ -94,10 +118,10 @@ export function AdminShell({ user, children }: AdminShellProps) {
             <button
               type="button"
               aria-label="Notifications, 3 unread"
-              className="relative inline-flex size-10 items-center justify-center rounded-full border border-adm-line bg-adm-surface text-adm-ink-soft transition-colors hover:text-adm-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-adm-accent"
+              className="relative inline-flex size-9 items-center justify-center rounded-lg border border-adm-line bg-adm-surface text-adm-ink-soft transition-colors hover:text-adm-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-adm-accent"
             >
               <Bell className="size-[18px]" strokeWidth={1.6} />
-              <span className="absolute top-2 right-2.5 size-2 rounded-full bg-adm-accent ring-2 ring-adm-surface" />
+              <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-adm-accent ring-2 ring-adm-surface" />
             </button>
             <ProfileMenu user={user} />
           </div>
@@ -124,14 +148,14 @@ function AdminSearch() {
   }, []);
 
   return (
-    <label className="hidden h-10 w-full max-w-md items-center gap-2.5 rounded-full border border-adm-line bg-adm-surface px-4 text-adm-ink-faint transition-colors focus-within:border-adm-accent md:flex">
+    <label className="hidden h-9 w-full max-w-sm items-center gap-2.5 rounded-lg border border-adm-line bg-adm-surface px-3 text-adm-ink-faint transition-colors focus-within:border-adm-accent md:flex">
       <Search className="size-4 shrink-0" strokeWidth={1.6} aria-hidden="true" />
       <span className="sr-only">Search the console</span>
       <input
         ref={inputRef}
         type="search"
         placeholder="Search orders, products, customers…"
-        className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-adm-ink outline-none placeholder:text-adm-ink-faint"
+        className="h-full min-w-0 flex-1 bg-transparent text-[13px] text-adm-ink outline-none placeholder:text-adm-ink-faint"
       />
       <kbd className="hidden rounded-md border border-adm-line px-1.5 py-0.5 font-sans text-[11px] text-adm-ink-faint lg:inline">⌘K</kbd>
     </label>
@@ -165,9 +189,9 @@ function ProfileMenu({ user }: { user: AdminShellProps["user"] }) {
         onClick={() => setOpen((value) => !value)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex items-center gap-2.5 rounded-full border border-adm-line bg-adm-surface py-1 pr-2 pl-1 transition-colors hover:border-adm-line-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-adm-accent sm:pr-3"
+        className="flex items-center gap-2.5 rounded-lg py-1 pr-2 pl-1 hover:bg-adm-surface-muted transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-adm-accent sm:pr-3"
       >
-        <span className="inline-flex size-8 items-center justify-center rounded-full bg-adm-ink text-[12px] font-semibold text-adm-canvas">
+        <span className="inline-flex size-8 items-center justify-center rounded-full bg-adm-accent text-[12px] font-semibold text-adm-accent-ink">
           {initials(user.name)}
         </span>
         <span className="hidden text-left leading-tight sm:block">

@@ -1,8 +1,10 @@
 "use client";
 
-import { useId, useMemo, useState, type PointerEvent } from "react";
+import { useId, useMemo, useState, type CSSProperties, type PointerEvent } from "react";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import type { DayPoint } from "@/features/admin/data/dashboard";
+import { AnimatedValue, formatValue, type ValueFormat } from "@/features/admin/components/dashboard/animated-value";
+import { TILE_CLASS } from "@/features/admin/components/dashboard/panels";
 import { formatMoney, formatNumber, formatPercent, percentChange } from "@/features/admin/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -12,67 +14,51 @@ const RANGES = [
   { days: 90, label: "90D" },
 ] as const;
 
-type Metric = "revenue" | "orders";
+type Metric = "revenue" | "orders" | "aov" | "conversion";
+
+const METRICS: Record<Metric, { label: string; format: ValueFormat; pick: (point: DayPoint) => number }> = {
+  revenue: { label: "Net revenue", format: "money", pick: (point) => point.revenuePaise },
+  orders: { label: "Orders", format: "number", pick: (point) => point.orders },
+  aov: { label: "Avg. order value", format: "money", pick: (point) => (point.orders ? point.revenuePaise / point.orders : 0) },
+  conversion: { label: "Conversion", format: "percent", pick: (point) => (point.sessions ? (point.orders / point.sessions) * 100 : 0) },
+};
 
 function sum(points: DayPoint[], pick: (point: DayPoint) => number) {
   return points.reduce((total, point) => total + pick(point), 0);
 }
 
-export function DashboardOverview({ series }: { series: DayPoint[] }) {
+function totals(points: DayPoint[]): Record<Metric, number> {
+  const revenue = sum(points, (point) => point.revenuePaise);
+  const orders = sum(points, (point) => point.orders);
+  const sessions = sum(points, (point) => point.sessions);
+  return {
+    revenue,
+    orders,
+    aov: orders ? revenue / orders : 0,
+    conversion: sessions ? (orders / sessions) * 100 : 0,
+  };
+}
+
+export function PerformanceTile({ series, delay = 0 }: { series: DayPoint[]; delay?: number }) {
   const [days, setDays] = useState<number>(30);
   const [metric, setMetric] = useState<Metric>("revenue");
 
-  const { current, previous } = useMemo(
-    () => ({ current: series.slice(-days), previous: series.slice(-days * 2, -days) }),
-    [series, days],
-  );
-
-  const kpis = useMemo(() => {
-    const revenue = sum(current, (point) => point.revenuePaise);
-    const revenuePrev = sum(previous, (point) => point.revenuePaise);
-    const orders = sum(current, (point) => point.orders);
-    const ordersPrev = sum(previous, (point) => point.orders);
-    const sessions = sum(current, (point) => point.sessions);
-    const sessionsPrev = sum(previous, (point) => point.sessions);
-    const aov = orders ? revenue / orders : 0;
-    const aovPrev = ordersPrev ? revenuePrev / ordersPrev : 0;
-    const conversion = sessions ? (orders / sessions) * 100 : 0;
-    const conversionPrev = sessionsPrev ? (ordersPrev / sessionsPrev) * 100 : 0;
-    return [
-      {
-        label: "Net revenue",
-        value: formatMoney(revenue, { compact: revenue >= 1_00_00_000 }),
-        change: percentChange(revenue, revenuePrev),
-        spark: current.map((point) => point.revenuePaise),
-      },
-      {
-        label: "Orders",
-        value: formatNumber(orders),
-        change: percentChange(orders, ordersPrev),
-        spark: current.map((point) => point.orders),
-      },
-      {
-        label: "Average order value",
-        value: formatMoney(aov),
-        change: percentChange(aov, aovPrev),
-        spark: current.map((point) => (point.orders ? point.revenuePaise / point.orders : 0)),
-      },
-      {
-        label: "Conversion rate",
-        value: formatPercent(conversion, 2),
-        change: percentChange(conversion, conversionPrev),
-        spark: current.map((point) => (point.sessions ? point.orders / point.sessions : 0)),
-      },
-    ];
-  }, [current, previous]);
+  const { current, previous, now, before } = useMemo(() => {
+    const current = series.slice(-days);
+    const previous = series.slice(-days * 2, -days);
+    return { current, previous, now: totals(current), before: totals(previous) };
+  }, [series, days]);
 
   return (
-    <section aria-label="Performance overview" className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[13px] text-adm-ink-soft">
-          Compared with the previous {days} days
-        </p>
-        <div role="group" aria-label="Date range" className="inline-flex rounded-full border border-adm-line bg-adm-surface p-1">
+    <section aria-label="Performance" className={cn("adm-rise flex h-full flex-col", TILE_CLASS)} style={{ "--adm-delay": `${delay}ms` } as CSSProperties}>
+      <header className="flex flex-wrap items-start justify-between gap-3 px-5 pt-5">
+        <div>
+          <h2 className="text-[14px] leading-tight font-semibold">Performance</h2>
+          <p className="mt-1 text-[12.5px] text-adm-ink-faint">
+            Last {days} days, compared with the {days} days before
+          </p>
+        </div>
+        <div role="group" aria-label="Date range" className="inline-flex rounded-lg bg-adm-surface-muted p-0.5">
           {RANGES.map((range) => (
             <button
               key={range.days}
@@ -80,113 +66,73 @@ export function DashboardOverview({ series }: { series: DayPoint[] }) {
               aria-pressed={days === range.days}
               onClick={() => setDays(range.days)}
               className={cn(
-                "h-8 rounded-full px-4 text-[12px] font-semibold tracking-[0.06em] transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-adm-accent",
-                days === range.days ? "bg-adm-ink text-adm-canvas" : "text-adm-ink-soft hover:text-adm-ink",
+                "h-7 rounded-md px-3 text-[12px] font-medium transition-all focus-visible:outline-2 focus-visible:outline-adm-accent",
+                days === range.days ? "bg-adm-surface text-adm-ink shadow-[0_1px_2px_rgb(0_0_0/0.08)]" : "text-adm-ink-faint hover:text-adm-ink",
               )}
             >
               {range.label}
             </button>
           ))}
         </div>
+      </header>
+
+      <div role="tablist" aria-label="Metric" className="mt-4 grid grid-cols-2 border-y border-adm-line lg:grid-cols-4">
+        {(Object.keys(METRICS) as Metric[]).map((key, index) => {
+          const meta = METRICS[key];
+          const change = percentChange(now[key], before[key]);
+          const up = (change ?? 0) >= 0;
+          const selected = metric === key;
+          return (
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              onClick={() => setMetric(key)}
+              className={cn(
+                "group relative px-5 py-4 text-left transition-colors focus-visible:z-10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-adm-accent",
+                index % 2 === 0 && "border-r border-adm-line",
+                index < 2 && "max-lg:border-b max-lg:border-adm-line",
+                index === 1 && "lg:border-r lg:border-adm-line",
+                selected ? "bg-adm-surface-muted/60" : "hover:bg-adm-surface-muted/40",
+              )}
+            >
+              <span
+                aria-hidden="true"
+                className={cn("absolute inset-x-0 bottom-0 h-0.5 bg-adm-accent transition-opacity", selected ? "opacity-100" : "opacity-0")}
+              />
+              <span className={cn("block text-[12.5px] font-medium", selected ? "text-adm-ink" : "text-adm-ink-soft")}>{meta.label}</span>
+              <AnimatedValue
+                value={now[key]}
+                format={key === "revenue" && now.revenue >= 1_00_00_000 ? "moneyCompact" : meta.format}
+                className="mt-1.5 block text-[22px] leading-tight font-semibold tracking-[-0.02em] tabular-nums"
+              />
+              {change === null ? (
+                <span className="mt-1 block text-[12px] text-adm-ink-faint">No baseline</span>
+              ) : (
+                <span className={cn("mt-1 inline-flex items-center gap-0.5 text-[12px] font-medium tabular-nums", up ? "text-adm-success" : "text-adm-danger")}>
+                  {up ? <ArrowUpRight className="size-3.5" strokeWidth={2} aria-hidden="true" /> : <ArrowDownRight className="size-3.5" strokeWidth={2} aria-hidden="true" />}
+                  {Math.abs(change).toFixed(1)}%
+                  <span className="ml-1 font-normal text-adm-ink-faint">vs prev.</span>
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {kpis.map((kpi) => (
-          <KpiCard key={kpi.label} {...kpi} />
-        ))}
-      </div>
-
-      <div className="rounded-2xl border border-adm-line bg-adm-surface">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-adm-line px-5 py-5 sm:px-6">
-          <div>
-            <h2 className="font-adm-display text-[15px] font-semibold">Sales performance</h2>
-            <p className="mt-1 text-[13px] text-adm-ink-soft">
-              {metric === "revenue" ? "Net revenue" : "Orders placed"} per day · last {days} days
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-4 text-[12px] text-adm-ink-soft">
-              <span className="flex items-center gap-2">
-                <span className="h-[2px] w-4 rounded-full bg-adm-accent" /> This period
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="w-4 border-t border-dashed border-adm-line-strong" /> Previous
-              </span>
-            </div>
-            <div role="group" aria-label="Chart metric" className="inline-flex rounded-lg border border-adm-line p-0.5">
-              {(["revenue", "orders"] as const).map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  aria-pressed={metric === option}
-                  onClick={() => setMetric(option)}
-                  className={cn(
-                    "h-8 rounded-md px-3 text-[12px] font-medium capitalize transition-colors focus-visible:outline-2 focus-visible:outline-adm-accent",
-                    metric === option ? "bg-adm-surface-muted text-adm-ink" : "text-adm-ink-faint hover:text-adm-ink",
-                  )}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className="flex flex-1 flex-col px-3 pt-5 pb-4 sm:px-5">
+        <div className="mb-4 flex items-center justify-end gap-4 pr-1 text-[12px] text-adm-ink-soft">
+          <span className="flex items-center gap-2">
+            <span className="h-[2px] w-4 rounded-full bg-adm-accent" /> This period
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-4 border-t border-dashed border-adm-line-strong" /> Previous
+          </span>
         </div>
-        <div className="px-3 pt-5 pb-4 sm:px-6">
-          <TrendChart current={current} previous={previous} metric={metric} />
-        </div>
+        <TrendChart current={current} previous={previous} metric={metric} />
       </div>
     </section>
-  );
-}
-
-function KpiCard({ label, value, change, spark }: { label: string; value: string; change: number | null; spark: number[] }) {
-  const up = (change ?? 0) >= 0;
-  return (
-    <article className="relative overflow-hidden rounded-2xl border border-adm-line bg-adm-surface p-5">
-      <p className="text-[12px] font-medium tracking-[0.04em] text-adm-ink-soft">{label}</p>
-      <p className="mt-3 font-adm-display text-[1.625rem] leading-none font-semibold tracking-[-0.02em] tabular-nums">{value}</p>
-      <div className="mt-4 flex items-end justify-between gap-3">
-        {change === null ? (
-          <span className="text-[12px] text-adm-ink-faint">No baseline</span>
-        ) : (
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-semibold tabular-nums",
-              up ? "bg-adm-success-soft text-adm-success" : "bg-adm-danger-soft text-adm-danger",
-            )}
-          >
-            {up ? <ArrowUpRight className="size-3.5" strokeWidth={2} /> : <ArrowDownRight className="size-3.5" strokeWidth={2} />}
-            {Math.abs(change).toFixed(1)}%
-          </span>
-        )}
-        <Sparkline values={spark} tone={up ? "success" : "danger"} />
-      </div>
-    </article>
-  );
-}
-
-function Sparkline({ values, tone }: { values: number[]; tone: "success" | "danger" }) {
-  if (values.length < 2) return null;
-  const width = 96;
-  const height = 32;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const span = max - min || 1;
-  const points = values
-    .map((value, index) => `${((index / (values.length - 1)) * width).toFixed(1)},${(height - 2 - ((value - min) / span) * (height - 4)).toFixed(1)}`)
-    .join(" ");
-  return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="h-8 w-24 shrink-0 overflow-visible" aria-hidden="true">
-      <polyline
-        points={points}
-        fill="none"
-        stroke={tone === "success" ? "var(--adm-success)" : "var(--adm-danger)"}
-        strokeWidth={1.5}
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        opacity={0.85}
-      />
-    </svg>
   );
 }
 
@@ -221,8 +167,12 @@ function smoothPath(points: { x: number; y: number }[]) {
 function TrendChart({ current, previous, metric }: { current: DayPoint[]; previous: DayPoint[]; metric: Metric }) {
   const gradientId = useId();
   const [hover, setHover] = useState<number | null>(null);
-  const pick = (point: DayPoint) => (metric === "revenue" ? point.revenuePaise : point.orders);
-  const format = (value: number, compact = false) => (metric === "revenue" ? formatMoney(value, { compact }) : formatNumber(value));
+  const { pick, label } = METRICS[metric];
+  const format = (value: number, compact = false) => {
+    if (metric === "conversion") return formatPercent(value, compact ? 1 : 2);
+    if (metric === "orders") return formatNumber(Math.round(value));
+    return compact ? formatMoney(value, { compact: true }) : formatValue(value, "money");
+  };
 
   const values = current.map(pick);
   const prevValues = previous.map(pick);
@@ -246,10 +196,8 @@ function TrendChart({ current, previous, metric }: { current: DayPoint[]; previo
   }
 
   const active = hover !== null ? { point: linePoints[hover], day: current[hover], prev: prevValues[hover] } : null;
-  const total = values.reduce((acc, value) => acc + value, 0);
-
   return (
-    <figure aria-label={`${metric === "revenue" ? "Revenue" : "Orders"} trend, total ${format(total)}`} className="flex gap-3">
+    <figure aria-label={`${label} per day, last ${count} days`} className="flex gap-3">
       <div className="relative w-12 shrink-0 sm:w-14" style={{ height: CHART_H }} aria-hidden="true">
         {ticks.map((tick) => (
           <span
@@ -300,7 +248,15 @@ function TrendChart({ current, previous, metric }: { current: DayPoint[]; previo
               />
             ) : null}
             <path d={area} fill={`url(#${gradientId})`} />
-            <path d={line} fill="none" stroke="var(--adm-accent)" strokeWidth={2} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path
+              d={line}
+              fill="none"
+              stroke="var(--adm-accent)"
+              strokeWidth={2}
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+              style={{ filter: "drop-shadow(0 6px 10px color-mix(in oklab, var(--adm-accent) 35%, transparent))" }}
+            />
           </svg>
 
           {active ? (
@@ -326,7 +282,7 @@ function TrendChart({ current, previous, metric }: { current: DayPoint[]; previo
                 <p className="text-[11px] font-medium tracking-[0.06em] text-adm-ink-faint uppercase">{active.day.label}</p>
                 <p className="mt-1 font-adm-display text-base font-semibold tabular-nums">{format(pick(active.day))}</p>
                 <p className="mt-1 text-[12px] text-adm-ink-soft">
-                  {metric === "revenue" ? `${active.day.orders} orders` : formatMoney(active.day.revenuePaise)}
+                  {metric === "revenue" ? `${active.day.orders} orders` : `${formatMoney(active.day.revenuePaise)} · ${active.day.orders} orders`}
                 </p>
                 {active.prev !== undefined ? (
                   <p className="mt-1.5 border-t border-adm-line pt-1.5 text-[11px] text-adm-ink-faint tabular-nums">

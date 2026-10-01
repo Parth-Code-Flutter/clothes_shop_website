@@ -48,6 +48,62 @@ export type AdminPalette = {
 type AdminTheme = { label: string; light: AdminPalette; dark: AdminPalette };
 
 export const adminThemes = {
+  /** Soft graphite neutrals with a refined violet accent; sidebar sits in the same tone as the page. */
+  iris: {
+    label: "Graphite & Iris",
+    light: {
+      canvas: "#f7f7f8",
+      surface: "#ffffff",
+      surfaceMuted: "#f3f3f5",
+      ink: "#111113",
+      inkSoft: "#5d5d66",
+      inkFaint: "#9a9aa3",
+      line: "#ebebee",
+      lineStrong: "#dcdce1",
+      accent: "#6e56cf",
+      accentInk: "#ffffff",
+      accentSoft: "#f1eefc",
+      sidebar: "#fbfbfc",
+      sidebarInk: "#111113",
+      sidebarInkSoft: "#6b6b74",
+      sidebarLine: "#ebebee",
+      sidebarAccent: "#6e56cf",
+      success: "#1f8a5b",
+      successSoft: "#e7f6ee",
+      warning: "#b26a00",
+      warningSoft: "#fdf3e1",
+      danger: "#d0393e",
+      dangerSoft: "#fdecec",
+      info: "#2563eb",
+      infoSoft: "#eaf1fe",
+    },
+    dark: {
+      canvas: "#0a0a0c",
+      surface: "#121215",
+      surfaceMuted: "#19191d",
+      ink: "#ededf0",
+      inkSoft: "#a1a1aa",
+      inkFaint: "#6b6b75",
+      line: "#222228",
+      lineStrong: "#2e2e36",
+      accent: "#8e7cf0",
+      accentInk: "#0a0a0c",
+      accentSoft: "#1d1a33",
+      sidebar: "#0d0d10",
+      sidebarInk: "#ededf0",
+      sidebarInkSoft: "#8b8b95",
+      sidebarLine: "#1c1c21",
+      sidebarAccent: "#a394f5",
+      success: "#3ecf8e",
+      successSoft: "#0f2a1e",
+      warning: "#f5a524",
+      warningSoft: "#2b2010",
+      danger: "#f06a6f",
+      dangerSoft: "#2d1416",
+      info: "#60a5fa",
+      infoSoft: "#10203a",
+    },
+  },
   /** Deep navy with steel-blue highlights. */
   midnight: {
     label: "Midnight",
@@ -229,7 +285,7 @@ export const adminBrand = {
   currency: "INR",
   timeZone: "Asia/Kolkata",
   /** Colour preset from `adminThemes`. */
-  theme: "midnight" satisfies AdminThemeName,
+  theme: "iris" satisfies AdminThemeName,
 } as const;
 
 const TOKEN_NAMES: Record<keyof AdminPalette, string> = {
@@ -265,8 +321,12 @@ function declarations(palette: AdminPalette) {
     .join("");
 }
 
-/** CSS custom properties for both themes, scoped to the admin root element. */
+/**
+ * CSS custom properties for both themes, scoped to the admin root element.
+ * `data-admin-dark` pins a subtree (e.g. the login brand panel) to the dark palette in either mode.
+ */
 export function adminThemeCss(theme: AdminThemeName = adminBrand.theme) {
   const { light, dark } = adminThemes[theme];
-  return `[data-admin]{${declarations(light)}color-scheme:light;}.dark [data-admin]{${declarations(dark)}color-scheme:dark;}`;
+  const darkBlock = `${declarations(dark)}color-scheme:dark;`;
+  return `[data-admin]{${declarations(light)}color-scheme:light;}.dark [data-admin]{${darkBlock}}[data-admin-dark]{${darkBlock}}`;
 }

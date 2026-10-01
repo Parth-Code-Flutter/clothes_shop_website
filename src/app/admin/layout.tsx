@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Inter } from "next/font/google";
+import { Geist } from "next/font/google";
 import { adminBrand, adminThemeCss } from "@/features/admin/config/admin-brand";
 
-const sans = Inter({
+const sans = Geist({
   variable: "--font-adm-sans",
   subsets: ["latin"],
 });

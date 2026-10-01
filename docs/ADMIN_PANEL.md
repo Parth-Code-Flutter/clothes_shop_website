@@ -16,7 +16,7 @@ Everything brand-specific is in `src/features/admin/config/admin-brand.ts`:
 | `monogram` | Two-letter mark in the gold ring and the login watermark |
 | `consoleLabel` | Product name shown under the store name ("Atelier Console") |
 | `locale`, `currency`, `timeZone` | Money/number formatting and the dashboard's "today" |
-| `theme` | Colour preset from `adminThemes`: `midnight` (navy, default), `sage` (muted green), `heritage` (ivory and gold) |
+| `theme` | Colour preset from `adminThemes`: `iris` (graphite and violet, default), `midnight` (navy), `sage` (muted green), `heritage` (ivory and gold) |
 
 Each preset in `adminThemes` has a light and a dark palette. To make a client-specific look, copy a
 preset, rename it, change the hex values and set `theme` to its name.
@@ -24,12 +24,12 @@ preset, rename it, change the hex values and set `theme` to its name.
 How colours work: each palette token becomes a CSS variable (`--adm-accent`, `--adm-canvas`, ...)
 scoped to `[data-admin]`, and Tailwind maps them to utilities (`bg-adm-accent`, `text-adm-ink`, ...)
 in `src/app/globals.css`. Components never use hex values, so changing `accent` re-themes buttons,
-charts and focus rings at once. `sidebarAccent` is the separate highlight used on the dark sidebar
-and login brand panel, so it must stay light enough to read on `sidebar`. The storefront theme is
-untouched.
+charts and focus rings at once. `sidebarAccent` is the highlight used on the sidebar and the login
+brand panel, so it must stay readable on `sidebar`. Add `data-admin-dark` to an element to pin it to
+the dark palette in both themes (the login brand panel does this). The storefront theme is untouched.
 
-Fonts: Inter for everything, loaded in `src/app/admin/layout.tsx`. Headings use the
-`font-adm-display` utility, which points at Inter in `src/app/globals.css`; to give a client a
+Fonts: Geist for everything, loaded in `src/app/admin/layout.tsx`. Headings use the
+`font-adm-display` utility, which points at the same font in `src/app/globals.css`; to give a client a
 different heading font, load it in the layout and change `--font-adm-display` there.
 
 Navigation: `src/features/admin/config/admin-nav.ts`. Set `ready: true` when a module ships;
@@ -67,7 +67,7 @@ use a shared store (Redis) for rate limiting, and add password reset by email.
 | # | Module | Status | Scope |
 | --- | --- | --- | --- |
 | 1 | Login | Done | Split brand layout, show/hide password, remember me, lockout, dev hint |
-| 2 | Dashboard | Done | KPIs with trends, sales chart (7/30/90 days), recent orders, fulfilment, top products, category mix, funnel, low stock |
+| 2 | Dashboard | Done | Bento grid. Performance: four KPI tabs (revenue, orders, AOV, conversion) that switch the trend chart, 7/30/90 days. Today so far, compared with the same weekday last week. Monthly goal with pace marker, forecast and amount needed per day. Daily brief: plain-language insights with a suggested action. Needs attention: orders to pack, awaiting payment, returns, low stock, reviews. Best sellers and the 5 latest orders. Collapsible sidebar (button in the sidebar header, Ctrl/⌘ B, remembered in the `adm_sidebar` cookie) |
 | 3 | Orders | Next | List with status tabs, search, filters, bulk actions; order detail with timeline, payment, shipping label, refunds, notes, invoice PDF |
 | 4 | Products | | List/grid, filters, bulk publish; editor with images, variants (size × colour), pricing, compare-at price, SEO, status |
 | 5 | Collections & categories | | Manual and rule-based collections, ordering, banners |
@@ -76,7 +76,7 @@ use a shared store (Redis) for rate limiting, and add password reset by email.
 | 8 | Discounts | | Codes and automatic offers, limits, schedule, usage |
 | 9 | Content | | Homepage hero, banners, lookbook, announcement bar, static pages |
 | 10 | Reviews | | Moderation queue, replies, featured reviews |
-| 11 | Analytics | | Sales, products, customers, traffic reports, CSV export |
+| 11 | Analytics | | Sales, products, customers, traffic reports, CSV export. Reuses the ready-made sales-rhythm heatmap (`sales-rhythm.tsx`), category donut and conversion funnel (`panels.tsx`) |
 | 12 | Settings | | Store details, branding, payments, shipping zones and rates, taxes (GST), notifications, staff and roles |
 | 13 | Audit log | | Who changed what and when |
 

@@ -1,9 +1,14 @@
 import Image from "next/image";
-import type { ReactNode } from "react";
-import { AlertTriangle, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import type { CSSProperties, ReactNode } from "react";
+import { ChevronRight } from "lucide-react";
 import type { DashboardData, OrderStatus } from "@/features/admin/data/dashboard";
+import { adminNav } from "@/features/admin/config/admin-nav";
 import { formatMoney, formatNumber, formatPercent } from "@/features/admin/lib/format";
 import { cn } from "@/lib/utils";
+
+export const TILE_CLASS =
+  "rounded-[14px] border border-adm-line bg-adm-surface shadow-[0_1px_2px_rgb(0_0_0/0.04),0_1px_0_rgb(255_255_255/0.03)_inset]";
 
 export function Panel({
   title,
@@ -11,19 +16,22 @@ export function Panel({
   action,
   children,
   className,
+  delay = 0,
 }: {
   title: string;
   description?: string;
   action?: ReactNode;
   children: ReactNode;
   className?: string;
+  /** Entrance stagger in ms. */
+  delay?: number;
 }) {
   return (
-    <section className={cn("flex flex-col rounded-2xl border border-adm-line bg-adm-surface", className)}>
-      <header className="flex items-start justify-between gap-4 border-b border-adm-line px-5 py-4 sm:px-6">
-        <div>
-          <h2 className="font-adm-display text-[15px] leading-tight font-semibold">{title}</h2>
-          {description ? <p className="mt-0.5 text-[13px] text-adm-ink-soft">{description}</p> : null}
+    <section className={cn("adm-rise flex h-full flex-col", TILE_CLASS, className)} style={{ "--adm-delay": `${delay}ms` } as CSSProperties}>
+      <header className="flex items-start justify-between gap-4 px-5 pt-5 pb-3">
+        <div className="min-w-0">
+          <h3 className="font-adm-display text-[14px] leading-tight font-semibold">{title}</h3>
+          {description ? <p className="mt-1 text-[12.5px] text-adm-ink-faint">{description}</p> : null}
         </div>
         {action}
       </header>
@@ -32,37 +40,32 @@ export function Panel({
   );
 }
 
-function SoonLink({ children }: { children: ReactNode }) {
+export const READY_ROUTES = new Set(adminNav.flatMap((group) => group.items.filter((item) => item.ready).map((item) => item.href)));
+
+/** Links to another admin screen once it is built; until then shows a muted "Soon" label. */
+export function ModuleLink({ href, children, className }: { href: string; children: ReactNode; className?: string }) {
+  if (READY_ROUTES.has(href)) {
+    return (
+      <Link
+        href={href}
+        className={cn(
+          "inline-flex shrink-0 items-center gap-1 text-[12px] font-medium text-adm-accent hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-adm-accent",
+          className,
+        )}
+      >
+        {children}
+        <ChevronRight className="size-3.5" strokeWidth={1.8} aria-hidden="true" />
+      </Link>
+    );
+  }
   return (
-    <span className="inline-flex shrink-0 items-center gap-1 pt-1 text-[12px] font-medium text-adm-ink-faint" title="Available once this screen is built">
+    <span
+      className={cn("inline-flex shrink-0 items-center gap-1.5 text-[12px] font-medium text-adm-ink-faint", className)}
+      title="Available once this screen is built"
+    >
       {children}
-      <ChevronRight className="size-3.5" strokeWidth={1.8} aria-hidden="true" />
+      <span className="rounded-full border border-adm-line px-1.5 py-px text-[10px] font-semibold tracking-[0.06em] uppercase">Soon</span>
     </span>
-  );
-}
-
-const TONE_DOT: Record<DashboardData["fulfilment"][number]["tone"], string> = {
-  warning: "bg-adm-warning",
-  info: "bg-adm-info",
-  accent: "bg-adm-accent",
-  success: "bg-adm-success",
-  danger: "bg-adm-danger",
-};
-
-export function FulfilmentPanel({ items }: { items: DashboardData["fulfilment"] }) {
-  const open = items.filter((item) => item.tone !== "success").reduce((total, item) => total + item.count, 0);
-  return (
-    <Panel title="Today's queue" description={`${open} orders need attention`} action={<SoonLink>Orders</SoonLink>}>
-      <ul className="divide-y divide-adm-line">
-        {items.map((item) => (
-          <li key={item.label} className="flex items-center gap-3 px-5 py-3.5 sm:px-6">
-            <span className={cn("size-2 shrink-0 rounded-full", TONE_DOT[item.tone])} aria-hidden="true" />
-            <span className="flex-1 text-[14px] text-adm-ink-soft">{item.label}</span>
-            <span className="font-adm-display text-lg font-semibold tabular-nums">{item.count}</span>
-          </li>
-        ))}
-      </ul>
-    </Panel>
   );
 }
 
@@ -84,16 +87,15 @@ function StatusBadge({ status }: { status: OrderStatus }) {
   );
 }
 
-export function RecentOrdersPanel({ orders }: { orders: DashboardData["recentOrders"] }) {
+export function RecentOrdersPanel({ orders, delay }: { orders: DashboardData["recentOrders"]; delay?: number }) {
   return (
-    <Panel title="Recent orders" description="Latest activity across all channels" action={<SoonLink>View all</SoonLink>}>
+    <Panel title="Recent orders" description={`Latest ${orders.length} orders`} action={<ModuleLink href="/admin/orders" className="pt-1">View all</ModuleLink>} delay={delay}>
       <div className="hidden md:block">
         <table className="w-full text-left text-[14px]">
           <thead>
             <tr className="text-[11px] font-semibold tracking-[0.06em] text-adm-ink-faint uppercase">
               <th scope="col" className="px-6 py-3 font-semibold">Order</th>
               <th scope="col" className="px-3 py-3 font-semibold">Customer</th>
-              <th scope="col" className="px-3 py-3 font-semibold">Payment</th>
               <th scope="col" className="px-3 py-3 font-semibold">Status</th>
               <th scope="col" className="px-6 py-3 text-right font-semibold">Total</th>
             </tr>
@@ -108,10 +110,9 @@ export function RecentOrdersPanel({ orders }: { orders: DashboardData["recentOrd
                 <td className="px-3 py-3.5">
                   <p className="text-adm-ink">{order.customer}</p>
                   <p className="text-[12px] text-adm-ink-faint">
-                    {order.city} · {order.items} {order.items === 1 ? "item" : "items"}
+                    {order.city} · {order.payment}
                   </p>
                 </td>
-                <td className="px-3 py-3.5 text-adm-ink-soft">{order.payment}</td>
                 <td className="px-3 py-3.5">
                   <StatusBadge status={order.status} />
                 </td>
@@ -131,7 +132,7 @@ export function RecentOrdersPanel({ orders }: { orders: DashboardData["recentOrd
             </div>
             <div className="flex items-center justify-between gap-3">
               <p className="min-w-0 truncate text-[13px] text-adm-ink-soft">
-                {order.customer} · {order.payment} · {order.placed}
+                {order.customer} · {order.placed}
               </p>
               <StatusBadge status={order.status} />
             </div>
@@ -142,10 +143,10 @@ export function RecentOrdersPanel({ orders }: { orders: DashboardData["recentOrd
   );
 }
 
-export function TopProductsPanel({ products }: { products: DashboardData["topProducts"] }) {
+export function TopProductsPanel({ products, delay }: { products: DashboardData["topProducts"]; delay?: number }) {
   const top = products[0]?.units || 1;
   return (
-    <Panel title="Best sellers" description="Units sold · last 30 days" action={<SoonLink>Products</SoonLink>}>
+    <Panel title="Best sellers" description="Units sold · last 30 days" action={<ModuleLink href="/admin/products" className="pt-1">Products</ModuleLink>} delay={delay}>
       <ol className="flex flex-col gap-1 p-3 sm:p-4">
         {products.map((product, index) => (
           <li key={product.id} className="flex items-center gap-3 rounded-xl px-2 py-2">
@@ -157,7 +158,7 @@ export function TopProductsPanel({ products }: { products: DashboardData["topPro
               <p className="truncate text-[14px] font-medium text-adm-ink">{product.name}</p>
               <div className="mt-1.5 flex items-center gap-2">
                 <span className="h-1 flex-1 overflow-hidden rounded-full bg-adm-surface-muted">
-                  <span className="block h-full rounded-full bg-adm-accent" style={{ width: `${(product.units / top) * 100}%` }} />
+                  <span className="adm-grow-x block h-full rounded-full bg-adm-accent" style={{ width: `${(product.units / top) * 100}%` }} />
                 </span>
                 <span className="text-[12px] text-adm-ink-faint tabular-nums">{product.units}</span>
               </div>
@@ -170,18 +171,56 @@ export function TopProductsPanel({ products }: { products: DashboardData["topPro
   );
 }
 
-const MIX_COLORS = ["var(--adm-accent)", "var(--adm-ink)", "var(--adm-info)", "var(--adm-ink-faint)", "var(--adm-success)"];
+/* Kept for the Analytics screen. */
 
-export function CategoryMixPanel({ mix }: { mix: DashboardData["categoryMix"] }) {
+const MIX_COLORS = [
+  "var(--adm-accent)",
+  "var(--adm-info)",
+  "color-mix(in oklab, var(--adm-accent) 50%, var(--adm-surface))",
+  "var(--adm-success)",
+  "var(--adm-ink-faint)",
+];
+const DONUT_RADIUS = 15.9155;
+
+export function CategoryMixPanel({ mix, delay }: { mix: DashboardData["categoryMix"]; delay?: number }) {
+  const total = mix.reduce((sum, entry) => sum + entry.revenuePaise, 0);
+  const starts = mix.map((_, index) => mix.slice(0, index).reduce((sum, entry) => sum + entry.share * 100, 0));
   return (
-    <Panel title="Sales by category" description="Share of revenue · last 30 days">
-      <div className="p-5 sm:p-6">
-        <div className="flex h-3 overflow-hidden rounded-full" role="img" aria-label={mix.map((entry) => `${entry.name} ${Math.round(entry.share * 100)}%`).join(", ")}>
-          {mix.map((entry, index) => (
-            <span key={entry.id} style={{ width: `${entry.share * 100}%`, background: MIX_COLORS[index % MIX_COLORS.length] }} className="h-full border-r-2 border-adm-surface last:border-r-0" />
-          ))}
+    <Panel title="Sales by category" description="Share of revenue · last 30 days" delay={delay}>
+      <div className="flex flex-col items-center gap-7 p-5 sm:flex-row sm:p-6 xl:flex-col 2xl:flex-row">
+        <div className="relative size-44 shrink-0">
+          <svg
+            viewBox="0 0 42 42"
+            className="size-full -rotate-90"
+            role="img"
+            aria-label={mix.map((entry) => `${entry.name} ${Math.round(entry.share * 100)}%`).join(", ")}
+          >
+            <circle cx="21" cy="21" r={DONUT_RADIUS} fill="none" stroke="var(--adm-surface-muted)" strokeWidth="4.5" />
+            {mix.map((entry, index) => {
+              const visible = Math.max(0.01, entry.share * 100 - (mix.length > 1 ? 1.2 : 0));
+              return (
+                <circle
+                  key={entry.id}
+                  cx="21"
+                  cy="21"
+                  r={DONUT_RADIUS}
+                  fill="none"
+                  stroke={MIX_COLORS[index % MIX_COLORS.length]}
+                  strokeWidth="4.5"
+                  strokeDasharray={`${visible} ${100 - visible}`}
+                  strokeDashoffset={-starts[index]}
+                  className="adm-rise"
+                  style={{ "--adm-delay": `${(delay ?? 0) + 150 + index * 90}ms` } as CSSProperties}
+                />
+              );
+            })}
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <span className="text-[1.25rem] leading-none font-semibold tracking-[-0.02em] tabular-nums">{formatMoney(total, { compact: true })}</span>
+            <span className="mt-1 text-[11px] text-adm-ink-faint">30-day revenue</span>
+          </div>
         </div>
-        <ul className="mt-6 flex flex-col gap-3.5">
+        <ul className="flex w-full min-w-0 flex-col gap-3.5">
           {mix.map((entry, index) => (
             <li key={entry.id} className="flex items-center gap-3 text-[14px]">
               <span className="size-2.5 shrink-0 rounded-[3px]" style={{ background: MIX_COLORS[index % MIX_COLORS.length] }} aria-hidden="true" />
@@ -196,10 +235,10 @@ export function CategoryMixPanel({ mix }: { mix: DashboardData["categoryMix"] })
   );
 }
 
-export function FunnelPanel({ steps }: { steps: DashboardData["funnel"] }) {
+export function FunnelPanel({ steps, delay }: { steps: DashboardData["funnel"]; delay?: number }) {
   const first = steps[0]?.value || 1;
   return (
-    <Panel title="Conversion funnel" description="Visitor journey · last 30 days">
+    <Panel title="Conversion funnel" description="Visitor journey · last 30 days" delay={delay}>
       <ol className="flex flex-col gap-4 p-5 sm:p-6">
         {steps.map((step, index) => {
           const previous = steps[index - 1]?.value;
@@ -212,7 +251,7 @@ export function FunnelPanel({ steps }: { steps: DashboardData["funnel"] }) {
               <div className="mt-2 flex items-center gap-3">
                 <span className="h-2 flex-1 overflow-hidden rounded-full bg-adm-surface-muted">
                   <span
-                    className="block h-full rounded-full bg-adm-accent"
+                    className="adm-grow-x block h-full rounded-full bg-adm-accent"
                     style={{ width: `${Math.max(2, (step.value / first) * 100)}%`, opacity: 1 - index * 0.18 }}
                   />
                 </span>
@@ -224,43 +263,6 @@ export function FunnelPanel({ steps }: { steps: DashboardData["funnel"] }) {
           );
         })}
       </ol>
-    </Panel>
-  );
-}
-
-export function LowStockPanel({ items }: { items: DashboardData["lowStock"] }) {
-  return (
-    <Panel
-      title="Low stock"
-      description="Sizes about to sell out"
-      action={
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-adm-warning-soft px-2.5 py-1 text-[12px] font-medium text-adm-warning">
-          <AlertTriangle className="size-3.5" strokeWidth={1.8} aria-hidden="true" />
-          {items.length}
-        </span>
-      }
-    >
-      <ul className="divide-y divide-adm-line">
-        {items.map((item) => (
-          <li key={`${item.id}-${item.size}`} className="flex items-center gap-3 px-5 py-3 sm:px-6">
-            <span className="relative size-11 shrink-0 overflow-hidden rounded-lg bg-adm-surface-muted">
-              <Image src={item.image} alt="" fill sizes="44px" className="object-cover" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-[14px] font-medium text-adm-ink">{item.name}</p>
-              <p className="text-[12px] text-adm-ink-faint">Size {item.size}</p>
-            </div>
-            <span
-              className={cn(
-                "rounded-full px-2.5 py-1 text-[12px] font-semibold tabular-nums whitespace-nowrap",
-                item.left <= 2 ? "bg-adm-danger-soft text-adm-danger" : "bg-adm-warning-soft text-adm-warning",
-              )}
-            >
-              {item.left} left
-            </span>
-          </li>
-        ))}
-      </ul>
     </Panel>
   );
 }

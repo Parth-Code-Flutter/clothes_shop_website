@@ -24,7 +24,7 @@ export function AdminThemeToggle({ className }: { className?: string }) {
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
       className={cn(
-        "inline-flex size-10 items-center justify-center rounded-full border border-adm-line bg-adm-surface text-adm-ink-soft transition-colors hover:border-adm-line-strong hover:text-adm-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-adm-accent",
+        "inline-flex size-9 items-center justify-center rounded-lg border border-adm-line bg-adm-surface text-adm-ink-soft transition-colors hover:border-adm-line-strong hover:text-adm-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-adm-accent",
         className,
       )}
     >

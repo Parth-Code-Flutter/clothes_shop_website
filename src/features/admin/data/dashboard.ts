@@ -31,10 +31,27 @@ export type RecentOrder = {
   placed: string;
 };
 
+export type AttentionKind = "pack" | "payment" | "returns" | "stock" | "reviews";
+
+/** One owner task; `count` 0 means nothing to do. */
+export type AttentionItem = { kind: AttentionKind; count: number; hint: string };
+
+export type BriefTone = "up" | "down" | "tip" | "alert";
+
+/** A one-line, plain-language observation the owner can act on. */
+export type BriefItem = { tone: BriefTone; title: string; detail: string };
+
+type DaySnapshot = { revenuePaise: number; orders: number; sessions: number; newCustomers: number };
+
 export type DashboardData = {
   generatedFor: string;
   series: DayPoint[];
-  fulfilment: { label: string; count: number; tone: "warning" | "info" | "accent" | "success" | "danger" }[];
+  today: DaySnapshot;
+  /** Same weekday one week earlier, for a like-for-like comparison. */
+  lastWeekSameDay: DaySnapshot & { weekday: string };
+  brief: BriefItem[];
+  monthGoal: { monthLabel: string; goalPaise: number; achievedPaise: number; daysElapsed: number; daysInMonth: number };
+  attention: AttentionItem[];
   recentOrders: RecentOrder[];
   topProducts: { id: string; name: string; image: string; category: string; units: number; revenuePaise: number }[];
   categoryMix: { id: string; name: string; revenuePaise: number; share: number }[];
@@ -180,18 +197,114 @@ export function getDashboardData(now = new Date()): DashboardData {
       left: 1 + Math.floor(random() * 5),
     }));
 
+  const todayPoint = series[series.length - 1];
+  const sumRevenue = (points: DayPoint[]) => points.reduce((total, day) => total + day.revenuePaise, 0);
+
+  const monthKey = todayPoint.iso.slice(0, 7);
+  const monthToDate = series.filter((day) => day.iso.startsWith(monthKey));
+  const previousMonthKey = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - 1, 1)).toISOString().slice(0, 7);
+  const previousMonth = series.filter((day) => day.iso.startsWith(previousMonthKey));
+  const daysInMonth = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0)).getUTCDate();
+  const goalPaise = Math.ceil((sumRevenue(previousMonth) * 1.15) / 50_000_00) * 50_000_00;
+
+  const thisWeek = sumRevenue(series.slice(-7));
+  const lastWeek = sumRevenue(series.slice(-14, -7));
+  const weekdayTotals = Array.from({ length: 7 }, () => ({ revenue: 0, days: 0 }));
+  for (const day of series.slice(-84)) {
+    const weekday = new Date(`${day.iso}T00:00:00Z`).getUTCDay();
+    weekdayTotals[weekday].revenue += day.revenuePaise;
+    weekdayTotals[weekday].days += 1;
+  }
+  const bestWeekdayIndex = weekdayTotals.reduce(
+    (best, entry, index) => (entry.revenue / (entry.days || 1) > weekdayTotals[best].revenue / (weekdayTotals[best].days || 1) ? index : best),
+    0,
+  );
+  const weekdayName = new Intl.DateTimeFormat(adminBrand.locale, { weekday: "long", timeZone: "UTC" }).format(
+    new Date(Date.UTC(2024, 0, 7 + bestWeekdayIndex)),
+  );
+
+  const scarce = [...lowStock].sort((a, b) => a.left - b.left)[0];
+
+  const sameDayLastWeek = series[series.length - 8];
+  const prev30 = series.slice(-60, -30);
+  const conversion30 = sessions30 ? orders30 / sessions30 : 0;
+  const prevSessions = prev30.reduce((total, day) => total + day.sessions, 0);
+  const prevConversion = prevSessions ? prev30.reduce((total, day) => total + day.orders, 0) / prevSessions : 0;
+  const conversionChange = prevConversion ? ((conversion30 - prevConversion) / prevConversion) * 100 : 0;
+  const weekChange = lastWeek ? ((thisWeek - lastWeek) / lastWeek) * 100 : null;
+  const leader = topProducts[0];
+  const inr = new Intl.NumberFormat(adminBrand.locale, { style: "currency", currency: adminBrand.currency, maximumFractionDigits: 0 });
+
+  const brief: BriefItem[] = [];
+  if (weekChange !== null) {
+    brief.push({
+      tone: weekChange >= 0 ? "up" : "down",
+      title: `Revenue ${weekChange >= 0 ? "up" : "down"} ${Math.abs(weekChange).toFixed(1)}% this week`,
+      detail: `${inr.format(thisWeek / 100)} in the last 7 days against ${inr.format(lastWeek / 100)} the week before.`,
+    });
+  }
+  if (scarce) {
+    brief.push({
+      tone: "alert",
+      title: `${scarce.name} is almost sold out`,
+      detail: `Only ${scarce.left} left in size ${scarce.size}. Restock before the weekend rush.`,
+    });
+  }
+  brief.push({
+    tone: "tip",
+    title: `${weekdayName}s are your best day`,
+    detail: `They average ${inr.format(weekdayTotals[bestWeekdayIndex].revenue / (weekdayTotals[bestWeekdayIndex].days || 1) / 100)}. Time new drops and offers for then.`,
+  });
+  brief.push(
+    conversionChange < 0
+      ? {
+          tone: "down",
+          title: `Conversion slipped ${Math.abs(conversionChange).toFixed(1)}%`,
+          detail: "Fewer visitors are checking out. Review delivery fees and the checkout steps.",
+        }
+      : {
+          tone: "up",
+          title: leader ? `${leader.name} leads sales` : `Conversion up ${conversionChange.toFixed(1)}%`,
+          detail: leader ? `${leader.units} sold in 30 days. Keep every size in stock.` : "More visitors are completing checkout.",
+        },
+  );
+
   return {
     generatedFor: today.toISOString().slice(0, 10),
     series,
-    fulfilment: [
-      { label: "Awaiting payment", count: 3, tone: "warning" },
-      { label: "To pack", count: 7, tone: "accent" },
-      { label: "Ready to ship", count: 5, tone: "info" },
-      { label: "In transit", count: 11, tone: "info" },
-      { label: "Delivered today", count: 9, tone: "success" },
-      { label: "Return requests", count: 2, tone: "danger" },
+    today: {
+      revenuePaise: todayPoint.revenuePaise,
+      orders: todayPoint.orders,
+      sessions: todayPoint.sessions,
+      newCustomers: todayPoint.newCustomers,
+    },
+    lastWeekSameDay: {
+      revenuePaise: sameDayLastWeek.revenuePaise,
+      orders: sameDayLastWeek.orders,
+      sessions: sameDayLastWeek.sessions,
+      newCustomers: sameDayLastWeek.newCustomers,
+      weekday: new Intl.DateTimeFormat(adminBrand.locale, { weekday: "long", timeZone: "UTC" }).format(new Date(`${sameDayLastWeek.iso}T00:00:00Z`)),
+    },
+    brief,
+    monthGoal: {
+      monthLabel: new Intl.DateTimeFormat(adminBrand.locale, { month: "long", timeZone: "UTC" }).format(today),
+      goalPaise,
+      achievedPaise: sumRevenue(monthToDate),
+      daysElapsed: monthToDate.length,
+      daysInMonth,
+    },
+    attention: [
+      { kind: "pack", count: 7, hint: "Oldest has waited 3 h" },
+      { kind: "payment", count: 3, hint: "UPI and COD confirmations" },
+      { kind: "returns", count: 2, hint: "Reply within 48 h" },
+      {
+        kind: "stock",
+        count: lowStock.length,
+        hint: scarce ? `${scarce.name}, size ${scarce.size}` : "All sizes in stock",
+      },
+      { kind: "reviews", count: 5, hint: "Waiting for approval" },
     ],
-    recentOrders,
+    recentOrders: recentOrders.slice(0, 5),
     topProducts,
     categoryMix,
     funnel: [

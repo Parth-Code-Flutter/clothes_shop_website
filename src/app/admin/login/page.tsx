@@ -71,7 +71,7 @@ export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
 
 function BrandPanel() {
   return (
-    <aside className="relative hidden overflow-hidden bg-adm-sidebar p-10 text-adm-sidebar-ink lg:flex lg:flex-col xl:p-14">
+    <aside data-admin-dark className="relative hidden overflow-hidden bg-adm-sidebar p-10 text-adm-sidebar-ink lg:flex lg:flex-col xl:p-14">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-40 -right-40 size-[560px] rounded-full opacity-[0.18] blur-3xl"
