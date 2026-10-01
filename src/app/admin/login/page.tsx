@@ -75,7 +75,7 @@ function BrandPanel() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-40 -right-40 size-[560px] rounded-full opacity-[0.18] blur-3xl"
-        style={{ background: "radial-gradient(circle, var(--adm-accent), transparent 65%)" }}
+        style={{ background: "radial-gradient(circle, var(--adm-sidebar-accent), transparent 65%)" }}
       />
       <div aria-hidden="true" className="pointer-events-none absolute inset-6 rounded-[28px] border border-adm-sidebar-line xl:inset-8" />
       <span
@@ -86,7 +86,7 @@ function BrandPanel() {
       </span>
 
       <div className="relative flex items-center gap-3">
-        <AdminMonogram />
+        <AdminMonogram onSidebar />
         <div className="leading-tight">
           <p className="font-adm-display text-xl font-semibold">{adminBrand.name}</p>
           <p className="text-[11px] font-medium tracking-[0.2em] text-adm-sidebar-ink-soft uppercase">{adminBrand.consoleLabel}</p>
@@ -94,11 +94,11 @@ function BrandPanel() {
       </div>
 
       <div className="relative mt-auto max-w-lg">
-        <span aria-hidden="true" className="block h-px w-14 bg-adm-accent" />
+        <span aria-hidden="true" className="block h-px w-14 bg-adm-sidebar-accent" />
         <h2 className="mt-8 font-adm-display text-5xl leading-[1.04] font-medium tracking-[-0.015em] xl:text-6xl">
           Every collection,
           <br />
-          <em className="font-medium text-adm-accent">curated</em> from one desk.
+          <em className="font-medium text-adm-sidebar-accent">curated</em> from one desk.
         </h2>
         <p className="mt-6 max-w-md text-[15px] leading-relaxed text-adm-sidebar-ink-soft">
           Orders, catalogue, inventory and customers in one quiet, considered workspace built for the person who runs the house.

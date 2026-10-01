@@ -16,12 +16,17 @@ Everything brand-specific is in `src/features/admin/config/admin-brand.ts`:
 | `monogram` | Two-letter mark in the gold ring and the login watermark |
 | `consoleLabel` | Product name shown under the store name ("Atelier Console") |
 | `locale`, `currency`, `timeZone` | Money/number formatting and the dashboard's "today" |
-| `palettes.light` / `palettes.dark` | Every colour in the admin |
+| `theme` | Colour preset from `adminThemes`: `midnight` (navy, default), `sage` (muted green), `heritage` (ivory and gold) |
+
+Each preset in `adminThemes` has a light and a dark palette. To make a client-specific look, copy a
+preset, rename it, change the hex values and set `theme` to its name.
 
 How colours work: each palette token becomes a CSS variable (`--adm-accent`, `--adm-canvas`, ...)
 scoped to `[data-admin]`, and Tailwind maps them to utilities (`bg-adm-accent`, `text-adm-ink`, ...)
-in `src/app/globals.css`. Components never use hex values, so changing `accent` in both palettes
-re-themes buttons, active nav, charts and focus rings at once. The storefront theme is untouched.
+in `src/app/globals.css`. Components never use hex values, so changing `accent` re-themes buttons,
+charts and focus rings at once. `sidebarAccent` is the separate highlight used on the dark sidebar
+and login brand panel, so it must stay light enough to read on `sidebar`. The storefront theme is
+untouched.
 
 Fonts: Cormorant Garamond (display) and Inter (UI), loaded in `src/app/admin/layout.tsx`.
 Swap them there; the CSS variable names stay the same.

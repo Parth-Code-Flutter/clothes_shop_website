@@ -14,7 +14,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col bg-adm-sidebar text-adm-sidebar-ink">
       <div className="flex h-[72px] shrink-0 items-center gap-3 border-b border-adm-sidebar-line px-6">
-        <AdminMonogram className="size-9 text-[13px]" />
+        <AdminMonogram onSidebar className="size-9 text-[13px]" />
         <div className="min-w-0 leading-tight">
           <p className="truncate font-adm-display text-[19px] font-semibold">{adminBrand.name}</p>
           <p className="text-[10px] font-medium tracking-[0.2em] text-adm-sidebar-ink-soft uppercase">{adminBrand.consoleLabel}</p>
@@ -34,14 +34,14 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
                     <span
                       aria-hidden="true"
                       className={cn(
-                        "absolute top-1/2 left-0 h-5 w-[2px] -translate-y-1/2 rounded-full bg-adm-accent transition-opacity",
+                        "absolute top-1/2 left-0 h-5 w-[2px] -translate-y-1/2 rounded-full bg-adm-sidebar-accent transition-opacity",
                         active ? "opacity-100" : "opacity-0",
                       )}
                     />
-                    <Icon className={cn("size-[18px] shrink-0", active ? "text-adm-accent" : "")} strokeWidth={1.6} aria-hidden="true" />
+                    <Icon className={cn("size-[18px] shrink-0", active ? "text-adm-sidebar-accent" : "")} strokeWidth={1.6} aria-hidden="true" />
                     <span className="flex-1 truncate">{item.label}</span>
                     {item.ready && item.badge ? (
-                      <span className="rounded-full bg-adm-accent px-2 py-0.5 text-[10px] font-semibold text-adm-accent-ink tabular-nums">
+                      <span className="rounded-full bg-adm-sidebar-accent px-2 py-0.5 text-[10px] font-semibold text-adm-sidebar tabular-nums">
                         {item.badge}
                       </span>
                     ) : null}
@@ -62,7 +62,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
                         aria-current={active ? "page" : undefined}
                         className={cn(
                           base,
-                          "transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-adm-accent",
+                          "transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-adm-sidebar-accent",
                           active
                             ? "bg-adm-sidebar-ink/[0.07] font-medium text-adm-sidebar-ink"
                             : "text-adm-sidebar-ink-soft hover:bg-adm-sidebar-ink/[0.04] hover:text-adm-sidebar-ink",
@@ -88,7 +88,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
           href="/"
           target="_blank"
           rel="noreferrer"
-          className="flex items-center justify-between rounded-lg border border-adm-sidebar-line px-3.5 py-3 text-[13px] text-adm-sidebar-ink-soft transition-colors hover:border-adm-accent/50 hover:text-adm-sidebar-ink focus-visible:outline-2 focus-visible:outline-adm-accent"
+          className="flex items-center justify-between rounded-lg border border-adm-sidebar-line px-3.5 py-3 text-[13px] text-adm-sidebar-ink-soft transition-colors hover:border-adm-sidebar-accent/50 hover:text-adm-sidebar-ink focus-visible:outline-2 focus-visible:outline-adm-sidebar-accent"
         >
           <span>
             <span className="block font-medium text-adm-sidebar-ink">View storefront</span>
