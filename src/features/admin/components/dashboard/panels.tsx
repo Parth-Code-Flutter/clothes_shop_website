@@ -6,9 +6,7 @@ import type { DashboardData, OrderStatus } from "@/features/admin/data/dashboard
 import { adminNav } from "@/features/admin/config/admin-nav";
 import { formatMoney, formatNumber, formatPercent } from "@/features/admin/lib/format";
 import { cn } from "@/lib/utils";
-
-export const TILE_CLASS =
-  "rounded-[14px] border border-adm-line bg-adm-surface shadow-[0_1px_2px_rgb(0_0_0/0.04),0_1px_0_rgb(255_255_255/0.03)_inset]";
+import { TILE_CLASS } from "@/features/admin/components/ui";
 
 export function Panel({
   title,

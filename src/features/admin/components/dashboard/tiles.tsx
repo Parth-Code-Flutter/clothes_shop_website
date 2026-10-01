@@ -178,7 +178,7 @@ const ATTENTION_META: Record<AttentionKind, { label: string; icon: LucideIcon; c
   pack: { label: "Orders to pack", icon: PackageOpen, chip: "bg-adm-accent-soft text-adm-accent", href: "/admin/orders" },
   payment: { label: "Awaiting payment", icon: Clock3, chip: "bg-adm-warning-soft text-adm-warning", href: "/admin/orders" },
   returns: { label: "Return requests", icon: Undo2, chip: "bg-adm-danger-soft text-adm-danger", href: "/admin/orders" },
-  stock: { label: "Sizes running low", icon: AlertTriangle, chip: "bg-adm-warning-soft text-adm-warning", href: "/admin/inventory" },
+  stock: { label: "Sizes running low", icon: AlertTriangle, chip: "bg-adm-warning-soft text-adm-warning", href: "/admin/products?view=low" },
   reviews: { label: "Reviews to approve", icon: MessageSquareQuote, chip: "bg-adm-info-soft text-adm-info", href: "/admin/reviews" },
 };
 
@@ -192,7 +192,7 @@ export function AttentionTile({ items, delay }: { items: DashboardData["attentio
           const meta = ATTENTION_META[item.kind];
           const clear = item.count === 0;
           const Icon = clear ? CheckCircle2 : meta.icon;
-          const ready = READY_ROUTES.has(meta.href);
+          const ready = READY_ROUTES.has(meta.href.split("?")[0]);
           const body = (
             <>
               <span className={cn("inline-flex size-7 shrink-0 items-center justify-center rounded-lg", clear ? "bg-adm-success-soft text-adm-success" : meta.chip)}>

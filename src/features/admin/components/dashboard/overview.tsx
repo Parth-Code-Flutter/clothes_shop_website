@@ -4,7 +4,7 @@ import { useId, useMemo, useState, type CSSProperties, type PointerEvent } from 
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import type { DayPoint } from "@/features/admin/data/dashboard";
 import { AnimatedValue, formatValue, type ValueFormat } from "@/features/admin/components/dashboard/animated-value";
-import { TILE_CLASS } from "@/features/admin/components/dashboard/panels";
+import { TILE_CLASS } from "@/features/admin/components/ui";
 import { formatMoney, formatNumber, formatPercent, percentChange } from "@/features/admin/lib/format";
 import { cn } from "@/lib/utils";
 

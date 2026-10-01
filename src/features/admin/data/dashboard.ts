@@ -1,10 +1,11 @@
 import { adminBrand } from "@/features/admin/config/admin-brand";
+import { getLowStockSizes } from "@/features/admin/data/products";
 import { getAllCategories, getAllProducts } from "@/features/catalog/data";
 
 /**
  * SAMPLE dashboard data.
- * Products and categories are the real catalogue; orders, revenue, traffic and
- * stock levels are generated deterministically per calendar day so the numbers
+ * Products and categories are the real catalogue and stock comes from the admin
+ * product data; orders, revenue and traffic are generated deterministically per calendar day so the numbers
  * are stable between reloads. Replace getDashboardData() with real queries once
  * an orders backend exists — the returned shape is what the UI expects.
  */
@@ -185,17 +186,7 @@ export function getDashboardData(now = new Date()): DashboardData {
     }))
     .sort((a, b) => b.share - a.share);
 
-  const lowStockPool = [...products].sort((a, b) => a.popularity - b.popularity).slice(0, 12);
-  const lowStock = lowStockPool
-    .filter((_, index) => index % 3 === 0)
-    .slice(0, 4)
-    .map((product) => ({
-      id: product.id,
-      name: product.name,
-      image: product.image,
-      size: product.sizes[Math.floor(random() * product.sizes.length)] ?? "One size",
-      left: 1 + Math.floor(random() * 5),
-    }));
+  const lowStock = getLowStockSizes().map(({ id, name, image, size, left }) => ({ id, name, image, size, left }));
 
   const todayPoint = series[series.length - 1];
   const sumRevenue = (points: DayPoint[]) => points.reduce((total, day) => total + day.revenuePaise, 0);
@@ -223,7 +214,7 @@ export function getDashboardData(now = new Date()): DashboardData {
     new Date(Date.UTC(2024, 0, 7 + bestWeekdayIndex)),
   );
 
-  const scarce = [...lowStock].sort((a, b) => a.left - b.left)[0];
+  const scarce = lowStock[0];
 
   const sameDayLastWeek = series[series.length - 8];
   const prev30 = series.slice(-60, -30);
@@ -246,8 +237,11 @@ export function getDashboardData(now = new Date()): DashboardData {
   if (scarce) {
     brief.push({
       tone: "alert",
-      title: `${scarce.name} is almost sold out`,
-      detail: `Only ${scarce.left} left in size ${scarce.size}. Restock before the weekend rush.`,
+      title: scarce.left === 0 ? `${scarce.name} is sold out in size ${scarce.size}` : `${scarce.name} is almost sold out`,
+      detail:
+        scarce.left === 0
+          ? "Customers can't order this size until it's restocked."
+          : `Only ${scarce.left} left in size ${scarce.size}. Restock before the weekend rush.`,
     });
   }
   brief.push({
