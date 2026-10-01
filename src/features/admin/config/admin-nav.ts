@@ -31,7 +31,7 @@ export const adminNav: AdminNavGroup[] = [
     label: "Overview",
     items: [
       { label: "Dashboard", href: "/admin", icon: LayoutDashboard, ready: true },
-      { label: "Analytics", href: "/admin/analytics", icon: BarChart3, ready: false },
+      { label: "Analytics", href: "/admin/analytics", icon: BarChart3, ready: true },
     ],
   },
   {

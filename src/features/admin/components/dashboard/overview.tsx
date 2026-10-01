@@ -39,8 +39,10 @@ function totals(points: DayPoint[]): Record<Metric, number> {
   };
 }
 
-export function PerformanceTile({ series, delay = 0 }: { series: DayPoint[]; delay?: number }) {
-  const [days, setDays] = useState<number>(30);
+/** Pass `days` to lock the range (the page controls it); otherwise the tile shows its own 7/30/90 switch. */
+export function PerformanceTile({ series, delay = 0, days: fixedDays }: { series: DayPoint[]; delay?: number; days?: number }) {
+  const [ownDays, setDays] = useState<number>(30);
+  const days = fixedDays ?? ownDays;
   const [metric, setMetric] = useState<Metric>("revenue");
 
   const { current, previous, now, before } = useMemo(() => {
@@ -58,7 +60,7 @@ export function PerformanceTile({ series, delay = 0 }: { series: DayPoint[]; del
             Last {days} days, compared with the {days} days before
           </p>
         </div>
-        <div role="group" aria-label="Date range" className="inline-flex rounded-lg bg-adm-surface-muted p-0.5">
+        <div role="group" aria-label="Date range" className={cn("inline-flex rounded-lg bg-adm-surface-muted p-0.5", fixedDays && "hidden")}>
           {RANGES.map((range) => (
             <button
               key={range.days}

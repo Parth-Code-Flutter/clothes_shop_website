@@ -156,8 +156,6 @@ export function TopProductsPanel({ products, delay }: { products: DashboardData[
   );
 }
 
-/* Kept for the Analytics screen. */
-
 const MIX_COLORS = [
   "var(--adm-accent)",
   "var(--adm-info)",
@@ -167,11 +165,11 @@ const MIX_COLORS = [
 ];
 const DONUT_RADIUS = 15.9155;
 
-export function CategoryMixPanel({ mix, delay }: { mix: DashboardData["categoryMix"]; delay?: number }) {
+export function CategoryMixPanel({ mix, delay, days = 30 }: { mix: DashboardData["categoryMix"]; delay?: number; days?: number }) {
   const total = mix.reduce((sum, entry) => sum + entry.revenuePaise, 0);
   const starts = mix.map((_, index) => mix.slice(0, index).reduce((sum, entry) => sum + entry.share * 100, 0));
   return (
-    <Panel title="Sales by category" description="Share of revenue · last 30 days" delay={delay}>
+    <Panel title="Sales by category" description={`Share of revenue · last ${days} days`} delay={delay}>
       <div className="flex flex-col items-center gap-7 p-5 sm:flex-row sm:p-6 xl:flex-col 2xl:flex-row">
         <div className="relative size-44 shrink-0">
           <svg
@@ -202,7 +200,7 @@ export function CategoryMixPanel({ mix, delay }: { mix: DashboardData["categoryM
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
             <span className="text-[1.25rem] leading-none font-semibold tracking-[-0.02em] tabular-nums">{formatMoney(total, { compact: true })}</span>
-            <span className="mt-1 text-[11px] text-adm-ink-faint">30-day revenue</span>
+            <span className="mt-1 text-[11px] text-adm-ink-faint">{days}-day revenue</span>
           </div>
         </div>
         <ul className="flex w-full min-w-0 flex-col gap-3.5">
@@ -220,10 +218,10 @@ export function CategoryMixPanel({ mix, delay }: { mix: DashboardData["categoryM
   );
 }
 
-export function FunnelPanel({ steps, delay }: { steps: DashboardData["funnel"]; delay?: number }) {
+export function FunnelPanel({ steps, delay, days = 30 }: { steps: DashboardData["funnel"]; delay?: number; days?: number }) {
   const first = steps[0]?.value || 1;
   return (
-    <Panel title="Conversion funnel" description="Visitor journey · last 30 days" delay={delay}>
+    <Panel title="Conversion funnel" description={`Visitor journey · last ${days} days · % moving on from the step above`} delay={delay}>
       <ol className="flex flex-col gap-4 p-5 sm:p-6">
         {steps.map((step, index) => {
           const previous = steps[index - 1]?.value;
